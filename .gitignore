@@ -45,3 +45,4 @@ ormconfig.json
 
 staging-release.zip
 prod-release.zip
+yarn.lock
