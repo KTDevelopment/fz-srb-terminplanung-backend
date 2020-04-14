@@ -1,0 +1,54 @@
+{
+    "logger": {
+        "isEnabled": false
+    },
+    "database": {
+        "type": "sqlite",
+        "database": ":memory:",
+        "synchronize": true,
+        "logging": false,
+        "dropSchema": true,
+        "entities": [
+            "dist/**/*.entity.js"
+        ],
+        "migrations": [
+            "src/migration/**/*.ts"
+        ]
+    },
+    "auth": {
+        "accessSecret": "test_secret_access",
+        "refreshSecret": "test_secret_refresh",
+        "accessTokenExpiresIn": "1 day",
+        "refreshTokenExpiresIn": "180 days",
+        "passwordResetTokenExpiresIn": "1 day"
+    },
+    "mail": {
+        "SMTPConfig": {
+            "host": "foo_host",
+            "port": 123,
+            "auth": {
+                "user": "foo_user",
+                "pass": "fo_pass"
+            },
+            "tls": {
+                "rejectUnauthorized": false
+            }
+        }
+    },
+    "firebase": {
+        "isEnabled": false,
+        "serviceAccount": {
+            "type": "wefwef",
+            "project_id": "wefwefwef-strausberg-app",
+            "private_key_id": "wefergwrg",
+            "private_key": "wefqerg43r2wefwef",
+            "client_email": "wefergwef-wefwrwef-87343@wefewrg-wefweff-fwef.iam.wefwe.com",
+            "client_id": "23423r234234",
+            "auth_uri": "https://wefwef.google.wefwef/o/wefwefoauth2/auth",
+            "token_uri": "https://owewauth2.thrth.com/token",
+            "auth_provider_x509_cert_url": "https://www.wef35h45he.com/23wefwefwe/v1/certs",
+            "client_x509_cert_url": "https://www.googleapis.com/robot/v1/ergergewwer/x509/firebase-23rewegf-87343%wefwefwe-strauswefwegerbergaccount.com"
+        },
+        "databaseUrl": "https://my-app.firebaseio.com"
+    }
+}

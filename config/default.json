@@ -1,0 +1,71 @@
+{
+    "port": 3100,
+    "logger": {
+        "isEnabled": true,
+        "sentry": {
+            "dsn": "",
+            "rootDir": "/FOO",
+            "releaseTemplate": "fz-srb-terminplanung-backend@",
+            "environment": "default"
+        }
+    },
+    "appStoreLinks": {
+        "ios": "foo_ios",
+        "android": "foo_android"
+    },
+    "ics": {
+        "icsRootPath": "http://www.fanfarenzug-strausberg.de/events.ics"
+    },
+    "database": {
+        "type": "sqlite",
+        "database": "./mydb.db",
+        "synchronize": true,
+        "logging": false,
+        "entities": [
+            "dist/**/*.entity.js"
+        ],
+        "migrations": [
+            "dist/migration/**/*.js"
+        ]
+    },
+    "auth": {
+        "accessSecret": "test_secret_access",
+        "refreshSecret": "test_secret_refresh",
+        "accessTokenExpiresIn": "1 day",
+        "refreshTokenExpiresIn": "180 days",
+        "passwordResetTokenExpiresIn": "1 day"
+    },
+    "mail": {
+        "SMTPConfig": {
+            "host": "foo_host",
+            "port": 123,
+            "auth": {
+                "user": "foo_user",
+                "pass": "fo_pass"
+            },
+            "tls": {
+                "rejectUnauthorized": false
+            }
+        },
+        "passwordResetBaseUrl": "passwordResetBaseUrl_foo"
+    },
+    "firebase": {
+        "enabled": false,
+        "serviceAccount": {
+            "type": "qwdqwd",
+            "project_id": "fanfqwd",
+            "private_key_id": "2323ewef32",
+            "private_key": "fooo",
+            "client_email": "wqdweerf.gserviceaccount.com",
+            "client_id": "323423235234",
+            "auth_uri": "https://aqwdweferf",
+            "token_uri": "https://oauwef3wefwef/token",
+            "auth_provider_x509_cert_url": "httqwd23fwefw3f",
+            "client_x509_cert_url": "httpqwd2423wdwedqam.gserviceaccount.com"
+        },
+        "databaseUrl": "https://my-app.firebaseio.com"
+    },
+    "adminClient": {
+        "location": "/FOO"
+    }
+}
