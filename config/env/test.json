@@ -12,7 +12,7 @@
             "dist/**/*.entity.js"
         ],
         "migrations": [
-            "src/migration/**/*.ts"
+            "src/migration/**/*.js"
         ]
     },
     "auth": {
