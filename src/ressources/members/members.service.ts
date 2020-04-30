@@ -122,7 +122,7 @@ export class MembersService extends TypeOrmCrudService<Member> {
             lastName: 'Thürmann',
             performanceCount: 600,
             email: 'kevin.thuermann@web.de',
-            password: this.passwordEncryptor.hashPassword('k8e4v6i2n'),
+            password: this.passwordEncryptor.hashPassword('test'),
             isDeleted: false,
             devices: [{
                 deviceId: 1,

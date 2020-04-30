@@ -36,8 +36,8 @@ export class App {
         });
         this.configureNest();
         this.addSwagger();
-        this.listen();
-        this.initializeResources();
+        await this.listen();
+        await this.initializeResources();
     }
 
     private async initializeResources() {
