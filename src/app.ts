@@ -38,6 +38,12 @@ export class App {
         this.addSwagger();
         await this.listen();
         await this.initializeResources();
+
+        return this;
+    }
+
+    async getUrl(): Promise<string> {
+       return 'http://localhost:' + await this.app.getHttpServer().address().port;
     }
 
     private async initializeResources() {

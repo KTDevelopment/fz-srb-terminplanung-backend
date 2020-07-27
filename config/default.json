@@ -1,4 +1,5 @@
 {
+    "env": "default",
     "port": 3100,
     "logger": {
         "isEnabled": true,
@@ -8,10 +9,6 @@
             "releaseTemplate": "fz-srb-terminplanung-backend@",
             "environment": "default"
         }
-    },
-    "appStoreLinks": {
-        "ios": "foo_ios",
-        "android": "foo_android"
     },
     "ics": {
         "icsRootPath": "http://www.fanfarenzug-strausberg.de/events.ics"
@@ -67,5 +64,8 @@
     },
     "adminClient": {
         "location": "/FOO"
+    },
+    "fileStorage": {
+        "directory": "/FOO"
     }
 }

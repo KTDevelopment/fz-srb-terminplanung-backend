@@ -1,5 +1,9 @@
 import {bodyMatchesObject} from "./_common/expectations";
-import {get} from "./_common/testRequests";
+import {get, getAuthenticated, postAuthenticated} from "./_common/testRequests";
+import {adminToken} from "./_common/helper";
+import {existsSync, unlinkSync} from "fs";
+
+cleanUpFileStorage();
 
 describe('Misc', () => {
     describe('/GET AppStoreLinks', () => {
@@ -14,10 +18,50 @@ describe('Misc', () => {
             return get('/misc/fzSrbAppStoreLinks')
                 .expect(200)
                 .expect((res) => bodyMatchesObject(res, {
-                    "androidLink": "foo_android",
-                    "iosLink": "foo_ios",
+                    "androidLink": "https://play.google.com/store/apps/details?id=com.fanfarenzugstrausbergapp",
+                    "iosLink": "https://itunes.apple.com/de/app/fanfarenzug-strausberg-app/id1439365342?mt=8",
+                }));
+        });
+        it('it should POST appStoreLinks with authorization', async () => {
+            return postAuthenticated('/misc/fzSrbAppStoreLinks', await adminToken())
+                .send({
+                    androidLink: "https://play.google.com/foo",
+                    iosLink: "https://itunes.apple.com/de/bar",
+                })
+                .expect(201)
+                .expect((res) => bodyMatchesObject(res, {
+                    "androidLink": "https://play.google.com/foo",
+                    "iosLink": "https://itunes.apple.com/de/bar",
+                }));
+        });
+        it('it should POST dropBoxLinks with authorization', async () => {
+            return postAuthenticated('/misc/dropBoxLinks', await adminToken())
+                .send({
+                    main: "https://dropBox.com/foobar",
+                })
+                .expect(201)
+                .expect((res) => bodyMatchesObject(res, {
+                    "main": "https://dropBox.com/foobar",
+                }));
+        });
+        it('it should GET dropBoxLinks without authorization', async () => {
+            return getAuthenticated('/misc/dropBoxLinks')
+                .expect(200)
+                .expect((res) => bodyMatchesObject(res, {
+                    "main": "https://dropBox.com/foobar",
                 }));
         });
     });
 });
 
+function cleanUpFileStorage() {
+    const links = [
+        'test/test-file-storage/dropBoxLinks.json',
+        'test/test-file-storage/fzAppStoreLinks.json',
+    ];
+    links.forEach(link => {
+        if(existsSync(link)) {
+            unlinkSync(link)
+        }
+    });
+}

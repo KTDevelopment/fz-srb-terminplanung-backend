@@ -1,13 +1,9 @@
 import {ApiProperty} from "@nestjs/swagger";
 import {IsString} from "class-validator";
 
-export class AppStoreLinksDto {
+export class DropBoxLinksDto {
 
     @ApiProperty()
     @IsString()
-    iosLink: string;
-
-    @ApiProperty()
-    @IsString()
-    androidLink: string;
+    main: string;
 }

@@ -8,10 +8,10 @@ config.version = version;
 export const Config: () => AppConfig = () => config;
 
 export interface AppConfig {
+    env: 'default' | 'test' | 'development' | 'staging' | 'production';
     port: number,
     version: string,
     database: any
-    appStoreLinks: AppStoreLinksConfig
     auth: AuthConfig
     ics: {
         icsRootPath: string
@@ -24,7 +24,8 @@ export interface AppConfig {
     },
     mail: MailConfig,
     logger: LoggerConfig,
-    adminClient: AdminClientConfig
+    adminClient: AdminClientConfig,
+    fileStorage: FileStorageConfig,
 }
 
 export interface AdminClientConfig {
@@ -98,8 +99,7 @@ export interface AuthConfig {
     passwordResetTokenExpiresIn: string,
 }
 
-export interface AppStoreLinksConfig {
-    "ios": string,
-    "android": string
+export interface FileStorageConfig {
+    directory: string
 }
 

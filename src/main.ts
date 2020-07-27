@@ -8,9 +8,12 @@ const mainLogger = new ApplicationLogger(configService);
 mainLogger.setContext('main');
 
 (async () => {
-    await runMigrations(mainLogger);
-    await new App(configService, mainLogger).start();
-    mainLogger.log('application startup completed')
+    if (configService.config.env !== 'development') {
+        await runMigrations(configService, mainLogger);
+    }
+    const app = await new App(configService, mainLogger)
+        .start();
+    mainLogger.log('application startup completed: ' + await app.getUrl())
 })().catch(e => {
     mainLogger.error('application startup failed');
     mainLogger.error(e.message, e.stack);

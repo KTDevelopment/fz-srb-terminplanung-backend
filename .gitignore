@@ -46,3 +46,6 @@ ormconfig.json
 staging-release.zip
 prod-release.zip
 yarn.lock
+local-file-storage
+/test/test-file-storage
+local.db
