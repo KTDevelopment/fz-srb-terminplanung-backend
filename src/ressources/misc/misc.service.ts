@@ -43,7 +43,7 @@ export class MiscService {
     }
 
     private ensureDropBoxLinksFileExists() {
-        MiscService.ensureFileExists(this.dropBoxLinksFilePath, '{"main": ""}')
+        MiscService.ensureFileExists(this.dropBoxLinksFilePath, '{"main": "", "music": "", "drill": ""}')
     }
 
     private ensureFzAppStoreLinksExists() {

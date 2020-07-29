@@ -6,4 +6,12 @@ export class DropBoxLinksDto {
     @ApiProperty()
     @IsString()
     main: string;
+
+    @ApiProperty()
+    @IsString()
+    music: string;
+
+    @ApiProperty()
+    @IsString()
+    drill: string;
 }
