@@ -51,7 +51,7 @@
     "@nestjsx/crud-typeorm": "4.4.2",
     "@sentry/integrations": "5.13.0",
     "@sentry/node": "5.12.4",
-    "bcrypt": "^3.0.7",
+    "bcrypt": "^5.0.0",
     "class-transformer": "^0.2.3",
     "class-validator": "^0.11.0",
     "compression": "^1.7.4",
