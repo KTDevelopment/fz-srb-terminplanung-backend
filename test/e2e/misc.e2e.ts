@@ -37,18 +37,24 @@ describe('Misc', () => {
         it('it should POST dropBoxLinks with authorization', async () => {
             return postAuthenticated('/misc/dropBoxLinks', await adminToken())
                 .send({
-                    main: "https://dropBox.com/foobar",
+                    main: "https://dropBox.com/main",
+                    music: "https://dropBox.com/music",
+                    drill: "https://dropBox.com/drill",
                 })
                 .expect(201)
                 .expect((res) => bodyMatchesObject(res, {
-                    "main": "https://dropBox.com/foobar",
+                    "main": "https://dropBox.com/main",
+                    "music": "https://dropBox.com/music",
+                    "drill": "https://dropBox.com/drill",
                 }));
         });
         it('it should GET dropBoxLinks without authorization', async () => {
             return getAuthenticated('/misc/dropBoxLinks')
                 .expect(200)
                 .expect((res) => bodyMatchesObject(res, {
-                    "main": "https://dropBox.com/foobar",
+                    "main": "https://dropBox.com/main",
+                    "music": "https://dropBox.com/music",
+                    "drill": "https://dropBox.com/drill",
                 }));
         });
     });
