@@ -15,6 +15,9 @@ import {
     STATE__INVITED
 } from "../../../src/ressources/participations/participation-states/participation-state.entity";
 import {getTestEvent, getTestMember, getTestPlanner} from "../testData";
+import {ApplicationLogger} from "../../../src/logger/application-logger.service";
+import {loggerMock} from "../mocks/loggerMock";
+import * as Sentry from "@sentry/node";
 
 describe('SendFirebaseMessageEventHandler Tests', () => {
     let sendFirebaseMessageEventHandler: SendFirebaseMessageEventHandler;
@@ -27,27 +30,23 @@ describe('SendFirebaseMessageEventHandler Tests', () => {
             }, {
                 provide: MembersService,
                 useValue: membersServiceMock,
+            }, {
+                provide: ApplicationLogger,
+                useValue: loggerMock
             }],
         }).compile();
 
         jest.resetAllMocks();
         membersServiceMock.findPlannerOfMember.mockResolvedValue([getTestPlanner()]);
         sendFirebaseMessageEventHandler = module.get<SendFirebaseMessageEventHandler>(SendFirebaseMessageEventHandler);
+        // @ts-ignore
+        Sentry.captureException = jest.fn();
     });
 
-    it('should do nothing for STATE__HAS_PARTICIPATED', () => {
+    it.each([STATE__HAS_PARTICIPATED, STATE__HAS_NOT_PARTICIPATED])
+    ('should do nothing for %p', (state)=> {
         sendFirebaseMessageEventHandler.handle(plainToClass(SendFirebaseMessageEvent, {
-            newStateId: STATE__HAS_PARTICIPATED,
-            callingMember: getTestPlanner(),
-            changedMember: getTestMember(),
-            event: getTestEvent(),
-        }));
-        expectNumberOfCalls(0,0,0);
-    });
-
-    it('should do nothing for STATE__HAS_NOT_PARTICIPATED', () => {
-        sendFirebaseMessageEventHandler.handle(plainToClass(SendFirebaseMessageEvent, {
-            newStateId: STATE__HAS_NOT_PARTICIPATED,
+            newStateId: state,
             callingMember: getTestPlanner(),
             changedMember: getTestMember(),
             event: getTestEvent(),
@@ -104,6 +103,20 @@ describe('SendFirebaseMessageEventHandler Tests', () => {
             event: getTestEvent(),
         }));
         expect(result).toBe('foo');
+        expectNumberOfCalls(0,1,1);
+    });
+
+    it('should handle errors of FCMService', async () => {
+        fcmServiceMock.notifyPlannerAboutStateChange.mockRejectedValue(new Error('caboom'));
+        const result = await sendFirebaseMessageEventHandler.handle(plainToClass(SendFirebaseMessageEvent, {
+            newStateId: STATE__INVITATION_REQUEST_PENDING,
+            callingMember: getTestMember(),
+            changedMember: getTestMember(),
+            event: getTestEvent(),
+        }));
+        expect(result).toBe(undefined);
+        expect(loggerMock.error).toHaveBeenCalled();
+        expect(Sentry.captureException).toHaveBeenCalled();
         expectNumberOfCalls(0,1,1);
     });
 });

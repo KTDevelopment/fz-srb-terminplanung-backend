@@ -1,6 +1,6 @@
 import {EventsHandler, IEventHandler} from "@nestjs/cqrs";
 import {SendFirebaseMessageEvent} from "./send-firebase-message.event";
-import {FcmService} from "../fcm.service";
+import {DeviceSpecificFcmResponse, FcmService} from "../fcm.service";
 import {
     STATE__ATTEND,
     STATE__DO_NOT_ATTEND,
@@ -8,24 +8,34 @@ import {
     STATE__HAS_PARTICIPATED
 } from "../../ressources/participations/participation-states/participation-state.entity";
 import {MembersService} from "../../ressources/members/members.service";
+import {ApplicationLogger} from "../../logger/application-logger.service";
+import * as Sentry from "@sentry/node";
+import {Maybe} from "purify-ts";
 
 @EventsHandler(SendFirebaseMessageEvent)
 export class SendFirebaseMessageEventHandler implements IEventHandler<SendFirebaseMessageEvent> {
     constructor(
         private readonly fcmService: FcmService,
         private readonly membersService: MembersService,
+        private readonly logger: ApplicationLogger
     ) {
+        this.logger.setContext(SendFirebaseMessageEventHandler.name);
     }
 
-    async handle(event: SendFirebaseMessageEvent) {
-        if (SendFirebaseMessageEventHandler.isFCMNeeded(event)) {
-            if (event.callingMember.isNotPrivileged()) {
-                let receivers = await this.membersService.findPlannerOfMember(event.callingMember);
-                return this.fcmService.notifyPlannerAboutStateChange(event.event, receivers, event.callingMember, event.newStateId);
+    async handle(event: SendFirebaseMessageEvent): Promise<Maybe<DeviceSpecificFcmResponse>> {
+        try {
+            if (SendFirebaseMessageEventHandler.isFCMNeeded(event)) {
+                if (event.callingMember.isNotPrivileged()) {
+                    let receivers = await this.membersService.findPlannerOfMember(event.callingMember);
+                    return await this.fcmService.notifyPlannerAboutStateChange(event.event, receivers, event.callingMember, event.newStateId);
+                }
+                if (event.changedMember.memberId !== event.callingMember.memberId) {
+                    return await this.fcmService.notifyMemberThatHisStateChanged(event.event, event.changedMember, event.callingMember, event.newStateId);
+                }
             }
-            if (event.changedMember.memberId !== event.callingMember.memberId) {
-                return this.fcmService.notifyMemberThatHisStateChanged(event.event, event.changedMember, event.callingMember, event.newStateId);
-            }
+        } catch (e) {
+            this.logger.error(e.message, e.stack);
+            Sentry.captureException(e)
         }
     }
 

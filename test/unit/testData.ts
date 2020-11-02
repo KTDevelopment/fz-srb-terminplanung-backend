@@ -126,10 +126,10 @@ export function getTestMemberList() {
 }
 
 export function getTestMemberListWithDevices() {
-    return [getTetMemberWithDevices(), getTetMemberWithDevices()]
+    return [getTestMemberWithDevices(), getTestMemberWithDevices()]
 }
 
-export function getTetMemberWithDevices() {
+export function getTestMemberWithDevices() {
     let member = getTestMember();
     member.devices = [
         getIosTestDevice(),

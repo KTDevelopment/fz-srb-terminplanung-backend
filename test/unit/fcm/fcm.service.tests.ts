@@ -13,7 +13,7 @@ import {
     getTestMemberList,
     getTestMemberListWithDevices,
     getTestPlanner,
-    getTetMemberWithDevices,
+    getTestMemberWithDevices,
     testFcmPayload
 } from "../testData";
 import {ApplicationLogger} from "../../../src/logger/application-logger.service";
@@ -81,7 +81,7 @@ describe('FcmServiceTests', () => {
     });
     it('should generate payloads and send messages for notifyMemberThatHisStateChanged when planner has devices', async () => {
         let testEvent = getTestEvent();
-        let testMember = getTetMemberWithDevices();
+        let testMember = getTestMemberWithDevices();
         let planner = getTestPlanner();
         let newState = 1;
         let testPayload = testFcmPayload(testEvent.eventId);
