@@ -36,13 +36,7 @@ export class FcmClient {
 
     async sendToDevice(registrationTokens: string[], payload: MessagingPayload): Promise<MessagingDevicesResponse> {
         if (!this.config.isEnabled) {
-            return {
-                canonicalRegistrationTokenCount: 0,
-                failureCount: 0,
-                multicastId: 0,
-                results: [],
-                successCount: registrationTokens.length,
-            };
+            throw new Error("firebase is not enabled");
         }
 
         return await retry(async () => {
