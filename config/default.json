@@ -11,7 +11,7 @@
         }
     },
     "ics": {
-        "icsRootPath": "http://www.fanfarenzug-strausberg.de/events.ics"
+        "icsRootPath": "https://fzsrb.de/termine/?ical=1"
     },
     "database": {
         "type": "sqlite",

@@ -10,9 +10,9 @@ export class Event extends BaseEntity {
     @IsOptional()
     eventId: number;
 
-    @Column({type: "bigint", nullable: true})
-    @IsInt()
-    wpId: number;
+    @IsString()
+    @Column({type: "varchar", length: 255, nullable: true})
+    remoteId: string;
 
     @Column({type: "datetime"})
     @IsDate()
@@ -89,10 +89,10 @@ export class Event extends BaseEntity {
         return now.getTime() > this.endDate.getTime();
     }
 
-    equals(event: Event) {
+    equalsEventWithoutCoordinates(event: Event): boolean {
         return (
-            this.startDate === event.startDate &&
-            this.endDate === event.endDate &&
+            this.startDate.getTime() === event.startDate.getTime() &&
+            this.endDate.getTime() === event.endDate.getTime() &&
             this.summary === event.summary &&
             this.description === event.description &&
             this.eventName === event.eventName &&
@@ -102,8 +102,16 @@ export class Event extends BaseEntity {
             this.town === event.town &&
             this.dress === event.dress &&
             this.participatingGroup === event.participatingGroup &&
-            this.category === event.category &&
-            this.longitude === event.longitude &&
-            this.latitude === event.latitude);
+            this.category === event.category
+        );
+    }
+
+    locationInfosEquals(event: Event): boolean {
+        return (
+            this.location === event.location &&
+            this.address === event.address &&
+            this.postcode === event.postcode &&
+            this.town === event.town
+        );
     }
 }

@@ -23,9 +23,9 @@ export class IcsService {
             const newEvents = [];
             iCal.fromURL(url, {}, (err, data) => {
                 if (!err) {
-                    for (let k in data) {
-                        if (data.hasOwnProperty(k)) {
-                            newEvents.push(IcsService.createEvent(data[k]));
+                    for (let i in data) {
+                        if (data.hasOwnProperty(i) && data[i].type === 'VEVENT') {
+                            newEvents.push(IcsService.createEvent(data[i]));
                         }
                     }
                     resolve(newEvents)
@@ -37,23 +37,23 @@ export class IcsService {
         })
     }
 
-    private static createEvent(rawEvent: any) {
+    private static createEvent(raw: any) {
         return plainToClass(Event, {
-            wpId: rawEvent.wpid,
-            startDate: IcsService.calculateDatePayingAttentionOnWinterTime(new Date(rawEvent.start)),
-            endDate: IcsService.calculateDatePayingAttentionOnWinterTime(new Date(rawEvent.end)),
-            summary: rawEvent.summary || '',
-            description: rawEvent.description || '',
-            eventName: rawEvent.eventname || '',
-            location: rawEvent.location || '',
-            address: rawEvent.adress || '',
-            postcode: parseInt(rawEvent.postcode) || 0,
-            town: rawEvent.town || '',
-            dress: rawEvent.kleidung || '',
-            participatingGroup: rawEvent.bereich || '',
-            category: rawEvent.kategorie || '',
-            longitude: parseFloat(rawEvent.longitude) || 0,
-            latitude: parseFloat(rawEvent.latitude) || 0,
+            remoteId: raw.uid,
+            startDate: IcsService.calculateDatePayingAttentionOnWinterTime(new Date(raw.start)),
+            endDate: IcsService.calculateDatePayingAttentionOnWinterTime(new Date(raw.end)),
+            summary: raw.summary || '',
+            description: raw.description || '',
+            eventName: raw.summary || '',
+            location: raw.location ? raw.location.split(',')[0].trim() : '',
+            address: raw.location ? raw.location.split(',')[1].trim() : '',
+            town: raw.location ? raw.location.split(',')[2].trim() : '',
+            postcode: raw.location ? parseInt(raw.location.split(',')[3].trim()) : '',
+            dress: '',
+            participatingGroup: '',
+            category: IcsService.determineCategory(raw.categories),
+            longitude: 0,
+            latitude: 0,
             isPublic: true
         });
     }
@@ -64,5 +64,17 @@ export class IcsService {
             return new Date(millisFormPlusOneHour);
         }
         return date;
+    }
+
+    private static determineCategory(catsFromWebsite: string[]): string {
+        if (catsFromWebsite.length === 0) return '';
+
+        if (catsFromWebsite.length === 1) return catsFromWebsite[0];
+
+        if (catsFromWebsite.includes('HIGHLIGHT')) {
+            return 'HIGHLIGHT';
+        }
+
+        return catsFromWebsite[0]
     }
 }

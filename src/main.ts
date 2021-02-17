@@ -8,7 +8,7 @@ const mainLogger = new ApplicationLogger(configService);
 mainLogger.setContext('main');
 
 (async () => {
-    if (configService.config.env !== 'development') {
+    if (configService.config.database.type === 'mysql') {
         await runMigrations(configService, mainLogger);
     }
     const app = await new App(configService, mainLogger)

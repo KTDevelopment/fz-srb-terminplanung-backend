@@ -7,6 +7,7 @@ import {IcsService} from "../../ics/ics.service";
 import {Cron, CronExpression} from "@nestjs/schedule";
 import {FindOneOptions} from "typeorm/find-options/FindOneOptions";
 import {ApplicationLogger} from "../../logger/application-logger.service";
+import {GeoService} from "../../geo/geo.service";
 
 @Injectable()
 export class EventsService extends TypeOrmCrudService<Event> {
@@ -14,6 +15,7 @@ export class EventsService extends TypeOrmCrudService<Event> {
     constructor(
         @InjectRepository(Event) repo,
         private readonly icsService: IcsService,
+        private readonly geoService: GeoService,
         private readonly logger: ApplicationLogger) {
         super(repo);
         this.logger.setContext(EventsService.name)
@@ -25,44 +27,48 @@ export class EventsService extends TypeOrmCrudService<Event> {
 
     @Cron(CronExpression.EVERY_HOUR)
     async importEventsFromWebsite() {
-        let newEvents = await this.icsService.downloadEvents();
-        await Promise.all(newEvents.map(newEvent => this.insertOrUpdateEvent(newEvent)));
-
-        let onlyWpIds = newEvents.map(event => event.wpId);
-
-        if (onlyWpIds.length > 0) {
-            await this.deleteEventsWhichAreInFutureButNotInWpIdList(onlyWpIds);
-        }
+        const newEvents = await this.icsService.downloadEvents();
+        await Promise.all(newEvents.map(async newEvent => this.insertOrUpdateEvent(newEvent)));
+        await this.deleteEventsWhichAreInFutureButNotInRemoteIdList(newEvents.map(event => event.remoteId));
     }
 
     private async insertOrUpdateEvent(newEvent: Event) {
-        if (!newEvent.wpId) {
-            this.logger.error("Fehler keine WpId: " + newEvent.eventName);
+        if (!newEvent.remoteId) {
+            this.logger.error("Fehler keine remote Id: " + newEvent.eventName);
             return;
         }
 
         try {
-            let currentEvent = await this.repo.findOne({wpId: newEvent.wpId});
+            let currentEvent = await this.repo.findOne({remoteId: newEvent.remoteId});
 
             if (currentEvent === undefined) {
-                return await this.repo.save(newEvent);
+                return await this.repo.save(await this.geoService.enrichEventWithGeoCoordinates(newEvent));
             }
 
-            if (!currentEvent.equals(newEvent)) {
+            if (!currentEvent.equalsEventWithoutCoordinates(newEvent)) {
                 newEvent.eventId = currentEvent.eventId;
+                if (!currentEvent.locationInfosEquals(newEvent)) {
+                    newEvent = await this.geoService.enrichEventWithGeoCoordinates(newEvent)
+                } else {
+                    newEvent.latitude = currentEvent.latitude;
+                    newEvent.longitude = currentEvent.latitude;
+                }
+
                 return await this.repo.save(newEvent);
             }
 
         } catch (e) {
-            this.logger.error("Fehler beim Insert/Update eines Events mit WpId: " + newEvent.wpId, e.stack);
+            this.logger.error("Fehler beim Insert/Update eines Events mit remote id: " + newEvent.remoteId, e.stack);
         }
     }
 
-    private async deleteEventsWhichAreInFutureButNotInWpIdList(wpIds: number[]): Promise<Event[]> {
+    private async deleteEventsWhichAreInFutureButNotInRemoteIdList(remoteIds: string[]): Promise<Event[]> {
+        if (remoteIds.length === 0) return [];
+
         let now = new Date();
         let eventsToDelete: Event[] = await this.find({
                 where: {
-                    wpId: Not(In(wpIds)),
+                    remoteId: Not(In(remoteIds)),
                     startDate: MoreThan(now),
                     isPublic: true
                 }
