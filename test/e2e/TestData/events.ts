@@ -4,7 +4,7 @@ import {Event} from "../../../src/ressources/events/event.entity";
 export function getNonPublicEvents() {
     return [
         plainToClass(Event, {
-            "wpId": 30,
+            "remoteId": "30",
             "startDate": "2018-08-17T03:24:00",
             "endDate": "2018-08-18T03:24:00",
             "summary": "19. Herbstfanfare 2018 - EnergieARENA - 03.10.2018 - 17:00 - 21:00",
@@ -25,7 +25,7 @@ export function getNonPublicEvents() {
             "version": 1
         }),
         plainToClass(Event, {
-            "wpId": 40,
+            "remoteId": "40",
             "startDate": "2018-07-17T03:24:00",
             "endDate": "2018-07-18T03:24:00",
             "summary": "Oktoberfest Zinndorf - Oktoberfest Zinndorf - 05.10.2018 - 21:30 - 22:45",
@@ -53,7 +53,7 @@ export function getPublicEvents() {
     let tomorrow = new Date(ms);
     return [
         plainToClass(Event, {
-            "wpId": 10,
+            "remoteId": "10",
             "startDate": "2018-09-17T03:24:00",
             "endDate": "2018-09-18T03:24:00",
             "summary": "Oktoberfest Zinndorf - Oktoberfest Zinndorf - 05.10.2018 - 21:30 - 22:45",
@@ -74,7 +74,7 @@ export function getPublicEvents() {
             "version": 1
         }),
         plainToClass(Event, {
-            "wpId": 20,
+            "remoteId": "20",
             "startDate": new Date().toISOString(),
             "endDate": tomorrow.toISOString(),
             "summary": "Oktoberfest Zinndorf - Oktoberfest Zinndorf - 05.10.2018 - 21:30 - 22:45",
@@ -99,7 +99,7 @@ export function getPublicEvents() {
 
 export function getEventThatShouldBeRemoved() {
     return plainToClass(Event, {
-        "wpId": 100,
+        "remoteId": "100",
         "startDate": '2100-01-01T00:00:00',
         "endDate": '2100-01-02T00:00:00',
         "summary": "Oktoberfest Zinndorf - Oktoberfest Zinndorf - 05.10.2018 - 21:30 - 22:45",

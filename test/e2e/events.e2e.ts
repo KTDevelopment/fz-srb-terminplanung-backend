@@ -22,7 +22,7 @@ describe('Events', () => {
                     "postcode": 1234,
                     "summary": "Oktoberfest Zinndorf - Oktoberfest Zinndorf - 05.10.2018 - 21:30 - 22:45",
                     "town": "Zinndorf",
-                    "wpId": 10,
+                    "remoteId": "10",
                 }))
         });
         it('it should GET all public events', async () => {
