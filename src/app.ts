@@ -16,8 +16,7 @@ import {SectionsService} from "./ressources/sections/sections.service";
 import {RolesService} from "./ressources/roles/roles.service";
 import {MembersService} from "./ressources/members/members.service";
 import {ParticipationStatesService} from "./ressources/participations/participation-states/participation-states.service";
-
-const version = require('./version.json').version;
+import {version} from "../package.json";
 
 export class App {
     private readonly configService: ConfigService;

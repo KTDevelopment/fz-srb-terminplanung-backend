@@ -19,10 +19,7 @@ $ yarn start:dev
 ```
 
 ## TODO
-- Newsletter upload with fcm
 - Password Reset testen
 - GoogleDrive Backup
 - aus app ausloggen wenn userdata isDeleted
 - FCM testing
-- copy version.json script
-- release script
