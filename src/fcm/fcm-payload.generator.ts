@@ -5,7 +5,7 @@ import {
     TYPE_PLANNER_CHANGED_MEMBER_STATE,
     TYPE_REMIND_MEMBER
 } from "./models/FcmPayload";
-import {BadRequestException, Injectable} from "@nestjs/common";
+import {Injectable} from "@nestjs/common";
 import {Member} from "../ressources/members/member.entity";
 import {Event} from "../ressources/events/event.entity";
 import {
@@ -17,6 +17,7 @@ import {
     STATE__NOT_INVITED
 } from "../ressources/participations/participation-states/participation-state.entity";
 import {ApplicationLogger} from "../logger/application-logger.service";
+import {AppException} from "../_common/AppException";
 
 @Injectable()
 export class FcmPayloadGenerator {
@@ -33,8 +34,9 @@ export class FcmPayloadGenerator {
                 .setEventId(event.eventId + '')
                 .setType(TYPE_REMIND_MEMBER);
         } catch (e) {
-            this.logger.error("generatePayloadForRemindMemberFailed", e);
-            throw e;
+            const error = new AppException(e, "generate Payload For Remind Member Failed");
+            this.logger.error(error);
+            throw error;
         }
     };
 
@@ -46,8 +48,9 @@ export class FcmPayloadGenerator {
                 .setEventId(event.eventId + '')
                 .setType(TYPE_MEMBER_CHANGED_HIS_STATE);
         } catch (e) {
-            this.logger.error("generatePayloadForMemberChangedHisStateFailed", e);
-            throw e;
+            const error = new AppException(e, "generate Payload For Member Changed His State Failed");
+            this.logger.error(error);
+            throw error;
         }
     };
 
@@ -59,8 +62,9 @@ export class FcmPayloadGenerator {
                 .setEventId(event.eventId + '')
                 .setType(TYPE_PLANNER_CHANGED_MEMBER_STATE);
         } catch (e) {
-            this.logger.error("generatePayloadForPlanerChangedMemberStateFailed", e);
-            throw e;
+            const error = new AppException(e, "generate Payload For Planer Changed Member State Failed");
+            this.logger.error(error);
+            throw error;
         }
     };
 
@@ -145,7 +149,7 @@ export class FcmPayloadGenerator {
     }
 }
 
-class InvalidStateForMessageException extends BadRequestException {
+class InvalidStateForMessageException extends Error {
     constructor(stateId: number, messageType: string) {
         super('no ' + messageType + ' for state: ' + stateId);
     }

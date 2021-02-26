@@ -3,15 +3,19 @@ import * as admin from "firebase-admin";
 import {FcmPayloadGenerator} from "./fcm-payload.generator";
 import {FcmClient} from "./fcm.client";
 import {Member} from "../ressources/members/member.entity";
-import {AVAILABLE_DEVICE_TYPES, Device, DEVICE_TYPE_ANDROID, DEVICE_TYPE_IOS} from "../ressources/devices/device.entity";
+import {
+    AVAILABLE_DEVICE_TYPES,
+    Device,
+    DEVICE_TYPE_ANDROID,
+    DEVICE_TYPE_IOS
+} from "../ressources/devices/device.entity";
 import {FcmPayload} from "./models/FcmPayload";
 import {Event} from "../ressources/events/event.entity";
 import {FcmMessage} from "./models/FcmMessage";
 import {DevicesService, RegistrationIdPair} from "../ressources/devices/devices.service";
 import {ApplicationLogger} from "../logger/application-logger.service";
-import * as Sentry from "@sentry/node";
-import {Severity} from "@sentry/types/dist/severity";
 import {Maybe} from "purify-ts";
+import {AppException} from "../_common/AppException";
 import MessagingDevicesResponse = admin.messaging.MessagingDevicesResponse;
 import MessagingDeviceResult = admin.messaging.MessagingDeviceResult;
 
@@ -39,7 +43,7 @@ export class FcmService {
         });
 
         if (devices.length === 0) {
-            this.logWarning("FCM: no Devices on receiver - " + receivers.map(it => it.memberId).join(','));
+            this.logger.warn("FCM: no Devices on receiver - " + receivers.map(it => it.memberId).join(','));
             return Maybe.empty();
         }
 
@@ -48,9 +52,9 @@ export class FcmService {
         return await this.sendFcmPayload(payload, devices);
     }
 
-    async notifyMemberThatHisStateChanged(event: Event, receiver: Member, sender: Member, newState): Promise<Maybe<DeviceSpecificFcmResponse>>  {
+    async notifyMemberThatHisStateChanged(event: Event, receiver: Member, sender: Member, newState): Promise<Maybe<DeviceSpecificFcmResponse>> {
         if (!receiver.devices || receiver.devices.length === 0) {
-            this.logWarning("FCM: no Devices on receiver - " + receiver.memberId);
+            this.logger.warn("FCM: no Devices on receiver - " + receiver.memberId);
             return Maybe.empty();
         }
 
@@ -58,14 +62,14 @@ export class FcmService {
         return await this.sendFcmPayload(payload, receiver.devices);
     }
 
-    async remindParticipator(event: Event, trigger: Member, receiver: Member, currentState): Promise<Maybe<DeviceSpecificFcmResponse>>  {
+    async remindParticipator(event: Event, trigger: Member, receiver: Member, currentState): Promise<Maybe<DeviceSpecificFcmResponse>> {
         if (trigger.memberId === receiver.memberId) {
-            this.logWarning("no self reminding allowed, member: " + receiver.memberId);
+            this.logger.warn("no self reminding allowed, member: " + receiver.memberId);
             return Maybe.empty();
         }
 
         if (receiver.devices.length === 0) {
-            this.logWarning("no devices on receiver: " + receiver.memberId);
+            this.logger.warn("no devices on receiver: " + receiver.memberId);
             return Maybe.empty();
         }
 
@@ -81,7 +85,7 @@ export class FcmService {
         });
 
         if (devices.length === 0) {
-            this.logWarning("FCM - newsletter Notify - Es sind keine DeviceIds hinterlegt");
+            this.logger.warn("FCM - newsletter Notify - Es sind keine DeviceIds hinterlegt");
             return Maybe.empty();
         }
 
@@ -119,7 +123,7 @@ export class FcmService {
             return response;
         }
 
-        this.logWarning('some fcm Messages failed: ' + JSON.stringify(response));
+        this.logger.warn('some fcm Messages failed: ' + JSON.stringify(response));
 
         let separatedResponse = this.separateResponseResults(response.results, fcmMessage.receiverIds);
         if (separatedResponse.removableIds.length > 0) {
@@ -130,7 +134,7 @@ export class FcmService {
         }
 
         if (response.failureCount === fcmMessage.receiverIds.length) {
-            this.logError("Error sending message" + JSON.stringify(response.results));
+            this.logger.error(new Error("Error sending message"), JSON.stringify(response.results))
         }
 
         return response;
@@ -172,7 +176,7 @@ export class FcmService {
         try {
             return await this.devicesService.deleteDevices(removableIds)
         } catch (e) {
-            this.logError('removeTheRemovablesFailed', e)
+            this.logger.error(new AppException(e, "removeTheRemovablesFailed"));
         }
     }
 
@@ -180,21 +184,8 @@ export class FcmService {
         try {
             return await this.devicesService.updateRegistrationIds(replaceableIdPairs);
         } catch (e) {
-            this.logError('replaceTheReplaceablesFailed', e)
+            this.logger.error(new AppException(e, "replaceTheReplaceablesFailed"));
         }
-    }
-
-    private logError(message, exception?) {
-        this.logger.error(message, exception ?? exception.stack);
-        if (exception) {
-            Sentry.captureException(exception);
-        }
-        Sentry.captureMessage(message, Severity.Error);
-    }
-
-    private logWarning(message) {
-        this.logger.warn(message);
-        Sentry.captureMessage(message, Severity.Warning);
     }
 }
 

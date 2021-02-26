@@ -16,23 +16,14 @@ class FcmPayloadGeneratorTests {
 
     @test
     async anyGeneratePayloadFunctionThrowsExceptionForInvalidState() {
-        try {
-            this.fcmPayloadGenerator.generatePayloadForRemindMember(getTestPlanner(), getTestEvent(), 25)
-        } catch (e) {
-            expectError(e,  {"error": "Bad Request", "message": "no MessageForRemindMember for state: 25", "statusCode": 400});
-        }
+        expect(() => this.fcmPayloadGenerator.generatePayloadForRemindMember(getTestPlanner(), getTestEvent(), 25))
+            .toThrow("no MessageForRemindMember for state: 25");
 
-        try {
-            this.fcmPayloadGenerator.generatePayloadForMemberChangedHisState(getTestPlanner(), getTestEvent(), 25)
-        } catch (e) {
-            expectError(e,{"error": "Bad Request", "message": "no MessageForPlaner for state: 25", "statusCode": 400});
-        }
+        expect(() => this.fcmPayloadGenerator.generatePayloadForMemberChangedHisState(getTestPlanner(), getTestEvent(), 25))
+            .toThrow("no MessageForPlaner for state: 25");
 
-        try {
-            this.fcmPayloadGenerator.generatePayloadForPlanerChangedMemberState(getTestPlanner(), getTestMember(), getTestEvent(), 25)
-        } catch (e) {
-            expectError(e,{"error": "Bad Request", "message": "no MessageForMember for state: 25", "statusCode": 400});
-        }
+        expect(() => this.fcmPayloadGenerator.generatePayloadForPlanerChangedMemberState(getTestPlanner(), getTestMember(), getTestEvent(), 25))
+            .toThrow("no MessageForMember for state: 25");
     }
 
     @test
@@ -191,10 +182,6 @@ class FcmPayloadGeneratorTests {
         expect(this.payload.getMessagingPayloadForIos()).toMatchObject(expectedIosPayload);
         expect(this.payload.getMessagingPayloadForAndroid()).toMatchObject(expectedAndroidPayload);
     }
-}
-
-function expectError(error, message: any) {
-    expect(error.response).toMatchObject(message);
 }
 
 

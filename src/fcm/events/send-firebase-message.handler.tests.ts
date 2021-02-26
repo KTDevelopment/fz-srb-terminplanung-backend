@@ -17,7 +17,6 @@ import {
 import {getTestEvent, getTestMember, getTestPlanner} from "../../../test/testData";
 import {ApplicationLogger} from "../../logger/application-logger.service";
 import {loggerMock} from "../../../test/mocks/loggerMock";
-import * as Sentry from "@sentry/node";
 
 describe('SendFirebaseMessageEventHandler Tests', () => {
     let sendFirebaseMessageEventHandler: SendFirebaseMessageEventHandler;
@@ -39,8 +38,6 @@ describe('SendFirebaseMessageEventHandler Tests', () => {
         jest.resetAllMocks();
         membersServiceMock.findPlannerOfMember.mockResolvedValue([getTestPlanner()]);
         sendFirebaseMessageEventHandler = module.get<SendFirebaseMessageEventHandler>(SendFirebaseMessageEventHandler);
-        // @ts-ignore
-        Sentry.captureException = jest.fn();
     });
 
     it.each([STATE__HAS_PARTICIPATED, STATE__HAS_NOT_PARTICIPATED])
@@ -116,7 +113,6 @@ describe('SendFirebaseMessageEventHandler Tests', () => {
         }));
         expect(result).toBe(undefined);
         expect(loggerMock.error).toHaveBeenCalled();
-        expect(Sentry.captureException).toHaveBeenCalled();
         expectNumberOfCalls(0,1,1);
     });
 });

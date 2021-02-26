@@ -1,6 +1,7 @@
 import {createConnection} from "typeorm";
 import {ApplicationLogger} from "./logger/application-logger.service";
 import {ConfigService} from "./config/config.service";
+import {AppException} from "./_common/AppException";
 
 export async function runMigrations(configService: ConfigService, logger: ApplicationLogger) {
     try {
@@ -8,7 +9,6 @@ export async function runMigrations(configService: ConfigService, logger: Applic
         await connection.runMigrations();
         await connection.close();
     } catch (e) {
-        logger.error('run migrations failed');
-        logger.error(e.message, e.stack);
+        logger.error(new AppException(e, "run migrations failed"));
     }
 }

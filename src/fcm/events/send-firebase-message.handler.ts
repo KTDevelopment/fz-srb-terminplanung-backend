@@ -9,7 +9,6 @@ import {
 } from "../../ressources/participations/participation-states/participation-state.entity";
 import {MembersService} from "../../ressources/members/members.service";
 import {ApplicationLogger} from "../../logger/application-logger.service";
-import * as Sentry from "@sentry/node";
 import {Maybe} from "purify-ts";
 
 @EventsHandler(SendFirebaseMessageEvent)
@@ -34,8 +33,7 @@ export class SendFirebaseMessageEventHandler implements IEventHandler<SendFireba
                 }
             }
         } catch (e) {
-            this.logger.error(e.message, e.stack);
-            Sentry.captureException(e)
+            this.logger.error(e);
         }
     }
 

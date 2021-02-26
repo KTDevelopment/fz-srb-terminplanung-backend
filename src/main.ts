@@ -2,6 +2,7 @@ import {ApplicationLogger} from "./logger/application-logger.service";
 import {ConfigService} from "./config/config.service";
 import {runMigrations} from "./preApplicationStart";
 import {App} from "./app";
+import {AppException} from "./_common/AppException";
 
 const configService = new ConfigService();
 const mainLogger = new ApplicationLogger(configService);
@@ -15,7 +16,6 @@ mainLogger.setContext('main');
         .start();
     mainLogger.log('application startup completed: ' + await app.getUrl())
 })().catch(e => {
-    mainLogger.error('application startup failed');
-    mainLogger.error(e.message, e.stack);
+    mainLogger.error(new AppException(e, 'application startup failed'));
     process.exit(1);
 });

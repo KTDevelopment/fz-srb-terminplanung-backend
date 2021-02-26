@@ -9,6 +9,7 @@ import {
 import * as Mail from "nodemailer/lib/mailer";
 import {ApplicationLogger} from "../logger/application-logger.service";
 import {ConfigService} from "../config/config.service";
+import {AppException} from "../_common/AppException";
 
 @Injectable()
 export class MailService {
@@ -36,7 +37,7 @@ export class MailService {
                 MailService.getHtmlContentForPlaners(member.getFullName(), MailService.getFullNamesAsString(plannerList), event.summary, MailService.parseStateToWording(stateId))
             ));
         } catch (e) {
-            this.logger.error('mailPlannersAboutStateChangeFailed', e.stack);
+            this.logger.error(new AppException(e, 'mailPlannersAboutStateChangeFailed'));
         }
     }
 
@@ -51,7 +52,7 @@ export class MailService {
                 MailService.getHtmlContentForPasswordReset(member.getFullName(), resetUrl)
             ));
         } catch (e) {
-            this.logger.error('sendPasswordResetMailFailed', e.stack);
+            this.logger.error(new AppException(e,'sendPasswordResetMailFailed'));
             throw new InternalServerErrorException("sending Mail failed");
         }
     }

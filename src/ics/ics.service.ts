@@ -4,6 +4,7 @@ import {plainToClass} from "class-transformer";
 import {SeasonsDeterminator} from "../_common/SeasonsDeterminator";
 import {ConfigService} from "../config/config.service";
 import {ApplicationLogger} from "../logger/application-logger.service";
+import {AppException} from "../_common/AppException";
 
 const iCal = require('node-ical');
 
@@ -30,7 +31,7 @@ export class IcsService {
                     }
                     resolve(newEvents)
                 } else {
-                    this.logger.error("Fehler beim Download der .ics Datei von " + url, err.stack);
+                    this.logger.error(new AppException(err, "Fehler beim Download der .ics Datei von " + url));
                     reject(err);
                 }
             });

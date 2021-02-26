@@ -8,6 +8,7 @@ import {Cron, CronExpression} from "@nestjs/schedule";
 import {FindOneOptions} from "typeorm/find-options/FindOneOptions";
 import {ApplicationLogger} from "../../logger/application-logger.service";
 import {GeoService} from "../../geo/geo.service";
+import {AppException} from "../../_common/AppException";
 
 @Injectable()
 export class EventsService extends TypeOrmCrudService<Event> {
@@ -34,7 +35,7 @@ export class EventsService extends TypeOrmCrudService<Event> {
 
     private async insertOrUpdateEvent(newEvent: Event) {
         if (!newEvent.remoteId) {
-            this.logger.error("Fehler keine remote Id: " + newEvent.eventName);
+            this.logger.error(new Error("Fehler keine remote Id: " + newEvent.eventName));
             return;
         }
 
@@ -58,7 +59,7 @@ export class EventsService extends TypeOrmCrudService<Event> {
             }
 
         } catch (e) {
-            this.logger.error("Fehler beim Insert/Update eines Events mit remote id: " + newEvent.remoteId, e.stack);
+            this.logger.error(new AppException(e, "Fehler beim Insert/Update eines Events mit remote id: " + newEvent.remoteId));
         }
     }
 

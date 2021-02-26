@@ -2,6 +2,7 @@ import {HttpService, Injectable} from '@nestjs/common';
 import {ConfigService} from "../config/config.service";
 import {ApplicationLogger} from "../logger/application-logger.service";
 import {Event} from "../ressources/events/event.entity";
+import {AppException} from "../_common/AppException";
 
 @Injectable()
 export class GeoService {
@@ -24,7 +25,7 @@ export class GeoService {
                 event.longitude = first.lon;
             }
         } catch (e) {
-            this.logger.error(`loading geo coordinates from ${url} failed`, e.stack);
+            this.logger.error(new AppException(e, `loading geo coordinates from ${url} failed`));
         }
 
         return event;
