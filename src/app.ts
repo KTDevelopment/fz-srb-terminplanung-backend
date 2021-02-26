@@ -94,13 +94,15 @@ export class App {
     }
 
     private initSentry() {
-        Sentry.init({
-            dsn: this.configService.config.logger.sentry.dsn,
-            integrations: [new RewriteFrames({
-                root: this.configService.config.logger.sentry.rootDir,
-            })],
-            release: this.configService.config.logger.sentry.releaseTemplate + version,
-            environment: this.configService.config.logger.sentry.environment
-        });
+        if (this.configService.config.logger.sentry) {
+            Sentry.init({
+                dsn: this.configService.config.logger.sentry.dsn,
+                integrations: [new RewriteFrames({
+                    root: this.configService.config.logger.sentry.rootDir,
+                })],
+                release: this.configService.config.logger.sentry.releaseTemplate + version,
+                environment: this.configService.config.logger.sentry.environment
+            });
+        }
     }
 }

@@ -2,7 +2,6 @@ import {setupTestEnvironment} from "./environment";
 import {login} from "../_common/testRequests";
 
 export function setUpE2E() {
-    process.env.NODE_ENV = 'test';
 
     beforeAll(async () => {
         const testEnv = (await setupTestEnvironment());

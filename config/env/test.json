@@ -1,5 +1,4 @@
 {
-    "env": "test",
     "logger": {
         "isEnabled": false
     },
@@ -9,10 +8,7 @@
         "synchronize": true,
         "logging": false,
         "dropSchema": true,
-        "autoLoadEntities": true,
-        "migrations": [
-            "dist/migration/**/*.js"
-        ]
+        "autoLoadEntities": true
     },
     "auth": {
         "accessSecret": "test_secret_access",

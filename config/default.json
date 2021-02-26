@@ -1,14 +1,8 @@
 {
-    "env": "default",
+    "env": "@@NODE_ENV",
     "port": 3100,
     "logger": {
-        "isEnabled": true,
-        "sentry": {
-            "dsn": "",
-            "rootDir": "/FOO",
-            "releaseTemplate": "fz-srb-terminplanung-backend@",
-            "environment": "default"
-        }
+        "isEnabled": true
     },
     "ics": {
         "icsRootPath": "https://fzsrb.de/termine/?ical=1"
@@ -45,7 +39,7 @@
         "passwordResetBaseUrl": "passwordResetBaseUrl_foo"
     },
     "firebase": {
-        "enabled": false,
+        "isEnabled": false,
         "serviceAccount": {
             "type": "qwdqwd",
             "project_id": "fanfqwd",
