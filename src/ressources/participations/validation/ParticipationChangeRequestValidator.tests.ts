@@ -1,11 +1,11 @@
-import {ParticipationChangeRequestValidator} from "../../../../../src/ressources/participations/validation/ParticipationChangeRequestValidator";
-import {ParticipationChangeRequest} from "../../../../../src/ressources/participations/validation/ParticipationChangeRequest";
-import {Member} from "../../../../../src/ressources/members/member.entity";
-import {Participation} from "../../../../../src/ressources/participations/participation.entity";
-import {ParticipationState} from "../../../../../src/ressources/participations/participation-states/participation-state.entity";
-import {Section} from "../../../../../src/ressources/sections/section.entity";
-import {Role} from "../../../../../src/ressources/roles/role.entity";
-import {Event} from "../../../../../src/ressources/events/event.entity";
+import {ParticipationChangeRequestValidator} from "./ParticipationChangeRequestValidator";
+import {ParticipationChangeRequest} from "./ParticipationChangeRequest";
+import {Member} from "../../members/member.entity";
+import {Participation} from "../participation.entity";
+import {ParticipationState} from "../participation-states/participation-state.entity";
+import {Section} from "../../sections/section.entity";
+import {Role} from "../../roles/role.entity";
+import {Event} from "../../events/event.entity";
 import {plainToClass} from "class-transformer";
 import {suite, test} from "@testdeck/jest";
 

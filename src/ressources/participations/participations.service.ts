@@ -107,9 +107,8 @@ export class ParticipationsService extends TypeOrmCrudService<Participation> {
         if (participation.hasState(STATE__HAS_NOT_PARTICIPATED) && oldStateId === STATE__HAS_PARTICIPATED) {
             if (isAnniversary(participation.member.performanceCount)) {
                 await entityManager.delete(Anniversary, {
-                    where: {
-                        memberId: participation.member.memberId, eventId: participation.eventId
-                    }
+                    memberId: participation.member.memberId,
+                    eventId: participation.eventId
                 })
             }
             await entityManager.save(Member, participation.member.decreasePerformanceCount());

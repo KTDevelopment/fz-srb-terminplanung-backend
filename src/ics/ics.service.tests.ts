@@ -1,10 +1,10 @@
 import {Test} from "@nestjs/testing";
-import {ApplicationLogger} from "../../../src/logger/application-logger.service";
-import {loggerMock} from "../mocks/loggerMock";
-import {ConfigService} from "../../../src/config/config.service";
-import {IcsService} from "../../../src/ics/ics.service";
+import {ApplicationLogger} from "../logger/application-logger.service";
+import {loggerMock} from "../../test/mocks/loggerMock";
+import {ConfigService} from "../config/config.service";
+import {IcsService} from "./ics.service";
 import {plainToClass} from "class-transformer";
-import {Event} from "../../../src/ressources/events/event.entity";
+import {Event} from "../ressources/events/event.entity";
 
 const iCal = require('node-ical');
 

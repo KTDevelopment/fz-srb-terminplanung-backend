@@ -2,6 +2,9 @@ import {bodyLengthGreaterOrEqual, bodyMatchesObject, firstBodyItemMatchesObject}
 import {TestResponses} from "./TestData/TestResponses";
 import {getAuthenticated, login} from "./_common/testRequests";
 import {adminToken} from "./_common/helper";
+import {setUpE2E} from "./setup/e2e-setup";
+
+setUpE2E()
 
 describe('Sections', () => {
 

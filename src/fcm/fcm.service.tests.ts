@@ -1,11 +1,11 @@
-import {FcmService} from "../../../src/fcm/fcm.service";
-import {FcmClient} from "../../../src/fcm/fcm.client";
-import {FcmPayloadGenerator} from "../../../src/fcm/fcm-payload.generator";
-import {DevicesService} from "../../../src/ressources/devices/devices.service";
+import {FcmService} from "./fcm.service";
+import {FcmClient} from "./fcm.client";
+import {FcmPayloadGenerator} from "./fcm-payload.generator";
+import {DevicesService} from "../ressources/devices/devices.service";
 import {Test} from "@nestjs/testing";
-import {fcmPayloadGeneratorMock} from "../mocks/fcmPayloadGeneratorMock";
-import {fcmClientMock} from "../mocks/fcmClientMock";
-import {devicesServiceMock} from "../mocks/devicesServiceMock";
+import {fcmPayloadGeneratorMock} from "../../test/mocks/fcmPayloadGeneratorMock";
+import {fcmClientMock} from "../../test/mocks/fcmClientMock";
+import {devicesServiceMock} from "../../test/mocks/devicesServiceMock";
 import {
     getPlannerListWithDevices,
     getTestEvent,
@@ -15,9 +15,9 @@ import {
     getTestPlanner,
     getTestMemberWithDevices,
     testFcmPayload
-} from "../testData";
-import {ApplicationLogger} from "../../../src/logger/application-logger.service";
-import {loggerMock} from "../mocks/loggerMock";
+} from "../../test/testData";
+import {ApplicationLogger} from "../logger/application-logger.service";
+import {loggerMock} from "../../test/mocks/loggerMock";
 
 
 describe('FcmServiceTests', () => {

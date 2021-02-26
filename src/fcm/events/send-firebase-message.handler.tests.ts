@@ -1,11 +1,11 @@
 import {Test} from "@nestjs/testing";
-import {SendFirebaseMessageEventHandler} from "../../../src/fcm/events/send-firebase-message.handler";
-import {FcmService} from "../../../src/fcm/fcm.service";
-import {MembersService} from "../../../src/ressources/members/members.service";
-import {fcmServiceMock} from "../mocks/fcmServiceMock";
-import {membersServiceMock} from "../mocks/membersServiceMock";
+import {SendFirebaseMessageEventHandler} from "./send-firebase-message.handler";
+import {FcmService} from "../fcm.service";
+import {MembersService} from "../../ressources/members/members.service";
+import {fcmServiceMock} from "../../../test/mocks/fcmServiceMock";
+import {membersServiceMock} from "../../../test/mocks/membersServiceMock";
 import {plainToClass} from "class-transformer";
-import {SendFirebaseMessageEvent} from "../../../src/fcm/events/send-firebase-message.event";
+import {SendFirebaseMessageEvent} from "./send-firebase-message.event";
 import {
     STATE__ATTEND,
     STATE__DO_NOT_ATTEND,
@@ -13,10 +13,10 @@ import {
     STATE__HAS_PARTICIPATED,
     STATE__INVITATION_REQUEST_PENDING,
     STATE__INVITED
-} from "../../../src/ressources/participations/participation-states/participation-state.entity";
-import {getTestEvent, getTestMember, getTestPlanner} from "../testData";
-import {ApplicationLogger} from "../../../src/logger/application-logger.service";
-import {loggerMock} from "../mocks/loggerMock";
+} from "../../ressources/participations/participation-states/participation-state.entity";
+import {getTestEvent, getTestMember, getTestPlanner} from "../../../test/testData";
+import {ApplicationLogger} from "../../logger/application-logger.service";
+import {loggerMock} from "../../../test/mocks/loggerMock";
 import * as Sentry from "@sentry/node";
 
 describe('SendFirebaseMessageEventHandler Tests', () => {

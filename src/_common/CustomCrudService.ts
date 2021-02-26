@@ -8,55 +8,41 @@ export abstract class CustomCrudService<T> extends TypeOrmCrudService<T> {
         joinOptions: any,
         builder: SelectQueryBuilder<T>,
     ) {
-        if (this.entityRelationsHash[cond.field] === undefined && cond.field.includes('.')) {
-            const curr = this.getRelationMetadata(cond.field);
-            if (!curr) {
-                this.entityRelationsHash[cond.field] = null;
-                return true;
-            }
+        const options = joinOptions[cond.field];
 
-            this.entityRelationsHash[cond.field] = {
-                name: curr.propertyName,
-                columns: curr.inverseEntityMetadata.columns.map((col) => col.propertyName),
-                primaryColumns: curr.inverseEntityMetadata.primaryColumns.map(
-                    (col) => col.propertyName,
-                ),
-                nestedRelation: curr.nestedRelation,
-            };
+        if (!options) {
+            return true;
         }
 
-        /* istanbul ignore else */
-        if (cond.field && this.entityRelationsHash[cond.field] && joinOptions[cond.field]) {
-            const relationCondition = joinOptions[cond.field].condition || '';
-            const relation = this.entityRelationsHash[cond.field];
-            const options = joinOptions[cond.field];
-            const allowed = this.getAllowedColumns(relation.columns, options);
+        const allowedRelation = this.getRelationMetadata(cond.field, options);
 
-            /* istanbul ignore if */
-            if (!allowed.length) {
-                return true;
-            }
+        if (!allowedRelation) {
+            return true;
+        }
 
-            const alias = options.alias ? options.alias : relation.name;
+        const relationType = options.required ? 'innerJoin' : 'leftJoin';
+        const alias = options.alias ? options.alias : allowedRelation.name;
+        const relationCondition = options.condition || '';
 
-            const columns =
-                !cond.select || !cond.select.length
-                    ? allowed
-                    : cond.select.filter((col) => allowed.some((a) => a === col));
+        builder[relationType](allowedRelation.path, alias, relationCondition);
+
+        if (options.select !== false) {
+            const columns = isArrayFull(cond.select)
+                ? cond.select.filter((column) =>
+                    allowedRelation.allowedColumns.some((allowed) => allowed === column),
+                )
+                : allowedRelation.allowedColumns;
 
             const select = [
-                ...relation.primaryColumns,
-                ...(options.persist && options.persist.length ? options.persist : []),
+                ...allowedRelation.primaryColumns,
+                ...(isArrayFull(options.persist) ? options.persist : []),
                 ...columns,
             ].map((col) => `${alias}.${col}`);
 
-            const relationPath = relation.nestedRelation || `${this.alias}.${relation.name}`;
-            const relationType = options.required ? 'innerJoin' : 'leftJoin';
-
-            builder[relationType](relationPath, alias, relationCondition);
             builder.addSelect(select);
         }
-
-        return true;
     }
 }
+
+const isArrayFull = (val: any): boolean => Array.isArray(val) && hasLength(val);
+const hasLength = (val: any): boolean => val.length > 0;

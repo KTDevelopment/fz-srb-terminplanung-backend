@@ -15,8 +15,8 @@ export class GeoService {
     }
 
     async enrichEventWithGeoCoordinates(event: Event) {
+        const url = `https://nominatim.openstreetmap.org/search?q=${event.address}+${event.postcode}+${event.town}&format=json&polygon=1&addressdetails=1`;
         try {
-            const url = `https://nominatim.openstreetmap.org/search?q=${event.address}+${event.postcode}+${event.town}&format=json&polygon=1&addressdetails=1`;
             const result = await this.httpService.get(url).toPromise();
             if (result.data.length > 0) {
                 const first = result.data[0];
@@ -24,7 +24,7 @@ export class GeoService {
                 event.longitude = first.lon;
             }
         } catch (e) {
-            this.logger.error('loading geo coordinates failed', e.stack);
+            this.logger.error(`loading geo coordinates from ${url} failed`, e.stack);
         }
 
         return event;

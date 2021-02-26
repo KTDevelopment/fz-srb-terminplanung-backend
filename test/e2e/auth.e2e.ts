@@ -1,5 +1,8 @@
 import {loginResponse} from "./_common/expectations";
 import {login, post} from "./_common/testRequests";
+import {setUpE2E} from "./setup/e2e-setup";
+
+setUpE2E()
 
 describe('Login', () => {
     describe('/POST login', () => {

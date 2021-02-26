@@ -1,6 +1,8 @@
 import {bodyLengthGreaterOrEqual, firstBodyItemMatchesObject} from "./_common/expectations";
 import {get} from "./_common/testRequests";
+import {setUpE2E} from "./setup/e2e-setup";
 
+setUpE2E()
 
 describe('Events', () => {
     describe('/GET events', () => {

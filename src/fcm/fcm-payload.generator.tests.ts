@@ -1,8 +1,8 @@
-import {FcmPayloadGenerator} from "../../../src/fcm/fcm-payload.generator";
-import {FcmPayload} from "../../../src/fcm/models/FcmPayload";
-import {getTestEvent, getTestMember, getTestPlanner} from "../testData";
+import {FcmPayloadGenerator} from "./fcm-payload.generator";
+import {FcmPayload} from "./models/FcmPayload";
+import {getTestEvent, getTestMember, getTestPlanner} from "../../test/testData";
 import {suite, test} from "@testdeck/jest";
-import {loggerMock} from "../mocks/loggerMock";
+import {loggerMock} from "../../test/mocks/loggerMock";
 
 @suite
 class FcmPayloadGeneratorTests {
@@ -194,7 +194,7 @@ class FcmPayloadGeneratorTests {
 }
 
 function expectError(error, message: any) {
-    expect(error.message).toMatchObject(message);
+    expect(error.response).toMatchObject(message);
 }
 
 

@@ -9,11 +9,9 @@
         "synchronize": true,
         "logging": false,
         "dropSchema": true,
-        "entities": [
-            "dist/**/*.entity.js"
-        ],
+        "autoLoadEntities": true,
         "migrations": [
-            "src/migration/**/*.js"
+            "dist/migration/**/*.js"
         ]
     },
     "auth": {

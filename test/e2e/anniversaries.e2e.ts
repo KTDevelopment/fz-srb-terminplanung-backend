@@ -1,6 +1,9 @@
 import {getAuthenticated} from "./_common/testRequests";
 import {bodyItemMatchesObject, bodyLengthGreaterOrEqual} from "./_common/expectations";
 import {adminToken} from "./_common/helper";
+import {setUpE2E} from "./setup/e2e-setup";
+
+setUpE2E()
 
 describe('Anniversaries', () => {
     it('should get all anniversaries', async () => {

@@ -1,9 +1,9 @@
-import {Role} from "../../src/ressources/roles/role.entity";
-import {Member} from "../../src/ressources/members/member.entity";
+import {Role} from "../src/ressources/roles/role.entity";
+import {Member} from "../src/ressources/members/member.entity";
 import {plainToClass} from "class-transformer";
-import {Event} from "../../src/ressources/events/event.entity";
-import {FcmPayload} from "../../src/fcm/models/FcmPayload";
-import {Device, DEVICE_TYPE_ANDROID, DEVICE_TYPE_IOS} from "../../src/ressources/devices/device.entity";
+import {Event} from "../src/ressources/events/event.entity";
+import {FcmPayload} from "../src/fcm/models/FcmPayload";
+import {Device, DEVICE_TYPE_ANDROID, DEVICE_TYPE_IOS} from "../src/ressources/devices/device.entity";
 
 export function getTestMember() {
     let role = new Role();

@@ -1,10 +1,10 @@
-import {MailService} from "../../../src/mail/mail.service";
-import {MailClient} from "../../../src/mail/mail.client";
+import {MailService} from "./mail.service";
+import {MailClient} from "./mail.client";
 import {Test} from "@nestjs/testing";
-import {getPasswordResetToken, getPlannerList, getTestEvent, getTestMember} from "../testData";
-import {ApplicationLogger} from "../../../src/logger/application-logger.service";
-import {loggerMock} from "../mocks/loggerMock";
-import {ConfigService} from "../../../src/config/config.service";
+import {getPasswordResetToken, getPlannerList, getTestEvent, getTestMember} from "../../test/testData";
+import {ApplicationLogger} from "../logger/application-logger.service";
+import {loggerMock} from "../../test/mocks/loggerMock";
+import {ConfigService} from "../config/config.service";
 
 describe('MailServiceTests', () => {
     let mailService: MailService;

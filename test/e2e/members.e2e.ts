@@ -2,6 +2,9 @@ import {deleteAuthenticated, getAuthenticated, patchAuthenticated, postAuthentic
 import {bodyItemMatchesObject, bodyLengthGreaterOrEqual, bodyMatchesObject, firstBodyItemMatchesObject} from "./_common/expectations";
 import {TestResponses} from "./TestData/TestResponses";
 import {adminToken, reload} from "./_common/helper";
+import {setUpE2E} from "./setup/e2e-setup";
+
+setUpE2E()
 
 describe('Member', () => {
     describe('/GET Member', () => {

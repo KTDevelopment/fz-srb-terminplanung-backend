@@ -1,12 +1,12 @@
 import {Test} from "@nestjs/testing";
-import {ApplicationLogger} from "../../../src/logger/application-logger.service";
-import {loggerMock} from "../mocks/loggerMock";
-import {ConfigService} from "../../../src/config/config.service";
-import {GeoService} from "../../../src/geo/geo.service";
+import {ApplicationLogger} from "../logger/application-logger.service";
+import {loggerMock} from "../../test/mocks/loggerMock";
+import {ConfigService} from "../config/config.service";
+import {GeoService} from "./geo.service";
 import {HttpService} from "@nestjs/common";
-import {httpServiceMock} from "../mocks/httpServiceMock";
+import {httpServiceMock} from "../../test/mocks/httpServiceMock";
 import {plainToClass} from "class-transformer";
-import {Event} from "../../../src/ressources/events/event.entity";
+import {Event} from "../ressources/events/event.entity";
 
 
 describe('FcmServiceTests', () => {

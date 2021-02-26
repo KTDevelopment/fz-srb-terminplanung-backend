@@ -2,8 +2,10 @@ import {bodyMatchesObject} from "./_common/expectations";
 import {get, getAuthenticated, postAuthenticated} from "./_common/testRequests";
 import {adminToken} from "./_common/helper";
 import {existsSync, unlinkSync} from "fs";
+import {setUpE2E} from "./setup/e2e-setup";
 
 cleanUpFileStorage();
+setUpE2E()
 
 describe('Misc', () => {
     describe('/GET AppStoreLinks', () => {

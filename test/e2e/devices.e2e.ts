@@ -1,6 +1,9 @@
 import {deleteAuthenticated, getAuthenticated, login, patchAuthenticated, postAuthenticated} from "./_common/testRequests";
 import {bodyLengthEqual, bodyLengthGreaterOrEqual, bodyMatchesObject} from "./_common/expectations";
 import {adminToken} from "./_common/helper";
+import {setUpE2E} from "./setup/e2e-setup";
+
+setUpE2E()
 
 describe('Device', () => {
     describe('/POST device', () => {
