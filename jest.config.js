@@ -1,4 +1,5 @@
 module.exports = {
+    clearMocks: true,
     moduleFileExtensions: ["ts", "json", "js"],
     collectCoverageFrom: [
         "src/**/*.ts"

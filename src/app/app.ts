@@ -1,35 +1,36 @@
-import {ConfigService} from "./config/config.service";
+import {ConfigService} from "../config/config.service";
 import {NestFactory} from "@nestjs/core";
 import {AppModule} from "./app.module";
-import {ApplicationLogger} from "./logger/application-logger.service";
-import * as Sentry from "@sentry/node";
-import {RewriteFrames} from "@sentry/integrations";
+import {ApplicationLogger} from "../logger/application-logger.service";
 import {INestApplication} from "@nestjs/common";
 import * as compression from 'compression';
 import * as helmet from 'helmet';
 import * as rateLimit from 'express-rate-limit';
 import * as basicAuth from 'express-basic-auth';
 import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
-import {BasicAuthorizer} from "./auth/basic.authorizer";
-import {EventsService} from "./ressources/events/events.service";
-import {SectionsService} from "./ressources/sections/sections.service";
-import {RolesService} from "./ressources/roles/roles.service";
-import {MembersService} from "./ressources/members/members.service";
-import {ParticipationStatesService} from "./ressources/participations/participation-states/participation-states.service";
-import {version} from "../package.json";
+import {BasicAuthorizer} from "../auth/basic.authorizer";
+import {EventsService} from "../ressources/events/events.service";
+import {SectionsService} from "../ressources/sections/sections.service";
+import {RolesService} from "../ressources/roles/roles.service";
+import {MembersService} from "../ressources/members/members.service";
+import {ParticipationStatesService} from "../ressources/participations/participation-states/participation-states.service";
+import {version} from "../../package.json";
 
 export class App {
     private readonly configService: ConfigService;
     private readonly logger: ApplicationLogger;
     private app: INestApplication;
 
-    constructor(configService: ConfigService, logger: ApplicationLogger) {
+    static create(configService: ConfigService, logger: ApplicationLogger): App {
+        return new App(configService, logger);
+    }
+
+    private constructor(configService: ConfigService, logger: ApplicationLogger) {
         this.configService = configService;
         this.logger = logger;
     }
 
     async start() {
-        this.initSentry();
         this.app = await NestFactory.create(AppModule, {
             logger: this.logger
         });
@@ -37,6 +38,7 @@ export class App {
         this.addSwagger();
         await this.listen();
         await this.initializeResources();
+        this.logger.log('application startup completed: ' + await this.getUrl());
 
         return this;
     }
@@ -90,18 +92,5 @@ export class App {
             authorizer: basicAuthorizer.authorize.bind(basicAuthorizer)
         }));
         SwaggerModule.setup(docPath, this.app, document);
-    }
-
-    private initSentry() {
-        if (this.configService.config.logger.sentry) {
-            Sentry.init({
-                dsn: this.configService.config.logger.sentry.dsn,
-                integrations: [new RewriteFrames({
-                    root: this.configService.config.logger.sentry.rootDir,
-                })],
-                release: this.configService.config.logger.sentry.releaseTemplate + version,
-                environment: this.configService.config.logger.sentry.environment
-            });
-        }
     }
 }

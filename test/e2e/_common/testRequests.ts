@@ -27,18 +27,18 @@ export function authenticatedRequest(method: 'get' | 'post' | 'put' | 'delete' |
         .set('authorization', 'Bearer ' + jwt);
 }
 
-export function get(url) {
-    return myRequest('get', url)
+export function get(url: string, prefix?: string) {
+    return myRequest('get', url, prefix)
 }
 
 export function post(url) {
     return myRequest('post', url)
 }
 
-function myRequest(method: 'get' | 'post' | 'put' | 'delete' | 'patch', url) {
+function myRequest(method: 'get' | 'post' | 'put' | 'delete' | 'patch', url: string, prefix: string = '/api/v2') {
     //@ts-ignore
     return request(global.testApp.getHttpServer())
-        [method]('/api/v2' + url)
+        [method](prefix + url)
 }
 
 export function login(email, password) {
