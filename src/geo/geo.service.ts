@@ -18,6 +18,7 @@ export class GeoService {
     async enrichEventWithGeoCoordinates(event: Event) {
         const url = `https://nominatim.openstreetmap.org/search?q=${event.address}+${event.postcode}+${event.town}&format=json&polygon=1&addressdetails=1`;
         try {
+            await new Promise(resolve => setTimeout(resolve, 1100)); // Api only accepts one request per second :(
             const result = await this.httpService.get(url).toPromise();
             if (result.data.length > 0) {
                 const first = result.data[0];

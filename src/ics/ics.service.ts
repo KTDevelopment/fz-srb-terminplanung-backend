@@ -46,10 +46,7 @@ export class IcsService {
             summary: raw.summary || '',
             description: raw.description || '',
             eventName: raw.summary || '',
-            location: raw.location ? raw.location.split(',')[0].trim() : '',
-            address: raw.location ? raw.location.split(',')[1].trim() : '',
-            town: raw.location ? raw.location.split(',')[2].trim() : '',
-            postcode: raw.location ? parseInt(raw.location.split(',')[3].trim()) : '',
+            ...IcsService.getLocationDetails(raw.location),
             dress: '',
             participatingGroup: '',
             category: IcsService.determineCategory(raw.categories),
@@ -57,6 +54,33 @@ export class IcsService {
             latitude: 0,
             isPublic: true
         });
+    }
+
+    private static getLocationDetails (locationString: string | null | undefined) {
+        if (!locationString) return {
+            location: '',
+            address: '',
+            town: '',
+            postcode: '',
+        }
+
+        const split = locationString.split(',');
+
+        if (split[3] && !isNaN(parseInt(split[3].trim()))) {
+            return {
+                location: split[0] ? split[0].trim() : '',
+                address: split[1] ? split[1].trim() : '',
+                town: split[2] ? split[2].trim() : '',
+                postcode: split[3] ? parseInt(split[3].trim()) : '',
+            }
+        }
+
+        return {
+            location: locationString,
+            address: '',
+            town: '',
+            postcode: '',
+        }
     }
 
     private static calculateDatePayingAttentionOnWinterTime(date) {
