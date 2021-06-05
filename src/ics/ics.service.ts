@@ -67,8 +67,8 @@ export class IcsService {
         return date;
     }
 
-    private static determineCategory(catsFromWebsite: string[]): string {
-        if (catsFromWebsite.length === 0) return '';
+    private static determineCategory(catsFromWebsite: string[] | null | undefined): string {
+        if (!catsFromWebsite || catsFromWebsite.length === 0) return '';
 
         if (catsFromWebsite.length === 1) return catsFromWebsite[0];
 

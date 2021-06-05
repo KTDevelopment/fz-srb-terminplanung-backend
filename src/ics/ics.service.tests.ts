@@ -55,6 +55,15 @@ describe('FcmServiceTests', () => {
         expect(loggerMock.error).toBeCalled();
     });
 
+    it('should handle nullable cats', async () => {
+        iCal.fromURL.mockImplementation((url, options, callback) => callback(null, falsyData()));
+
+        const events = await icsService.downloadEvents();
+
+        expect(events.length).toBe(1);
+        expect(events[0].category).toBe('');
+    });
+
 });
 
 function iCalRawData(): any {
@@ -92,6 +101,21 @@ function iCalRawData(): any {
             location: 'ENERGIE-ARENA, Wriezener Str. 30 e, Strausberg, 15344, Deutschland',
             categories: ['AUFTRITT', 'noch was']
         }
+    }
+}
+
+function falsyData(): any {
+    return {
+        event1: {
+            type: 'VEVENT',
+            uid: 'event1',
+            start: new Date('2020-02-17T12:00:00Z'),
+            end: new Date('2020-02-17T17:00:00Z'),
+            summary: 'HERBSTFANFARE',
+            description: 'Beschreibung des Termins …\\n…\\n…\\n..\\n…. \\nINFOS ZUR HERBSTFANFARE',
+            location: 'ENERGIE-ARENA, Wriezener Str. 30 e, Strausberg, 15344, Deutschland',
+            categories: undefined
+        },
     }
 }
 
