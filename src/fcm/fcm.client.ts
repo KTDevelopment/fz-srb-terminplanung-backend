@@ -1,5 +1,4 @@
 import * as admin from "firebase-admin";
-import {initializeApp, messaging} from "firebase-admin";
 import {retry} from "@lifeomic/attempt";
 import {Injectable} from "@nestjs/common";
 import {FireBaseConfig} from "../config/config";
@@ -23,11 +22,11 @@ export class FcmClient {
         this.logger.setContext(FcmClient.name);
         this.config = configService.config.firebase;
         if (this.config.isEnabled) {
-            initializeApp({
+            admin.initializeApp({
                 credential: cert(this.config.serviceAccount as any),
                 databaseURL: this.config.databaseUrl
             });
-            this.messaging = messaging();
+            this.messaging = admin.messaging();
             this.logger.log('FcmClient is enabled')
         } else {
             this.logger.log('FcmClient is disabled')
