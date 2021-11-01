@@ -9,6 +9,7 @@ import {FindOneOptions} from "typeorm/find-options/FindOneOptions";
 import {ApplicationLogger} from "../../logger/application-logger.service";
 import {GeoService} from "../../geo/geo.service";
 import {AppException} from "../../_common/AppException";
+import {promiseAllSequentially} from "../../_common/promiseAllSequentially";
 
 @Injectable()
 export class EventsService extends TypeOrmCrudService<Event> {
@@ -29,7 +30,8 @@ export class EventsService extends TypeOrmCrudService<Event> {
     @Cron(CronExpression.EVERY_HOUR)
     async importEventsFromWebsite() {
         const newEvents = await this.icsService.downloadEvents();
-        await Promise.all(newEvents.map(async newEvent => this.insertOrUpdateEvent(newEvent)));
+        // to this sequential to limit requests at geo service
+        await promiseAllSequentially(newEvents, async newEvent => this.insertOrUpdateEvent(newEvent));
         await this.deleteEventsWhichAreInFutureButNotInRemoteIdList(newEvents.map(event => event.remoteId));
     }
 

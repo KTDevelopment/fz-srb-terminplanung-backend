@@ -13,6 +13,7 @@
         "synchronize": true,
         "logging": false,
         "autoLoadEntities": true,
+        "dropSchema": true,
         "migrations": [
             "dist/migration/**/*.js"
         ]

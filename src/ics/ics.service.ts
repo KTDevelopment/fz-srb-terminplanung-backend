@@ -1,7 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {Event} from "../ressources/events/event.entity";
 import {plainToClass} from "class-transformer";
-import {SeasonsDeterminator} from "../_common/SeasonsDeterminator";
 import {ConfigService} from "../config/config.service";
 import {ApplicationLogger} from "../logger/application-logger.service";
 import {AppException} from "../_common/AppException";
@@ -41,8 +40,8 @@ export class IcsService {
     private static createEvent(raw: any) {
         return plainToClass(Event, {
             remoteId: raw.uid,
-            startDate: IcsService.calculateDatePayingAttentionOnWinterTime(new Date(raw.start)),
-            endDate: IcsService.calculateDatePayingAttentionOnWinterTime(new Date(raw.end)),
+            startDate: new Date(raw.start),
+            endDate: new Date(raw.end),
             summary: raw.summary || '',
             description: raw.description || '',
             eventName: raw.summary || '',
@@ -75,6 +74,15 @@ export class IcsService {
             }
         }
 
+        if (split[0] === "BANDHAUS") {
+            return {
+                location: split[0] ? split[0].trim() : '',
+                address: split[1] ? split[1].trim() : '',
+                town: split[2] ? split[2].trim() : '',
+                postcode: split[4] ? parseInt(split[4].trim()) : '',
+            }
+        }
+
         return {
             location: locationString,
             address: '',
@@ -83,13 +91,14 @@ export class IcsService {
         }
     }
 
-    private static calculateDatePayingAttentionOnWinterTime(date) {
-        if (SeasonsDeterminator.isInWinterTime(date)) {
-            let millisFormPlusOneHour = date.getTime() + (60 * 60 * 1000); // eine Stunde addieren, weil der Zeitstempel nicht in WinterZeit ist
-            return new Date(millisFormPlusOneHour);
-        }
-        return date;
-    }
+    // hopefully not used anymore
+    // private static calculateDatePayingAttentionOnWinterTime(date) {
+    //     if (SeasonsDeterminator.isInWinterTime(date)) {
+    //         let millisFormPlusOneHour = date.getTime() + (60 * 60 * 1000); // eine Stunde addieren, weil der Zeitstempel nicht in WinterZeit ist
+    //         return new Date(millisFormPlusOneHour);
+    //     }
+    //     return date;
+    // }
 
     private static determineCategory(catsFromWebsite: string[] | null | undefined): string {
         if (!catsFromWebsite || catsFromWebsite.length === 0) return '';
