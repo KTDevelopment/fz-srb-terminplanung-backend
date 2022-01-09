@@ -1,5 +1,6 @@
 "use strict";
 import {config} from 'node-config-ts'
+import {LogLevel} from "../logger/logLevels";
 
 export const Config: () => AppConfig = () => config;
 
@@ -32,6 +33,7 @@ export interface AdminClientConfig {
 
 export interface LoggerConfig {
     isEnabled: boolean;
+    level: LogLevel;
     sentry?: {
         dsn: string;
         rootDir: string;

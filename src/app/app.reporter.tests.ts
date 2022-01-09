@@ -1,6 +1,7 @@
 import {initSentry} from "./app.reporter";
 import * as Sentry from "@sentry/node";
 import {configServiceMock} from "../../test/mocks/configServiceMock";
+import {LogLevel} from "../logger/logLevels";
 
 describe('App Reporter', () => {
     // @ts-ignore
@@ -9,6 +10,7 @@ describe('App Reporter', () => {
         initSentry(configServiceMock({
             logger: {
                 isEnabled: true,
+                level: LogLevel.DEBUG,
                 sentry: {
                     dsn: 'foo',
                     environment: 'env',
@@ -23,7 +25,8 @@ describe('App Reporter', () => {
     it('do nothing if not configured', async () => {
         initSentry(configServiceMock({
             logger: {
-                isEnabled: true
+                isEnabled: true,
+                level: LogLevel.DEBUG
             }
         }));
         expect(Sentry.init).not.toBeCalled();

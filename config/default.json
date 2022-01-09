@@ -2,7 +2,8 @@
     "env": "@@NODE_ENV",
     "port": 3100,
     "logger": {
-        "isEnabled": true
+        "isEnabled": true,
+        "level": "DEBUG"
     },
     "ics": {
         "icsRootPath": "https://fzsrb.de/termine/?ical=1"

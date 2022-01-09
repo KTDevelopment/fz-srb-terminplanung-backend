@@ -38,6 +38,7 @@ export class FcmClient {
             throw new Error("firebase is not enabled");
         }
 
+        this.logger.debug(`send message ${JSON.stringify(payload)} to ${registrationTokens}`)
         return await retry(async () => {
             return await this.messaging.sendToDevice(registrationTokens, payload)
         }, {

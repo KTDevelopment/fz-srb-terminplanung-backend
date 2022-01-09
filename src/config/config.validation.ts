@@ -1,5 +1,6 @@
 import Joi = require("joi");
 import {Environment} from "./config";
+import {LogLevel} from "../logger/logLevels";
 
 export const configValidation = () => {
     return Joi.object({
@@ -60,6 +61,7 @@ export const configValidation = () => {
         }),
         logger: Joi.object({
             isEnabled: Joi.boolean(),
+            level: Joi.string().valid(...Object.values(LogLevel)).default(LogLevel.DEBUG),
             sentry: Joi.object({
                 dsn: Joi.string(),
                 rootDir: Joi.string(),

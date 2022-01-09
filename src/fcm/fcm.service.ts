@@ -43,7 +43,7 @@ export class FcmService {
         });
 
         if (devices.length === 0) {
-            this.logger.warn("FCM: no Devices on receiver - " + receivers.map(it => it.memberId).join(','));
+            this.logger.warn("FCM: no Devices on receivers - " + receivers.map(it => it.memberId).join(','));
             return Maybe.empty();
         }
 

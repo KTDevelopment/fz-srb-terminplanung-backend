@@ -60,7 +60,7 @@ export class IcsService {
             location: '',
             address: '',
             town: '',
-            postcode: '',
+            postcode: 0,
         }
 
         const split = locationString.split(',');
@@ -70,7 +70,7 @@ export class IcsService {
                 location: split[0] ? split[0].trim() : '',
                 address: split[1] ? split[1].trim() : '',
                 town: split[2] ? split[2].trim() : '',
-                postcode: split[3] ? parseInt(split[3].trim()) : '',
+                postcode: split[3] ? parseInt(split[3].trim()) :0,
             }
         }
 
@@ -79,7 +79,7 @@ export class IcsService {
                 location: split[0] ? split[0].trim() : '',
                 address: split[1] ? split[1].trim() : '',
                 town: split[2] ? split[2].trim() : '',
-                postcode: split[4] ? parseInt(split[4].trim()) : '',
+                postcode: split[4] ? parseInt(split[4].trim()) : 0,
             }
         }
 
@@ -87,7 +87,7 @@ export class IcsService {
             location: locationString,
             address: '',
             town: '',
-            postcode: '',
+            postcode: 0,
         }
     }
 

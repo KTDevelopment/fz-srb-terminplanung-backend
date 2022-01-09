@@ -10,6 +10,7 @@ export async function runMigrations(configService: ConfigService, logger: Applic
         const connection = await createConnection({...configService.config.database, logging: true});
         await connection.runMigrations();
         await connection.close();
+        logger.debug("migrations finished")
     } catch (e) {
         logger.error(new AppException(e, "run migrations failed"));
     }

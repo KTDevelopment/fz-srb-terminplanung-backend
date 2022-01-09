@@ -82,13 +82,15 @@ export class ParticipationsService extends TypeOrmCrudService<Participation> {
 
     async findDetailedParticipation(memberId: number, eventId: number): Promise<Participation> {
         let result = await this.findOne({
-            relations: ['member', 'participationState', 'event', 'member.devices', 'member.section', 'member.roles'],
+            relations: ['member', 'participationState', 'event'],
             where: {eventId, memberId}
         });
 
         if (!result) {
             return this.defaultParticipation(memberId, eventId)
         }
+
+        result.member = await this.membersService.findDetailedMember(result.memberId);
 
         return result
     }
