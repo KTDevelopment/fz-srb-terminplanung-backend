@@ -119,6 +119,7 @@ export class FcmService {
 
     private async sendMessage(fcmMessage: FcmMessage): Promise<MessagingDevicesResponse> {
         let response = await this.fcmClient.sendToDevice(fcmMessage.receiverIds, fcmMessage.messagingPayload);
+        this.logger.debug("response from fcm messaging: " + JSON.stringify(response));
         if (response.successCount === fcmMessage.receiverIds.length && response.canonicalRegistrationTokenCount === 0) {
             return response;
         }
