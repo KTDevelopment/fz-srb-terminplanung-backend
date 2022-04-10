@@ -2,7 +2,7 @@ import {DumpGateway} from "../gateways/DumpGateway";
 import {RemoteRepository} from "../gateways/RemoteRepository";
 import {BackupDatabaseUseCase} from "../use-cases/BackupDatabaseUseCase";
 import {ConfigGateway} from "../gateways/ConfigGateway";
-import {existsSync, rm} from "fs";
+import {existsSync, unlink} from "fs";
 
 export class DatabaseBackupService implements BackupDatabaseUseCase {
     constructor(
@@ -33,7 +33,7 @@ export class DatabaseBackupService implements BackupDatabaseUseCase {
 
     private async removeTempBackup(fileName: string) {
         return new Promise<void>((resolve, reject) => {
-            rm(fileName, (err) => {
+            unlink(fileName, (err) => {
                 if (err) {
                     reject(err)
                 } else {
