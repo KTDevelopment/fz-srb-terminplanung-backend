@@ -2,7 +2,7 @@ import {DumpGateway} from "../gateways/DumpGateway";
 import {RemoteRepository} from "../gateways/RemoteRepository";
 import {BackupDatabaseUseCase} from "../use-cases/BackupDatabaseUseCase";
 import {ConfigGateway} from "../gateways/ConfigGateway";
-import {rmSync} from "fs";
+import {existsSync, rmSync} from "fs";
 
 export class DatabaseBackupService implements BackupDatabaseUseCase {
     constructor(
@@ -17,7 +17,9 @@ export class DatabaseBackupService implements BackupDatabaseUseCase {
 
         await this.dumpGateway.createDumpAndSaveTo(fileName)
         await this.remoteFileRepository.save(fileName)
-        rmSync(fileName)
+        if (existsSync(fileName)) {
+            rmSync(fileName)
+        }
     }
 
     private getFileName(): string {
