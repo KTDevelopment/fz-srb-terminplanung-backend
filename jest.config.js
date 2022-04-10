@@ -19,5 +19,4 @@ module.exports = {
             coverageLink: "../coverage/lcov-report/index.html",
         }]
     ],
-    timers: "modern"
 };

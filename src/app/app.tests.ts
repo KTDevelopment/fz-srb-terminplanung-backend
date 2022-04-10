@@ -34,7 +34,7 @@ describe('App', () => {
         await App.create(configServiceMock({
             database: {
                 type: 'sqlite'
-            }
+            } as any
         }), loggerMock).start()
     });
 });
