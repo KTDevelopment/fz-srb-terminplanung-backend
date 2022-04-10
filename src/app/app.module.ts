@@ -21,6 +21,7 @@ import {ConfigService} from "../config/config.service";
 import {ServeStaticModule} from "@nestjs/serve-static";
 import {RavenInterceptor, RavenModule} from "nest-raven";
 import {APP_INTERCEPTOR} from "@nestjs/core";
+import {BackupModule} from "../backup/nest-integration/backup.module";
 
 @Module({
     imports: [
@@ -51,7 +52,9 @@ import {APP_INTERCEPTOR} from "@nestjs/core";
         AnniversariesModule,
         MiscModule,
         MailModule,
-        FcmModule],
+        FcmModule,
+        BackupModule,
+    ],
     controllers: [AppController],
     providers: [
         {

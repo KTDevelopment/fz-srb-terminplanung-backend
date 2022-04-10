@@ -31,18 +31,7 @@ export const configValidation = () => {
         },
         firebase: Joi.object({
             isEnabled: Joi.boolean(),
-            serviceAccount: Joi.object({
-                type: Joi.string(),
-                project_id: Joi.string(),
-                private_key_id: Joi.string(),
-                private_key: Joi.string(),
-                client_email: Joi.string(),
-                client_id: Joi.string(),
-                auth_uri: Joi.string(),
-                token_uri: Joi.string(),
-                auth_provider_x509_cert_url: Joi.string(),
-                client_x509_cert_url: Joi.string(),
-            }),
+            serviceAccount: getServiceAccountSchemaValidation(),
             databaseUrl: Joi.string(),
         }),
         mail: Joi.object({
@@ -75,6 +64,27 @@ export const configValidation = () => {
         fileStorage: Joi.object({
             directory: Joi.string()
         }),
+        backup: Joi.object({
+            enabled: Joi.boolean(),
+            tempDirectory: Joi.string(),
+            driveConfig: getServiceAccountSchemaValidation(),
+            driveDirectoryName: Joi.string()
+        }),
+    });
+}
+
+function getServiceAccountSchemaValidation() {
+    return Joi.object({
+        type: Joi.string(),
+        project_id: Joi.string(),
+        private_key_id: Joi.string(),
+        private_key: Joi.string(),
+        client_email: Joi.string(),
+        client_id: Joi.string(),
+        auth_uri: Joi.string(),
+        token_uri: Joi.string(),
+        auth_provider_x509_cert_url: Joi.string(),
+        client_x509_cert_url: Joi.string(),
     });
 }
 

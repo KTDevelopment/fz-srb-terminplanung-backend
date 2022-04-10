@@ -11,7 +11,7 @@ describe('preApplicationStart', () => {
     typeorm.createConnection = jest.fn().mockReturnValue(connectionMock);
 
     it('creates connection and runs migrations for database type mysql', async () => {
-        await runMigrations(configServiceMock({database: {type: 'mysql'}}), loggerMock);
+        await runMigrations(configServiceMock({database: {type: 'mysql'} as any}), loggerMock);
 
         expect(typeorm.createConnection).toBeCalled();
         expect(connectionMock.runMigrations).toBeCalled();
@@ -19,7 +19,7 @@ describe('preApplicationStart', () => {
     });
 
     it('do nothing for database type other than mysql', async () => {
-        await runMigrations(configServiceMock({database: {type: 'sqlite'}}), loggerMock);
+        await runMigrations(configServiceMock({database: {type: 'sqlite'} as any}), loggerMock);
 
         expect(typeorm.createConnection).not.toBeCalled();
         expect(connectionMock.runMigrations).not.toBeCalled();
@@ -28,7 +28,11 @@ describe('preApplicationStart', () => {
 
     it('handles errors', async () => {
         connectionMock.runMigrations.mockRejectedValue(new Error('caboom'));
-        await runMigrations(configServiceMock({database: {type: 'mysql'}}), loggerMock);
+        try {
+            await runMigrations(configServiceMock({database: {type: 'mysql'} as any}), loggerMock);
+        } catch (e) {
+            // do nothing
+        }
 
         expect(typeorm.createConnection).toBeCalled();
         expect(connectionMock.runMigrations).toBeCalled();

@@ -15,7 +15,7 @@ export enum Environment {
 export interface AppConfig {
     env: Environment
     port: number
-    database: any
+    database: DatabaseConfig
     auth: AuthConfig
     ics: {
         icsRootPath: string
@@ -25,6 +25,16 @@ export interface AppConfig {
     logger: LoggerConfig,
     adminClient: AdminClientConfig,
     fileStorage: FileStorageConfig,
+    backup: BackupConfig,
+}
+
+export interface DatabaseConfig {
+    type: "mysql" | "sqlite",
+    host: string,
+    database: string,
+    port: number,
+    username: string,
+    password: string,
 }
 
 export interface AdminClientConfig {
@@ -44,18 +54,7 @@ export interface LoggerConfig {
 
 export interface FireBaseConfig {
     isEnabled: boolean,
-    serviceAccount: {
-        type: string,
-        project_id: string,
-        private_key_id: string,
-        private_key: string,
-        client_email: string,
-        client_id: string,
-        auth_uri: string,
-        token_uri: string,
-        auth_provider_x509_cert_url: string,
-        client_x509_cert_url: string
-    }
+    serviceAccount: GoogleServiceAccount
     databaseUrl: string
 }
 
@@ -84,5 +83,25 @@ export interface AuthConfig {
 
 export interface FileStorageConfig {
     directory: string
+}
+
+export interface BackupConfig {
+    enabled: boolean,
+    tempDirectory: string,
+    driveConfig: GoogleServiceAccount,
+    driveDirectoryName: string,
+}
+
+export interface GoogleServiceAccount extends DriveConfig {
+    type: string,
+    project_id: string,
+    private_key_id: string,
+    private_key: string,
+    client_email: string,
+    client_id: string,
+    auth_uri: string,
+    token_uri: string,
+    auth_provider_x509_cert_url: string,
+    client_x509_cert_url: string
 }
 

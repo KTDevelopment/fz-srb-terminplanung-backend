@@ -48,4 +48,6 @@ prod-release.zip
 yarn.lock
 local-file-storage
 /test/test-file-storage
+local-backup-temp
+/test/test-backup-temp
 local.db

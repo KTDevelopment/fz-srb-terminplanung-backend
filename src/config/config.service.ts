@@ -17,8 +17,4 @@ export class ConfigService implements OnModuleInit {
             abortEarly: true
         })
     }
-
-    get<T = any>(configKey: keyof AppConfig): T {
-        return this.config[configKey];
-    }
 }

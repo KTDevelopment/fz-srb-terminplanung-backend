@@ -61,5 +61,22 @@
     },
     "fileStorage": {
         "directory": "/FOO"
+    },
+    "backup": {
+        "enabled": false,
+        "tempDirectory": "/FOO",
+        "driveConfig": {
+            "type": "qwdqwd",
+            "project_id": "fanfqwd",
+            "private_key_id": "2323ewef32",
+            "private_key": "fooo",
+            "client_email": "wqdweerf.gserviceaccount.com",
+            "client_id": "323423235234",
+            "auth_uri": "https://aqwdweferf",
+            "token_uri": "https://oauwef3wefwef/token",
+            "auth_provider_x509_cert_url": "httqwd23fwefw3f",
+            "client_x509_cert_url": "httpqwd2423wdwedqam.gserviceaccount.com"
+        },
+        "driveDirectoryName": "FZ_SRB_SQL_BACKUP"
     }
 }

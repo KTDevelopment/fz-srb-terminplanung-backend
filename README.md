@@ -19,7 +19,4 @@ $ yarn start:dev
 ```
 
 ## TODO
-- Password Reset testen
-- GoogleDrive Backup
 - aus app ausloggen wenn userdata isDeleted
-- FCM testing

@@ -13,5 +13,6 @@ export async function runMigrations(configService: ConfigService, logger: Applic
         logger.debug("migrations finished")
     } catch (e) {
         logger.error(new AppException(e, "run migrations failed"));
+        throw e
     }
 }
