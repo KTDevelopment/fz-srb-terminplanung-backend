@@ -8,6 +8,7 @@ import {DoBackupHouseKeepingUseCase} from "../use-cases/DoBackupHouseKeepingUseC
 import {DatabaseDumpService} from "./DatabaseDumpService";
 import {BackupConfigService} from "./BackupConfigService";
 import {GoogleDriveClient} from "./GoogleDriveClient";
+import {existsSync, mkdirSync} from "fs";
 
 @Injectable()
 export class BackupService implements OnApplicationBootstrap {
@@ -49,6 +50,7 @@ export class BackupService implements OnApplicationBootstrap {
     async backUpDatabase() {
         if (this.configService.config.backup.enabled) {
             try {
+                this.ensureLocalBackupDir()
                 await this.backupDatabaseUseCase.invoke()
                 this.logger.log("database backup finished")
             } catch (e) {
@@ -77,4 +79,9 @@ export class BackupService implements OnApplicationBootstrap {
         this.backUpDatabase().catch(this.logger.error)
     }
 
+    private ensureLocalBackupDir() {
+        if (!existsSync(this.configService.config.backup.tempDirectory)) {
+            mkdirSync(this.configService.config.backup.tempDirectory)
+        }
+    }
 }
