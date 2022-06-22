@@ -225,7 +225,8 @@ export class TestDataManager {
             {memberId: 2, eventId: 1, stateId: 5},
             {memberId: 4, eventId: 1, stateId: 7},
             {memberId: 3, eventId: 2, stateId: 0},
-            {memberId: 6, eventId: 1, stateId: 6}
+            {memberId: 6, eventId: 1, stateId: 6},
+            {memberId: 3, eventId: 2, stateId: 1},
         ]
     }
 

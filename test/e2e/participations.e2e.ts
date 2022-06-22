@@ -197,6 +197,12 @@ describe('Participations', () => {
                 .query('filter=memberId||eq||' + memberId + '&filter=eventId||eq||1')
                 .expect(res => expect(res.body.length).toBe(0))
         });
+        it('should delete participation if belonging event is deleted', async () => {
+            await deleteAuthenticated('/events/2', await adminToken())
+                .expect(200);
+
+            return getAuthenticated('/participations/4', await adminToken()).expect(404)
+        });
     })
 });
 
