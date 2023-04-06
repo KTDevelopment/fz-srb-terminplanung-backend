@@ -1,5 +1,5 @@
 import {Body, Controller, Get, Post, UsePipes, ValidationPipe} from '@nestjs/common';
-import {TransformClassToPlain} from "class-transformer";
+import {TransformInstanceToPlain} from "class-transformer";
 import {MiscService} from "./misc.service";
 import {AppStoreLinksDto} from "./model/AppStoreLinks.dto";
 import {ApiTags} from "@nestjs/swagger";
@@ -30,7 +30,7 @@ export class MiscController {
     }
 
     @Get('fzSrbAppStoreLinks')
-    @TransformClassToPlain()
+    @TransformInstanceToPlain()
     async handleFzAppStoreLinks(): Promise<AppStoreLinksDto> {
         return this.miscService.getFzAppStoreLinks()
     }
@@ -38,14 +38,14 @@ export class MiscController {
     @Auth(ROLE_ID_ADMIN)
     @Post('fzSrbAppStoreLinks')
     @UsePipes(new ValidationPipe({ transform: true }))
-    @TransformClassToPlain()
+    @TransformInstanceToPlain()
     async handlePostFzAppStoreLinks(@Body() newLinks: AppStoreLinksDto): Promise<AppStoreLinksDto> {
         return this.miscService.saveFzAppStoreLinks(newLinks)
     }
 
     @Auth(ROLE_ID_MEMBER)
     @Get('dropBoxLinks')
-    @TransformClassToPlain()
+    @TransformInstanceToPlain()
     async handleGetDropBoxLinks(): Promise<DropBoxLinksDto> {
         return this.miscService.getDropBoxLinks()
     }
@@ -53,7 +53,7 @@ export class MiscController {
     @Auth(ROLE_ID_ADMIN)
     @Post('dropBoxLinks')
     @UsePipes(new ValidationPipe({ transform: true }))
-    @TransformClassToPlain()
+    @TransformInstanceToPlain()
     async handlePostDropBoxLinks(@Body() newLinks: DropBoxLinksDto): Promise<DropBoxLinksDto> {
         return this.miscService.saveDropBoxLinks(newLinks)
     }

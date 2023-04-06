@@ -27,7 +27,7 @@ export class ParticipationStatesService extends CustomCrudService<ParticipationS
 
     async insertParticipationStates() {
         await Promise.all(ParticipationStatesService.participationStates().map(async (participationState) => {
-            if ((await this.repo.count({stateId: participationState.stateId})) === 0) {
+            if ((await this.repo.countBy({stateId: participationState.stateId})) === 0) {
                 await this.repo.insert(participationState)
             }
         }));

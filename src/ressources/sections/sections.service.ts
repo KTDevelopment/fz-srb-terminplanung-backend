@@ -12,7 +12,7 @@ export class SectionsService extends CustomCrudService<Section> {
 
     async insertDefaultSectionsIdNeeded() {
         await Promise.all(SectionsService.defaultSections().map(async (section) => {
-            if ((await this.repo.count({sectionId: section.sectionId})) === 0) {
+            if ((await this.repo.countBy({sectionId: section.sectionId})) === 0) {
                 await this.repo.insert(section)
             }
         }));

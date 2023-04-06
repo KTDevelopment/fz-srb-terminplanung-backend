@@ -1,15 +1,14 @@
-import {Injectable, Logger, Scope} from '@nestjs/common';
+import {ConsoleLogger, Injectable, Scope} from '@nestjs/common';
 import {LoggerConfig} from "../config/config";
 import {ConfigService} from "../config/config.service";
 import * as Sentry from "@sentry/node";
-import {Severity} from "@sentry/types/dist/severity";
 import {DEFAULT_LOG_LEVELS, LogLevel} from "./logLevels";
 
 /**
- * Just used for Local Logging, Errors came throw Sentry
+ * Just used for Local Logging, Errors came through Sentry
  */
 @Injectable({scope: Scope.TRANSIENT})
-export class ApplicationLogger extends Logger {
+export class ApplicationLogger extends ConsoleLogger {
     private config: LoggerConfig;
     private enabledLogLevels: string[];
 
@@ -17,6 +16,10 @@ export class ApplicationLogger extends Logger {
         super();
         this.config = configService.config.logger;
         this.enabledLogLevels = DEFAULT_LOG_LEVELS.slice(DEFAULT_LOG_LEVELS.indexOf(this.config.level) || 0)
+    }
+
+    setContext(context: string) {
+        this.context = context
     }
 
     log(message: any, context?: string): any {
@@ -36,7 +39,7 @@ export class ApplicationLogger extends Logger {
         if (this.logLevelIsDisabled(LogLevel.WARN)) return;
         super.warn(message, context);
         if (this.config.sentry) {
-            Sentry.captureMessage(message, Severity.Warning);
+            Sentry.captureMessage(message, "warning");
         }
     };
 

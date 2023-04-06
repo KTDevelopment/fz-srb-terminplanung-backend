@@ -4,17 +4,19 @@ import {AppModule} from "./app.module";
 import {ApplicationLogger} from "../logger/application-logger.service";
 import {INestApplication} from "@nestjs/common";
 import * as compression from 'compression';
-import * as helmet from 'helmet';
-import * as rateLimit from 'express-rate-limit';
+import rateLimit from 'express-rate-limit'
 import * as basicAuth from 'express-basic-auth';
 import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
 import {BasicAuthorizer} from "../auth/basic.authorizer";
-import {EventsService} from "../ressources/events/events.service";
 import {SectionsService} from "../ressources/sections/sections.service";
 import {RolesService} from "../ressources/roles/roles.service";
 import {MembersService} from "../ressources/members/members.service";
-import {ParticipationStatesService} from "../ressources/participations/participation-states/participation-states.service";
+import {
+    ParticipationStatesService
+} from "../ressources/participations/participation-states/participation-states.service";
 import {version} from "../../package.json";
+import helmet from "helmet";
+import {EventsService} from "../ressources/events/events.service";
 
 export class App {
     private readonly configService: ConfigService;

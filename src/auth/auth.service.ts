@@ -52,9 +52,9 @@ export class AuthService {
             let passwordResetToken = this.tokenService.getPasswordResetToken({}, member.password);
             this.logger.log('passwordResetToken generated for: ' + email);
             await this.mailService.sendPasswordResetMail(member, passwordResetToken);
-            return {send: true};
+            return {};
         } catch (e) {
-            return null;
+            return {};
         }
     }
 

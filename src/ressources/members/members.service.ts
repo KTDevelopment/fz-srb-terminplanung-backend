@@ -8,6 +8,7 @@ import {validateEntity} from "../../_common/EntityValidator";
 import {RolesService} from "../roles/roles.service";
 import {Role} from "../roles/role.entity";
 import {DeepPartial} from "typeorm";
+import {FindOneOptions} from "typeorm/find-options/FindOneOptions";
 
 @Injectable()
 export class MembersService extends TypeOrmCrudService<Member> {
@@ -19,7 +20,10 @@ export class MembersService extends TypeOrmCrudService<Member> {
     }
 
     async findPlannerOfMember(member: Member) {
-        const memberOfSection = await this.repo.find({where: {sectionId: member.sectionId}, relations: ['section', 'devices']});
+        const memberOfSection = await this.repo.find({
+            where: {sectionId: member.sectionId},
+            relations: ['section', 'devices']
+        });
         return memberOfSection.filter(member => member.isPlanner());
     }
 
@@ -28,15 +32,17 @@ export class MembersService extends TypeOrmCrudService<Member> {
     }
 
     async findDetailedMember(memberIdOrEmail: number | string): Promise<Member> {
-        let findCondition;
+        const findCondition: FindOneOptions = {
+            relations: ['section', 'devices']
+        };
 
         if (typeof memberIdOrEmail === 'number') {
-            findCondition = {memberId: memberIdOrEmail}
+            findCondition.where = {memberId: memberIdOrEmail}
         } else {
-            findCondition = {email: memberIdOrEmail}
+            findCondition.where = {email: memberIdOrEmail}
         }
 
-        return this.repo.findOneOrFail(findCondition, {relations: ['section', 'devices']})
+        return this.repo.findOneOrFail(findCondition)
     }
 
     async createOne(req: CrudRequest, dto: DeepPartial<Member>): Promise<Member> {
@@ -87,7 +93,7 @@ export class MembersService extends TypeOrmCrudService<Member> {
     }
 
     async insertKevinThuermann() {
-        if ((await this.repo.count({firstName: 'Kevin', lastName: 'Thürmann'})) === 0) {
+        if ((await this.repo.count({where: {firstName: 'Kevin', lastName: 'Thürmann'}})) === 0) {
             await this.repo.save(this.getKevin());
         }
     }

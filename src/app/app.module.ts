@@ -61,7 +61,7 @@ import {BackupModule} from "../backup/nest-integration/backup.module";
             provide: APP_INTERCEPTOR,
             useValue: new RavenInterceptor({
                 filters: [
-                    // Filter exceptions of type HttpException. Ignore those that
+                    // Filter exceptions to type HttpException. Ignore those that
                     // have status code of less than 500
                     {type: HttpException, filter: (exception: HttpException) => 500 > exception.getStatus()}
                 ],

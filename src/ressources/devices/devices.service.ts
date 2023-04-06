@@ -13,9 +13,9 @@ export class DevicesService extends CustomCrudService<Device> {
 
     async createOne(req: CrudRequest, dto: DeepPartial<Device>): Promise<Device> {
         const memberId = req.parsed.authPersist.memberId || dto.memberId;
-        const candidate = await this.findOne({registrationId: dto.registrationId, memberId});
+        const candidate = await this.findOne({where: {registrationId: dto.registrationId, memberId}});
         if (candidate) {
-           return candidate
+            return candidate
         }
         return super.createOne(req, dto);
     }
@@ -26,7 +26,7 @@ export class DevicesService extends CustomCrudService<Device> {
 
     async updateRegistrationIds(registrationIdPairs: RegistrationIdPair[]) {
         let oldIds = registrationIdPairs.map(pair => pair.old);
-        let candidates = await this.repo.find({registrationId: In(oldIds)});
+        let candidates = await this.repo.find({where: {registrationId: In(oldIds)}});
         candidates.map(candidate =>
             candidate.registrationId = registrationIdPairs.find(pair => pair.old === candidate.registrationId).new
         );

@@ -13,12 +13,12 @@ export class RolesService extends CustomCrudService<Role> {
     }
 
     async getDefaultRole(): Promise<Role> {
-        return this.repo.findOne(DEFAULT_MEMBER_ROLE_ID);
+        return this.repo.findOneBy({ roleId: DEFAULT_MEMBER_ROLE_ID});
     }
 
     async insertDefaultRolesNeeded() {
         await Promise.all(RolesService.defaultRoles().map(async (role) => {
-            if ((await this.repo.count({roleId: role.roleId})) === 0) {
+            if ((await this.repo.countBy({roleId: role.roleId})) === 0) {
                 await this.repo.insert(role)
             }
         }));

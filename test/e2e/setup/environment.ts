@@ -1,7 +1,8 @@
 import {Test, TestingModule} from "@nestjs/testing";
 import {AppModule} from "../../../src/app/app.module";
 import {TestDataManager} from "../TestData/TestDataManager";
-import {getConnection} from "typeorm";
+import {getDataSourceToken} from "@nestjs/typeorm";
+import {DataSource} from "typeorm/data-source/DataSource";
 
 export async function setupTestEnvironment() {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -10,7 +11,8 @@ export async function setupTestEnvironment() {
 
     let testApp = moduleFixture.createNestApplication();
     await testApp.init();
-    let testDataManager = new TestDataManager(getConnection());
+
+    let testDataManager = new TestDataManager(await testApp.resolve(getDataSourceToken()) as DataSource);
     await testDataManager.populateTablesWithTestData();
     return {
         testApp,

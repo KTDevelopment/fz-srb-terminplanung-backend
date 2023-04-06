@@ -1,4 +1,4 @@
-import {Connection, EntityManager} from "typeorm";
+import {EntityManager} from "typeorm";
 import {getEventThatShouldBeRemoved, getNonPublicEvents, getPublicEvents} from "./events";
 import {Role} from "../../../src/ressources/roles/role.entity";
 import {Section} from "../../../src/ressources/sections/section.entity";
@@ -8,16 +8,17 @@ import {Device} from "../../../src/ressources/devices/device.entity";
 import {ParticipationState} from "../../../src/ressources/participations/participation-states/participation-state.entity";
 import {Participation} from "../../../src/ressources/participations/participation.entity";
 import {Anniversary} from "../../../src/ressources/anniversaries/anniversary.entity";
+import {DataSource} from "typeorm/data-source/DataSource";
 
 export class TestDataManager {
 
-    private connection: Connection;
+    private dataSource: DataSource;
     private passwordEncryptor: PasswordEncryptor;
     private entityManager: EntityManager;
 
-    constructor(connection: Connection) {
-        this.connection = connection;
-        this.entityManager = this.connection.createEntityManager();
+    constructor(dataSource: DataSource) {
+        this.dataSource = dataSource;
+        this.entityManager = this.dataSource.createEntityManager();
         this.passwordEncryptor = new PasswordEncryptor();
     }
 
@@ -34,8 +35,8 @@ export class TestDataManager {
 
     /** used inside tests through global */
     async clearData() {
-        await this.connection.close();
-        await this.connection.connect();
+        await this.dataSource.destroy();
+        await this.dataSource.initialize();
     }
 
     public async addEventThatShouldBeRemoved() {
@@ -43,7 +44,7 @@ export class TestDataManager {
     }
 
     private async insertTestAnniversaries() {
-        await this.entityManager.save(this.entityManager.create(Anniversary, await TestDataManager.getRawAnniversaries()));
+        await this.entityManager.save(this.entityManager.create(Anniversary, TestDataManager.getRawAnniversaries()));
     }
 
     private async insertTestRoles() {
@@ -96,7 +97,7 @@ export class TestDataManager {
         //     (5, 'invitation request reject'),
         //     (1, 'invited'),
         //     (0, 'not invited');
-        return await this.connection.manager.save([state0, state1, state6, state7, state4, state5])
+        return await this.dataSource.manager.save([state0, state1, state6, state7, state4, state5])
     }
 
     private async insertTestDevices() {

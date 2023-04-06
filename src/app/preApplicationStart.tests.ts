@@ -1,42 +1,51 @@
-import typeorm = require('typeorm');
 import {runMigrations} from "./preApplicationStart";
 import {configServiceMock} from "../../test/mocks/configServiceMock";
 import {loggerMock} from "../../test/mocks/loggerMock";
+import { DataSource } from "typeorm"
+
+const dataSourceMock = {
+    initialize: jest.fn(),
+    runMigrations: jest.fn(),
+    destroy: jest.fn(),
+};
+jest.mock("typeorm", () => ({
+    DataSource: jest.fn().mockImplementation(() => {
+        return dataSourceMock;
+    }),
+}));
 
 describe('preApplicationStart', () => {
-    const connectionMock = {
-        runMigrations: jest.fn(),
-        close: jest.fn(),
-    }
-    typeorm.createConnection = jest.fn().mockReturnValue(connectionMock);
 
-    it('creates connection and runs migrations for database type mysql', async () => {
+    it('creates dataSource and runs migrations for database type mysql', async () => {
         await runMigrations(configServiceMock({database: {type: 'mysql'} as any}), loggerMock);
 
-        expect(typeorm.createConnection).toBeCalled();
-        expect(connectionMock.runMigrations).toBeCalled();
-        expect(connectionMock.close).toBeCalled();
+        expect(DataSource).toBeCalled();
+        expect(dataSourceMock.initialize).toBeCalled();
+        expect(dataSourceMock.runMigrations).toBeCalled();
+        expect(dataSourceMock.destroy).toBeCalled();
     });
 
     it('do nothing for database type other than mysql', async () => {
         await runMigrations(configServiceMock({database: {type: 'sqlite'} as any}), loggerMock);
 
-        expect(typeorm.createConnection).not.toBeCalled();
-        expect(connectionMock.runMigrations).not.toBeCalled();
-        expect(connectionMock.close).not.toBeCalled();
+        expect(DataSource).not.toBeCalled();
+        expect(dataSourceMock.initialize).not.toBeCalled();
+        expect(dataSourceMock.runMigrations).not.toBeCalled();
+        expect(dataSourceMock.destroy).not.toBeCalled();
     });
 
     it('handles errors', async () => {
-        connectionMock.runMigrations.mockRejectedValue(new Error('caboom'));
+        dataSourceMock.runMigrations.mockRejectedValue(new Error('caboom'));
         try {
             await runMigrations(configServiceMock({database: {type: 'mysql'} as any}), loggerMock);
         } catch (e) {
             // do nothing
         }
 
-        expect(typeorm.createConnection).toBeCalled();
-        expect(connectionMock.runMigrations).toBeCalled();
-        expect(connectionMock.close).not.toBeCalled();
+        expect(DataSource).toBeCalled();
+        expect(dataSourceMock.initialize).toBeCalled();
+        expect(dataSourceMock.runMigrations).toBeCalled();
+        expect(dataSourceMock.destroy).not.toBeCalled();
         expect(loggerMock.error).toBeCalled();
     });
 

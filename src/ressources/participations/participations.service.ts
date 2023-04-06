@@ -1,9 +1,9 @@
 import {Injectable} from '@nestjs/common';
-import {InjectConnection, InjectRepository} from "@nestjs/typeorm";
+import {InjectRepository} from "@nestjs/typeorm";
 import {Participation} from "./participation.entity";
 import {TypeOrmCrudService} from "@nestjsx/crud-typeorm";
 import {CreateManyDto, CrudRequest} from "@nestjsx/crud";
-import {Connection, DeepPartial, EntityManager} from "typeorm";
+import {DeepPartial, EntityManager} from "typeorm";
 import {MembersService} from "../members/members.service";
 import {EventsService} from "../events/events.service";
 import {ParticipationStatesService} from "./participation-states/participation-states.service";
@@ -16,12 +16,14 @@ import {Anniversary} from "../anniversaries/anniversary.entity";
 import {EventBus} from "@nestjs/cqrs";
 import {SendFirebaseMessageEvent} from "../../fcm/events/send-firebase-message.event";
 import {Event} from "../events/event.entity";
+import {InjectDataSource} from "@nestjs/typeorm/dist/common/typeorm.decorators";
+import {DataSource} from "typeorm/data-source/DataSource";
 
 @Injectable()
 export class ParticipationsService extends TypeOrmCrudService<Participation> {
     constructor(
         @InjectRepository(Participation) repo,
-        @InjectConnection() private readonly connection: Connection,
+        @InjectDataSource() private readonly dataSource: DataSource,
         private readonly membersService: MembersService,
         private readonly eventsService: EventsService,
         private readonly participationStatesService: ParticipationStatesService,
@@ -38,7 +40,7 @@ export class ParticipationsService extends TypeOrmCrudService<Participation> {
         delete participation.participationState;
         participation.stateId = dto.stateId;
 
-        let response = await this.connection.transaction(async entityManager => {
+        let response = await this.dataSource.transaction(async entityManager => {
             if (participation.event.category.includes('AUFTRITT')) {
                 await ParticipationsService.handlePerformanceCountAndAnniversary(participation, oldStateId, entityManager);
             }
@@ -62,10 +64,10 @@ export class ParticipationsService extends TypeOrmCrudService<Participation> {
     async deleteOne(req: CrudRequest) {
         const deleted = await super.deleteOne(req);
         if (deleted) {
-            await this.connection.transaction(async entityManager => {
-                const event = await entityManager.findOne(Event, {eventId: deleted.eventId});
+            await this.dataSource.transaction(async entityManager => {
+                const event = await entityManager.findOneBy(Event, {eventId: deleted.eventId});
                 if (event.category.includes('AUFTRITT') && deleted.hasState(STATE__HAS_PARTICIPATED)) {
-                    const member = await entityManager.findOne(Member, {memberId: deleted.memberId});
+                    const member = await entityManager.findOneBy(Member, {memberId: deleted.memberId});
                     if (isAnniversary(member.performanceCount)) {
                         await entityManager.delete(Anniversary, {
                             eventId: deleted.eventId,

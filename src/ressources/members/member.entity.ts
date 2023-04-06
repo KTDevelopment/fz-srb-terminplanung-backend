@@ -1,11 +1,13 @@
 import {Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
-import {Exclude, Transform, TransformationType} from "class-transformer";
+import {Exclude, Transform} from "class-transformer";
 import {IsBoolean, IsEmail, IsInt, IsNumber, IsOptional, IsString, ValidateNested} from "class-validator";
 import {ApiHideProperty, ApiProperty} from "@nestjs/swagger";
 import {Role, ROLE_ID_ADMIN, ROLE_ID_NEWS_MAN, ROLE_ID_PLANNER} from "../roles/role.entity";
 import {Device} from "../devices/device.entity";
 import {Section} from "../sections/section.entity";
 import {BaseEntity} from "../../_common/base.entity";
+import {rolesTransformer} from "./rolesTransformer";
+import {devicesTransformer} from "./devicesTransformer";
 
 @Entity()
 export class Member extends BaseEntity {
@@ -110,30 +112,4 @@ export class Member extends BaseEntity {
     }
 }
 
-function devicesTransformer(value, object, transformationType){
-    switch (transformationType) {
-        case TransformationType.PLAIN_TO_CLASS:
-            return value;
-        case TransformationType.CLASS_TO_PLAIN:
-            return typeof value === "boolean" ? value : value.length > 0; // can be boolean if classToPlain gets called multiple times
-        default:
-            return undefined;
-    }
-}
 
-
-function rolesTransformer(value, object, transformationType){
-    switch (transformationType) {
-        case TransformationType.PLAIN_TO_CLASS:
-            return value;
-        case TransformationType.CLASS_TO_PLAIN:
-            return value.map(role => {
-                delete role.creationDate;
-                delete role.updateDate;
-                delete role.version;
-                return role;
-            });
-        default:
-            return undefined;
-    }
-}

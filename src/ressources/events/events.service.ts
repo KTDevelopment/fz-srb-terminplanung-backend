@@ -23,7 +23,7 @@ export class EventsService extends TypeOrmCrudService<Event> {
         this.logger.setContext(EventsService.name)
     }
 
-    findOneOrFail(options?: FindOneOptions<Event>){
+    findOneOrFail(options?: FindOneOptions<Event>) {
         return this.repo.findOneOrFail(options)
     }
 
@@ -42,9 +42,9 @@ export class EventsService extends TypeOrmCrudService<Event> {
         }
 
         try {
-            let currentEvent = await this.repo.findOne({remoteId: newEvent.remoteId});
+            let currentEvent = await this.repo.findOne({where: {remoteId: newEvent.remoteId}});
 
-            if (currentEvent === undefined) {
+            if (currentEvent === null) {
                 return await this.repo.save(await this.geoService.enrichEventWithGeoCoordinates(newEvent));
             }
 

@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  database:
+    image: arm64v8/mysql:oracle
+    container_name: "fz-srb-terminplanung-backend-database"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "mysqlroot"
+      MYSQL_DATABASE: "fz-srb-db"
+    ports:
+      - "3306:3306"
+#  app:
+#    depends_on:
+#      - database
+#      - fz-auth-mock
+#    image: band-space:1.1.0
+#    environment:
+#      DB_HOST: "band-space-database"
+#      DB_PORT: "3306"
+#      DB_USERNAME: "root"
+#      DB_PASSWORD: "mysqlroot"
+#      DB_NAME: "band-space-db"
+#      AUTH_PROXY_TARGET: "http://fz-auth-mock:4444"
+#      AUTH_PROXY_PATH_LOGIN: "/api/v2/auth/login"
+#      AUTH_PROXY_PATH_REQUEST_PASSWORD_RESET: "/api/v2/auth/forgot-password"
+#      AUTH_PROXY_PATH_USERS: "/api/v2/members"
+#      AUTH_USER_INFO_URL_TEMPLATE: "http://fz-auth-mock:4444/api/v2/members/{memberId}?join=roles"
+#    ports:
+#      - "8081:1337"

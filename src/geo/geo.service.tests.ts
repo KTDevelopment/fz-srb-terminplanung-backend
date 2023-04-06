@@ -3,10 +3,11 @@ import {ApplicationLogger} from "../logger/application-logger.service";
 import {loggerMock} from "../../test/mocks/loggerMock";
 import {ConfigService} from "../config/config.service";
 import {GeoService} from "./geo.service";
-import {HttpService} from "@nestjs/common";
 import {httpServiceMock} from "../../test/mocks/httpServiceMock";
 import {plainToClass} from "class-transformer";
 import {Event} from "../ressources/events/event.entity";
+import {HttpService} from "@nestjs/axios";
+import {BehaviorSubject} from "rxjs";
 
 
 describe('FcmServiceTests', () => {
@@ -42,9 +43,8 @@ describe('FcmServiceTests', () => {
     });
 
     it('should load coordinates', async () => {
-        httpServiceMock.get.mockReturnValue({
-            toPromise: jest.fn().mockResolvedValue({data: [{lat: 1, lon: 2}]})
-        })
+
+        httpServiceMock.get.mockReturnValue(new BehaviorSubject({data: [{lat: 1, lon: 2}]}))
         let event = testEvent();
 
         event = await geoService.enrichEventWithGeoCoordinates(event);
@@ -54,9 +54,7 @@ describe('FcmServiceTests', () => {
     });
 
     it('should handle empty http response', async () => {
-        httpServiceMock.get.mockReturnValue({
-            toPromise: jest.fn().mockResolvedValue({data: []})
-        })
+        httpServiceMock.get.mockReturnValue(new BehaviorSubject({data: []}))
         let event = testEvent();
 
         event = await geoService.enrichEventWithGeoCoordinates(event);
@@ -66,8 +64,8 @@ describe('FcmServiceTests', () => {
     });
 
     it('should handle and log errors', async () => {
-        httpServiceMock.get.mockReturnValue({
-            toPromise: jest.fn().mockRejectedValue(new Error('caboom'))
+        httpServiceMock.get.mockImplementation(() => {
+            throw new Error('caboom')
         })
         let event = testEvent();
 
