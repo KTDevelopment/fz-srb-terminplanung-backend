@@ -46,7 +46,7 @@ describe('FcmServiceTests', () => {
 
     it('Should Do Nothing for notifyPlannerAboutStateChange when changed member has privileges', async () => {
         let response = await fcmService.notifyPlannerAboutStateChange(getTestEvent(), [getTestPlanner(), getTestPlanner()], getTestPlanner(), 1);
-        expect(response.isNothing()).toBeTruthy();
+        expect(response).toBeNull();
         expect(fcmPayloadGeneratorMock.generatePayloadForMemberChangedHisState).toBeCalledTimes(0)
     });
     it('should generate Payload and sends messages for notifyPlannerAboutStateChange when planner has devices', async () => {
@@ -61,8 +61,8 @@ describe('FcmServiceTests', () => {
 
         let response = await fcmService.notifyPlannerAboutStateChange(testEvent, plannerListWithDevices, testMember, newState);
 
-        expect(response.isJust()).toBeTruthy();
-        expectFcmResponse(response.unsafeCoerce(), getAllSuccessFcmTestResponse());
+        expect(response).not.toBeNull();
+        expectFcmResponse(response, getAllSuccessFcmTestResponse());
         expect(fcmPayloadGeneratorMock.generatePayloadForMemberChangedHisState).toBeCalledTimes(1);
         expect(fcmPayloadGeneratorMock.generatePayloadForMemberChangedHisState).toBeCalledWith(testMember, testEvent, newState);
         expect(fcmClientMock.sendToDevice).toBeCalledTimes(2);
@@ -75,7 +75,7 @@ describe('FcmServiceTests', () => {
 
         let response = await fcmService.notifyMemberThatHisStateChanged(testEvent, testMember, planner, newState);
 
-        expect(response.isNothing()).toBeTruthy();
+        expect(response).toBeNull();
         expect(fcmClientMock.sendToDevice).toBeCalledTimes(0);
         expect(fcmPayloadGeneratorMock.generatePayloadForPlanerChangedMemberState).toBeCalledTimes(0);
     });
@@ -91,8 +91,8 @@ describe('FcmServiceTests', () => {
 
         let response = await fcmService.notifyMemberThatHisStateChanged(testEvent, testMember, planner, newState);
 
-        expect(response.isJust()).toBeTruthy();
-        expectFcmResponse(response.unsafeCoerce(), getAllSuccessFcmTestResponse());
+        expect(response).not.toBeNull();
+        expectFcmResponse(response, getAllSuccessFcmTestResponse());
         expect(fcmClientMock.sendToDevice).toBeCalledTimes(2);
         expect(fcmPayloadGeneratorMock.generatePayloadForPlanerChangedMemberState).toBeCalledTimes(1);
         expect(fcmPayloadGeneratorMock.generatePayloadForPlanerChangedMemberState).toBeCalledWith(planner, testMember, testEvent, newState);
@@ -103,7 +103,7 @@ describe('FcmServiceTests', () => {
         let newState = 1;
 
         const response = await fcmService.remindParticipator(testEvent, testMember, testMember, newState);
-        expect(response.isNothing()).toBeTruthy();
+        expect(response).toBeNull();
         expect(loggerMock.warn).toBeCalledTimes(1);
     });
     it('should log warning for remindParticipator when receiver has no devices', async () => {
@@ -113,14 +113,14 @@ describe('FcmServiceTests', () => {
         let newState = 1;
 
         const response = await fcmService.remindParticipator(testEvent, testPlanner, testMember, newState);
-        expect(response.isNothing()).toBeTruthy();
+        expect(response).toBeNull();
         expect(loggerMock.warn).toBeCalledTimes(1);
     });
     it('should log warning for notifyAboutNewNewsletter when no member has any device', async () => {
         let testMemberList = getTestMemberList();
 
         const response = await fcmService.notifyAllAboutNewNewsletter(testMemberList);
-        expect(response.isNothing()).toBeTruthy();
+        expect(response).toBeNull();
         expect(loggerMock.warn).toBeCalledTimes(1);
     });
     it('should send correct Messages for notifyAboutNewNewsletter when members have devices', async () => {
@@ -132,8 +132,8 @@ describe('FcmServiceTests', () => {
 
         let response = await fcmService.notifyAllAboutNewNewsletter(testMemberList);
 
-        expect(response.isJust()).toBeTruthy();
-        expectFcmResponse(response.unsafeCoerce(), getAllSuccessFcmTestResponse(2));
+        expect(response).not.toBeNull();
+        expectFcmResponse(response, getAllSuccessFcmTestResponse(2));
         expect(fcmClientMock.sendToDevice).toBeCalledTimes(2);
         expect(fcmPayloadGeneratorMock.generatePayloadForNewNewsletter).toBeCalledTimes(1);
     });

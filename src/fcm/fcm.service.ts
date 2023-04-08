@@ -14,7 +14,6 @@ import {Event} from "../ressources/events/event.entity";
 import {FcmMessage} from "./models/FcmMessage";
 import {DevicesService, RegistrationIdPair} from "../ressources/devices/devices.service";
 import {ApplicationLogger} from "../logger/application-logger.service";
-import {Maybe} from "purify-ts";
 import {AppException} from "../_common/AppException";
 import MessagingDevicesResponse = admin.messaging.MessagingDevicesResponse;
 import MessagingDeviceResult = admin.messaging.MessagingDeviceResult;
@@ -32,9 +31,9 @@ export class FcmService {
         this.logger.setContext(FcmService.name);
     }
 
-    async notifyPlannerAboutStateChange(event: Event, receivers: Member[], sender: Member, newState): Promise<Maybe<DeviceSpecificFcmResponse>> {
+    async notifyPlannerAboutStateChange(event: Event, receivers: Member[], sender: Member, newState): Promise<null | DeviceSpecificFcmResponse> {
         if (sender.isPrivileged()) {
-            return Maybe.empty();
+            return null;
         }
 
         let devices: Device[] = [];
@@ -44,41 +43,41 @@ export class FcmService {
 
         if (devices.length === 0) {
             this.logger.warn("FCM: no Devices on receivers - " + receivers.map(it => it.memberId).join(','));
-            return Maybe.empty();
+            return null;
         }
 
         let payload = this.fcmPayloadGenerator.generatePayloadForMemberChangedHisState(sender, event, newState);
 
-        return await this.sendFcmPayload(payload, devices);
+        return this.sendFcmPayload(payload, devices);
     }
 
-    async notifyMemberThatHisStateChanged(event: Event, receiver: Member, sender: Member, newState): Promise<Maybe<DeviceSpecificFcmResponse>> {
+    async notifyMemberThatHisStateChanged(event: Event, receiver: Member, sender: Member, newState): Promise<DeviceSpecificFcmResponse> {
         if (!receiver.devices || receiver.devices.length === 0) {
             this.logger.warn("FCM: no Devices on receiver - " + receiver.memberId);
-            return Maybe.empty();
+            return null;
         }
 
         let payload: FcmPayload = this.fcmPayloadGenerator.generatePayloadForPlanerChangedMemberState(sender, receiver, event, newState);
-        return await this.sendFcmPayload(payload, receiver.devices);
+        return this.sendFcmPayload(payload, receiver.devices);
     }
 
-    async remindParticipator(event: Event, trigger: Member, receiver: Member, currentState): Promise<Maybe<DeviceSpecificFcmResponse>> {
+    async remindParticipator(event: Event, trigger: Member, receiver: Member, currentState): Promise<null | DeviceSpecificFcmResponse> {
         if (trigger.memberId === receiver.memberId) {
             this.logger.warn("no self reminding allowed, member: " + receiver.memberId);
-            return Maybe.empty();
+            return null;
         }
 
         if (receiver.devices.length === 0) {
             this.logger.warn("no devices on receiver: " + receiver.memberId);
-            return Maybe.empty();
+            return null;
         }
 
         let payload: FcmPayload = this.fcmPayloadGenerator.generatePayloadForRemindMember(trigger, event, currentState);
 
-        return await this.sendFcmPayload(payload, receiver.devices);
+        return this.sendFcmPayload(payload, receiver.devices);
     }
 
-    async notifyAllAboutNewNewsletter(memberList: Member[]): Promise<Maybe<DeviceSpecificFcmResponse>> {
+    async notifyAllAboutNewNewsletter(memberList: Member[]): Promise<null | DeviceSpecificFcmResponse> {
         let devices: Array<Device> = [];
         memberList.forEach((member: Member) => {
             devices = devices.concat(member.devices);
@@ -86,19 +85,19 @@ export class FcmService {
 
         if (devices.length === 0) {
             this.logger.warn("FCM - newsletter Notify - Es sind keine DeviceIds hinterlegt");
-            return Maybe.empty();
+            return null;
         }
 
         let payload = this.fcmPayloadGenerator.generatePayloadForNewNewsletter();
 
-        return await this.sendFcmPayload(payload, devices)
+        return this.sendFcmPayload(payload, devices)
     };
 
-    private async sendFcmPayload(payload: FcmPayload, receiverDevices: Device[]): Promise<Maybe<DeviceSpecificFcmResponse>> {
-        return Maybe.of({
+    private async sendFcmPayload(payload: FcmPayload, receiverDevices: Device[]): Promise<DeviceSpecificFcmResponse> {
+        return {
             ios: await this.sendMessagesByType(payload, receiverDevices, DEVICE_TYPE_IOS),
             android: await this.sendMessagesByType(payload, receiverDevices, DEVICE_TYPE_ANDROID)
-        })
+        }
     }
 
     private async sendMessagesByType(payload: FcmPayload, receiverDevices: Device[], deviceType: AVAILABLE_DEVICE_TYPES) {

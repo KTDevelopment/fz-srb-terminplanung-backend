@@ -9,7 +9,6 @@ import {
 } from "../../ressources/participations/participation-states/participation-state.entity";
 import {MembersService} from "../../ressources/members/members.service";
 import {ApplicationLogger} from "../../logger/application-logger.service";
-import {Maybe} from "purify-ts";
 
 @EventsHandler(SendFirebaseMessageEvent)
 export class SendFirebaseMessageEventHandler implements IEventHandler<SendFirebaseMessageEvent> {
@@ -21,7 +20,7 @@ export class SendFirebaseMessageEventHandler implements IEventHandler<SendFireba
         this.logger.setContext(SendFirebaseMessageEventHandler.name);
     }
 
-    async handle(event: SendFirebaseMessageEvent): Promise<Maybe<DeviceSpecificFcmResponse>> {
+    async handle(event: SendFirebaseMessageEvent): Promise<null | DeviceSpecificFcmResponse> {
         this.logger.debug(`firebase event received: ${JSON.stringify(event)}`)
         try {
             if (SendFirebaseMessageEventHandler.isFCMNeeded(event)) {
@@ -45,7 +44,7 @@ export class SendFirebaseMessageEventHandler implements IEventHandler<SendFireba
 
     private static isFCMNeeded(event: SendFirebaseMessageEvent) {
         const {newStateId, callingMember, changedMember} = event;
-        // Nachricht über FCM wird NICHT verschickt wenn
+        // Nachricht über FCM wird NICHT verschickt, wenn
         // status 6 oder 7 verteilt wird
         // oder status 2 oder 3 von einem Planer, wenn ein Mitglied keine Reg_ids hat
 
