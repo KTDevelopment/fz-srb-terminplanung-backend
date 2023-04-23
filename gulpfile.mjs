@@ -1,6 +1,7 @@
-const {SentryHelper} = require("./scripts/SentryHelper");
+import {SentryHelper} from "./scripts/SentryHelper.mjs";
+import gulp from 'gulp';
 
-function sentryRelease(cb) {
+gulp.task('releaseToSentry',(cb) => {
     SentryHelper.newRelease()
         .then(() => SentryHelper.uploadSourceMaps())
         .then(cb)
@@ -8,16 +9,13 @@ function sentryRelease(cb) {
             console.log('error while sentryRelease: ', e);
             process.exit(1)
         })
-}
+});
 
-function uploadSourceMapsToSentry(cb) {
+gulp.task('sourceMapsToSentry',(cb) => {
     SentryHelper.uploadSourceMaps()
         .then(cb)
         .catch(e => {
             console.log('error while sentryRelease: ', e);
             process.exit(1)
         })
-}
-
-exports.sourceMapsToSentry = uploadSourceMapsToSentry;
-exports.releaseToSentry = sentryRelease;
+});

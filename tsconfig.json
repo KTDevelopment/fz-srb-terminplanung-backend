@@ -24,6 +24,6 @@
         "jest.config.js",
         "client",
         "scripts",
-        "gulpfile.js"
+        "gulpfile.mjs"
     ]
 }

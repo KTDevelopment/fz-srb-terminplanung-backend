@@ -1,8 +1,8 @@
 'use strict';
-const exec = require('child_process').exec;
-const log = require('fancy-log');
+import log from 'fancy-log';
+import {exec} from "node:child_process";
 
-exports.executeBash = (command) => {
+export const executeBash = (command) => {
     return new Promise((resolve, reject) => {
         let error = '';
         let buffer = exec(command);
