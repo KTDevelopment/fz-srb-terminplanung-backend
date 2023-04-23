@@ -1,7 +1,7 @@
 import log from 'fancy-log';
 import chalk from "chalk";
 import {readFile} from 'fs/promises';
-import {executeBash} from "./Helper.js";
+import {executeBash} from "./Helper.mjs";
 
 const {name, version} = JSON.parse(
     await readFile(
