@@ -1,7 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {Participation} from "./participation.entity";
-import {TypeOrmCrudService} from "@nestjsx/crud-typeorm";
 import {CreateManyDto, CrudRequest} from "@nestjsx/crud";
 import {DeepPartial, EntityManager} from "typeorm";
 import {MembersService} from "../members/members.service";
@@ -18,9 +17,10 @@ import {SendFirebaseMessageEvent} from "../../fcm/events/send-firebase-message.e
 import {Event} from "../events/event.entity";
 import {InjectDataSource} from "@nestjs/typeorm/dist/common/typeorm.decorators";
 import {DataSource} from "typeorm/data-source/DataSource";
+import {CustomCrudService} from "../../_common/CustomCrudService";
 
 @Injectable()
-export class ParticipationsService extends TypeOrmCrudService<Participation> {
+export class ParticipationsService extends CustomCrudService<Participation> {
     constructor(
         @InjectRepository(Participation) repo,
         @InjectDataSource() private readonly dataSource: DataSource,

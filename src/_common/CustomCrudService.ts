@@ -1,5 +1,7 @@
 import {TypeOrmCrudService} from "@nestjsx/crud-typeorm";
 import {SelectQueryBuilder} from "typeorm";
+import {QueryOptions} from "@nestjsx/crud";
+import {ParsedRequestParams} from '@nestjsx/crud-request';
 
 export abstract class CustomCrudService<T> extends TypeOrmCrudService<T> {
 
@@ -39,8 +41,25 @@ export abstract class CustomCrudService<T> extends TypeOrmCrudService<T> {
                 ...columns,
             ].map((col) => `${alias}.${col}`);
 
-            builder.addSelect(select);
+            builder.addSelect(Array.from(new Set(select)));
         }
+    }
+
+    protected getSelect(query: ParsedRequestParams, options: QueryOptions): string[] {
+        const allowed = this.getAllowedColumns(this.entityColumns, options);
+
+        const columns =
+            query.fields && query.fields.length
+                ? query.fields.filter((field) => allowed.some((col) => field === col))
+                : allowed;
+
+        const select = [
+            ...(options.persist && options.persist.length ? options.persist : []),
+            ...columns,
+            ...this.entityPrimaryColumns,
+        ].map((col) => `${this.alias}.${col}`);
+
+        return Array.from(new Set(select));
     }
 }
 

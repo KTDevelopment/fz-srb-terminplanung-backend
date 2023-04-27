@@ -3,8 +3,12 @@
         "isEnabled": false
     },
     "database": {
-        "type": "sqlite",
-        "database": ":memory:",
+        "type": "mysql",
+        "host": "localhost",
+        "database": "fz-srb-db",
+        "port": 3306,
+        "username": "root",
+        "password": "mysqlroot",
         "synchronize": true,
         "logging": false,
         "dropSchema": true,

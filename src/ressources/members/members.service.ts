@@ -1,5 +1,4 @@
 import {Injectable} from '@nestjs/common';
-import {TypeOrmCrudService} from "@nestjsx/crud-typeorm";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Member} from "./member.entity";
 import {PasswordEncryptor} from "../../auth/password.encryptor";
@@ -9,9 +8,10 @@ import {RolesService} from "../roles/roles.service";
 import {Role} from "../roles/role.entity";
 import {DeepPartial} from "typeorm";
 import {FindOneOptions} from "typeorm/find-options/FindOneOptions";
+import {CustomCrudService} from "../../_common/CustomCrudService";
 
 @Injectable()
-export class MembersService extends TypeOrmCrudService<Member> {
+export class MembersService extends CustomCrudService<Member> {
     constructor(
         @InjectRepository(Member) repo,
         private readonly passwordEncryptor: PasswordEncryptor,

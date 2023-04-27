@@ -1,7 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {Event} from "./event.entity";
 import {InjectRepository} from "@nestjs/typeorm";
-import {TypeOrmCrudService} from "@nestjsx/crud-typeorm";
 import {In, MoreThan, Not} from "typeorm";
 import {IcsService} from "../../ics/ics.service";
 import {Cron, CronExpression} from "@nestjs/schedule";
@@ -10,9 +9,10 @@ import {ApplicationLogger} from "../../logger/application-logger.service";
 import {GeoService} from "../../geo/geo.service";
 import {AppException} from "../../_common/AppException";
 import {promiseAllSequentially} from "../../_common/promiseAllSequentially";
+import {CustomCrudService} from "../../_common/CustomCrudService";
 
 @Injectable()
-export class EventsService extends TypeOrmCrudService<Event> {
+export class EventsService extends CustomCrudService<Event> {
 
     constructor(
         @InjectRepository(Event) repo,
