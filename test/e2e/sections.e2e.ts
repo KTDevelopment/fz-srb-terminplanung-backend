@@ -27,9 +27,9 @@ describe('Sections', () => {
                     "sectionId": 1,
                     "sectionName": "Hochtrommler",
                     "members": [
-                        TestResponses.alexandra(),
                         TestResponses.jasmin(),
-                        TestResponses.martin()
+                        TestResponses.martin(),
+                        TestResponses.alexandra(),
                     ]
                 }));
         });

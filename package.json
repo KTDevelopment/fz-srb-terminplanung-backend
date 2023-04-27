@@ -18,7 +18,7 @@
     "start:prod": "NODE_ENV=production DEPLOYMENT=production pm2 start dist/src/production-server.js && pm2 save",
     "stop:staging": "pm2 delete staging-server && pm2 save",
     "stop:prod": "pm2 delete production-server && pm2 save",
-    "test": "NODE_ENV=test jest",
+    "test": "NODE_ENV=test jest --runInBand",
     "test:coverage": "yarn test --collectCoverage",
     "test:watch": "yarn test --watch",
     "test:report": "yarn test:coverage; open test-reports/html/index.html",
