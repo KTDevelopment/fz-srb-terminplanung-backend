@@ -26,7 +26,7 @@ export class SendFirebaseMessageEventHandler implements IEventHandler<SendFireba
             if (SendFirebaseMessageEventHandler.isFCMNeeded(event)) {
                 if (event.callingMember.isNotPrivileged()) {
                     this.logger.debug(`firebase event from member for planner`)
-                    let receivers = await this.membersService.findPlannerOfMember(event.callingMember);
+                    const receivers = await this.membersService.findPlannerOfMember(event.callingMember);
                     return await this.fcmService.notifyPlannerAboutStateChange(event.event, receivers, event.callingMember, event.newStateId);
                 }
                 if (event.changedMember.memberId !== event.callingMember.memberId) {

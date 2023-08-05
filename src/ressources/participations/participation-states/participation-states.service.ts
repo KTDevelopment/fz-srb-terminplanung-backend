@@ -12,7 +12,7 @@ import {
     STATE__INVITED,
     STATE__NOT_INVITED
 } from "./participation-state.entity";
-import {plainToClass} from "class-transformer";
+import {plainToInstance} from "class-transformer";
 import {FindOneOptions} from "typeorm/find-options/FindOneOptions";
 
 @Injectable()
@@ -21,7 +21,7 @@ export class ParticipationStatesService extends CustomCrudService<ParticipationS
         super(repo);
     }
 
-    findOneOrFail(options?: FindOneOptions<ParticipationState>){
+    findOneOrFail(options?: FindOneOptions<ParticipationState>) {
         return this.repo.findOneOrFail(options)
     }
 
@@ -35,14 +35,23 @@ export class ParticipationStatesService extends CustomCrudService<ParticipationS
 
     private static participationStates() {
         return [
-            plainToClass(ParticipationState, {stateId: STATE__NOT_INVITED, stateName: 'not_invited'}),
-            plainToClass(ParticipationState, {stateId: STATE__INVITED, stateName: 'invited'}),
-            plainToClass(ParticipationState, {stateId: STATE__ATTEND, stateName: 'attend'}),
-            plainToClass(ParticipationState, {stateId: STATE__DO_NOT_ATTEND, stateName: 'do_not_attend'}),
-            plainToClass(ParticipationState, {stateId: STATE__INVITATION_REQUEST_PENDING, stateName: 'invitation_request_pending'}),
-            plainToClass(ParticipationState, {stateId: STATE__INVITATION_REQUEST_REJECTED, stateName: 'invitation_request_rejected'}),
-            plainToClass(ParticipationState, {stateId: STATE__HAS_PARTICIPATED, stateName: 'has_participated'}),
-            plainToClass(ParticipationState, {stateId: STATE__HAS_NOT_PARTICIPATED, stateName: 'has_not_participated'}),
+            plainToInstance(ParticipationState, {stateId: STATE__NOT_INVITED, stateName: 'not_invited'}),
+            plainToInstance(ParticipationState, {stateId: STATE__INVITED, stateName: 'invited'}),
+            plainToInstance(ParticipationState, {stateId: STATE__ATTEND, stateName: 'attend'}),
+            plainToInstance(ParticipationState, {stateId: STATE__DO_NOT_ATTEND, stateName: 'do_not_attend'}),
+            plainToInstance(ParticipationState, {
+                stateId: STATE__INVITATION_REQUEST_PENDING,
+                stateName: 'invitation_request_pending'
+            }),
+            plainToInstance(ParticipationState, {
+                stateId: STATE__INVITATION_REQUEST_REJECTED,
+                stateName: 'invitation_request_rejected'
+            }),
+            plainToInstance(ParticipationState, {stateId: STATE__HAS_PARTICIPATED, stateName: 'has_participated'}),
+            plainToInstance(ParticipationState, {
+                stateId: STATE__HAS_NOT_PARTICIPATED,
+                stateName: 'has_not_participated'
+            }),
         ]
     }
 }

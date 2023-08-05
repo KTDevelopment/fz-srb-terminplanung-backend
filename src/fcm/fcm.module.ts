@@ -9,11 +9,12 @@ import {MembersModule} from "../ressources/members/members.module";
 import {FcmController} from "./fcm.controller";
 import {EventsModule} from "../ressources/events/events.module";
 
-export const EventHandlers =  [SendFirebaseMessageEventHandler];
+export const EventHandlers = [SendFirebaseMessageEventHandler];
 
 @Module({
-  controllers: [FcmController],
-  imports: [DevicesModule, MembersModule, CqrsModule, EventsModule],
-  providers: [FcmService, FcmClient, FcmPayloadGenerator, ...EventHandlers]
+    controllers: [FcmController],
+    imports: [DevicesModule, MembersModule, CqrsModule, EventsModule],
+    providers: [FcmService, FcmClient, FcmPayloadGenerator, ...EventHandlers]
 })
-export class FcmModule {}
+export class FcmModule {
+}

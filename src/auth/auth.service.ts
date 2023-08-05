@@ -2,7 +2,7 @@ import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {MembersService} from "../ressources/members/members.service";
 import {Member} from "../ressources/members/member.entity";
 import {LoginTokensDto} from "./Models/LoginTokens.dto";
-import {plainToClass} from "class-transformer";
+import {plainToInstance} from "class-transformer";
 import {PasswordEncryptor} from "./password.encryptor";
 import {AuthGuard} from "@nestjs/passport";
 import {TokenService} from "./token.service";
@@ -35,9 +35,9 @@ export class AuthService {
     }
 
     generateLoginTokens(member: Member): LoginTokensDto {
-        let payload = {sub: member.memberId};
+        const payload = {sub: member.memberId};
 
-        return plainToClass(
+        return plainToInstance(
             LoginTokensDto,
             {
                 accessToken: this.tokenService.getAccessToken(payload),
@@ -49,7 +49,7 @@ export class AuthService {
     async sendPasswordResetMail(email: string) {
         try {
             const member = await this.membersService.findDetailedMember(email);
-            let passwordResetToken = this.tokenService.getPasswordResetToken({}, member.password);
+            const passwordResetToken = this.tokenService.getPasswordResetToken({}, member.password);
             this.logger.log('passwordResetToken generated for: ' + email);
             await this.mailService.sendPasswordResetMail(member, passwordResetToken);
             return {};

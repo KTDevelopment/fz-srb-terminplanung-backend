@@ -70,7 +70,7 @@ export class MembersController implements CrudController<Member> {
     @Override()
     getMany(
         @ParsedRequest() req: CrudRequest,
-        @Query('includeDeleted', ParseBooleanPipe) includeDeleted?: boolean
+        @Query('includeDeleted', ParseBooleanPipe) includeDeleted: boolean
     ) {
         if (!includeDeleted) {
             MembersController.addFieldToSearch(req, 'isDeleted', false);

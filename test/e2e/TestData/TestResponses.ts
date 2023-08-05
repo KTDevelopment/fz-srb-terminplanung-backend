@@ -1,6 +1,6 @@
 export class TestResponses {
     static rol0WithMembers() {
-        let role0 = this.role0();
+        const role0 = this.role0();
         role0.members = [
             this.kevin(),
             this.amely()
@@ -9,22 +9,22 @@ export class TestResponses {
     }
 
     static rolesWithMemberList() {
-        let role0 = this.role0();
+        const role0 = this.role0();
         role0.members = [
             this.kevin(),
             this.amely()
         ];
-        let role1 = this.role1();
+        const role1 = this.role1();
         role1.members = [
             this.kevin(),
         ];
-        let role100 = this.role100();
+        const role100 = this.role100();
         role100.members = [
             this.kevin(),
             this.martin(),
             this.amely()
         ];
-        let role200 = this.role200();
+        const role200 = this.role200();
         role200.members = [
             this.kevin(),
             this.jasmin(),
@@ -50,7 +50,7 @@ export class TestResponses {
     }
 
     static roleWithMemberList() {
-        let role200 = this.role200();
+        const role200 = this.role200();
         role200.members = [
             this.kevin(),
             this.jasmin(),
@@ -66,13 +66,13 @@ export class TestResponses {
     }
 
     static kevinWithSection() {
-        let kevin = this.kevin();
+        const kevin = this.kevin();
         kevin.section = this.section2();
         return kevin;
     }
 
     static kevinWithRoles() {
-        let kevin = this.kevin();
+        const kevin = this.kevin();
         kevin.roles = [
             this.role0(),
             this.role1(),
@@ -83,7 +83,7 @@ export class TestResponses {
     }
 
     static kevinWithDevices() {
-        let kevin = this.kevin();
+        const kevin = this.kevin();
         kevin.devices = true;
         return kevin;
     }
@@ -99,15 +99,15 @@ export class TestResponses {
     }
 
     static allMemberWithSections() {
-        let kevin = this.kevin();
+        const kevin = this.kevin();
         kevin.section = this.section2();
-        let jasmin = this.jasmin();
+        const jasmin = this.jasmin();
         jasmin.section = this.section1();
-        let martin = this.martin();
+        const martin = this.martin();
         martin.section = this.section1();
-        let amely = this.amely();
+        const amely = this.amely();
         amely.section = this.section2();
-        let alexandra = this.alexandra();
+        const alexandra = this.alexandra();
         alexandra.section = this.section1();
         return [
             kevin,
@@ -218,6 +218,31 @@ export class TestResponses {
         return {
             "roleId": 200,
             "roleName": "member",
+        }
+    }
+
+    static unfinishedEvent(): any {
+        return {
+            address: "Festzelt auf dem Anger",
+            category: "AUFTRITT",
+            creationDate: "2023-07-10T18:56:00.907Z",
+            description: "",
+            dress: "-",
+            endDate: "2023-07-17T23:24:00.000Z",
+            eventId: 3,
+            eventName: "TestAuftritt",
+            isPublic: true,
+            latitude: 321.23,
+            location: "Zinndorf",
+            longitude: 123.23,
+            participatingGroup: "Drumline",
+            postcode: 1234,
+            remoteId: "100",
+            startDate: "2023-07-16T23:24:00.000Z",
+            summary: "TestAuftritt für die unfinished",
+            town: "Zinndorf",
+            updateDate: "2023-07-11T18:56:00.907Z",
+            version: 2
         }
     }
 }

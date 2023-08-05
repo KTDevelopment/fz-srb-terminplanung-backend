@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
-import {plainToClass} from "class-transformer";
+import {plainToInstance} from "class-transformer";
 import {Role, ROLE_ID_ADMIN, ROLE_ID_MEMBER, ROLE_ID_NEWS_MAN, ROLE_ID_PLANNER, ROLE_ID_WEBADMIN} from "./role.entity";
 import {CustomCrudService} from "../../_common/CustomCrudService";
 
@@ -13,7 +13,7 @@ export class RolesService extends CustomCrudService<Role> {
     }
 
     async getDefaultRole(): Promise<Role> {
-        return this.repo.findOneBy({ roleId: DEFAULT_MEMBER_ROLE_ID});
+        return this.repo.findOneBy({roleId: DEFAULT_MEMBER_ROLE_ID});
     }
 
     async insertDefaultRolesNeeded() {
@@ -26,11 +26,11 @@ export class RolesService extends CustomCrudService<Role> {
 
     private static defaultRoles() {
         return [
-            plainToClass(Role, {roleId: ROLE_ID_ADMIN, roleName: 'admin'}),
-            plainToClass(Role, {roleId: ROLE_ID_WEBADMIN, roleName: 'webadmin'}),
-            plainToClass(Role, {roleId: ROLE_ID_NEWS_MAN, roleName: 'newsMan'}),
-            plainToClass(Role, {roleId: ROLE_ID_PLANNER, roleName: 'planner'}),
-            plainToClass(Role, {roleId: ROLE_ID_MEMBER, roleName: 'member'}),
+            plainToInstance(Role, {roleId: ROLE_ID_ADMIN, roleName: 'admin'}),
+            plainToInstance(Role, {roleId: ROLE_ID_WEBADMIN, roleName: 'webadmin'}),
+            plainToInstance(Role, {roleId: ROLE_ID_NEWS_MAN, roleName: 'newsMan'}),
+            plainToInstance(Role, {roleId: ROLE_ID_PLANNER, roleName: 'planner'}),
+            plainToInstance(Role, {roleId: ROLE_ID_MEMBER, roleName: 'member'}),
         ]
     }
 }

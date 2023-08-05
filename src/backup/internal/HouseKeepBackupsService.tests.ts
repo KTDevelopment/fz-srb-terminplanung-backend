@@ -40,8 +40,9 @@ describe("HouseKeepBackupsService", () => {
         expect(remoteFileRepository.files.every(file => expectedFiles.includes(file))).toBeTruthy()
     });
 
-    function shuffle(array) {
-        let currentIndex = array.length,  randomIndex;
+    function shuffle(array: string[]) {
+        let currentIndex: number = array.length;
+        let randomIndex: number;
 
         // While there remain elements to shuffle...
         while (currentIndex != 0) {

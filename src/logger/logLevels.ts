@@ -1,4 +1,3 @@
-
 export enum LogLevel {
     DEBUG = "DEBUG",
     VERBOSE = "VERBOSE",

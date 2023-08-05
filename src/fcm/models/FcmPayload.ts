@@ -1,7 +1,6 @@
-import * as admin from "firebase-admin";
 import {BadRequestException} from "@nestjs/common";
 import {AVAILABLE_DEVICE_TYPES, DEVICE_TYPE_ANDROID, DEVICE_TYPE_IOS} from "../../ressources/devices/device.entity";
-import MessagingPayload = admin.messaging.MessagingPayload;
+import {BaseMessage} from "firebase-admin/lib/messaging/messaging-api";
 
 export const TYPE_REMIND_MEMBER = "300";
 export const TYPE_MEMBER_CHANGED_HIS_STATE = "200";
@@ -34,20 +33,20 @@ export class FcmPayload {
         return this;
     }
 
-    getMessagingPayloadByType(deviceType: AVAILABLE_DEVICE_TYPES): MessagingPayload {
+    getBaseMessageByType(deviceType: AVAILABLE_DEVICE_TYPES): BaseMessage {
         switch (deviceType) {
             case DEVICE_TYPE_ANDROID:
-                return this.getMessagingPayloadForAndroid();
+                return this.getBaseMessageForAndroid();
             case DEVICE_TYPE_IOS:
-                return this.getMessagingPayloadForIos();
+                return this.getBaseMessageForIos();
             default:
-                return this.getMessagingPayloadForAndroid()
+                return this.getBaseMessageForAndroid()
         }
     }
 
-    getMessagingPayloadForIos(): MessagingPayload {
+    getBaseMessageForIos(): BaseMessage {
         this.validate();
-        let payload = {
+        const payload = {
             notification: {
                 title: this.title,
                 body: this.message,
@@ -64,9 +63,9 @@ export class FcmPayload {
         return payload;
     }
 
-    getMessagingPayloadForAndroid(): MessagingPayload {
+    getBaseMessageForAndroid(): BaseMessage {
         this.validate();
-        let payload = {
+        const payload = {
             notification: {
                 title: this.title,
                 body: this.message,

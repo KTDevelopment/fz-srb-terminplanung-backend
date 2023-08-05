@@ -52,7 +52,7 @@ export class MailService {
                 MailService.getHtmlContentForPasswordReset(member.getFullName(), resetUrl)
             ));
         } catch (e) {
-            this.logger.error(new AppException(e,'sendPasswordResetMailFailed'));
+            this.logger.error(new AppException(e, 'sendPasswordResetMailFailed'));
             throw new InternalServerErrorException("sending Mail failed");
         }
     }

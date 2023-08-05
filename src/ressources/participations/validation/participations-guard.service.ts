@@ -4,7 +4,7 @@ import {ParticipationChangeRequest} from "./ParticipationChangeRequest";
 import {ParticipationsService} from "../participations.service";
 import {Member} from "../../members/member.entity";
 import {ParticipationChangeRequestValidator} from "./ParticipationChangeRequestValidator";
-import {plainToClass} from "class-transformer";
+import {plainToInstance} from "class-transformer";
 import {Participation} from "../participation.entity";
 import {validateEntity} from "../../../_common/EntityValidator";
 import {DeepPartial} from "typeorm";
@@ -36,8 +36,8 @@ export class ParticipationsGuard implements CanActivate {
     }
 
     private async determineSingleRequest(dto: DeepPartial<Participation>, member: Member): Promise<ParticipationChangeRequest> {
-        const {memberId, eventId, stateId} = await validateEntity(plainToClass(Participation, dto));
-        let currentParticipation = await this.participationsService.findDetailedParticipation(memberId, eventId);
+        const {memberId, eventId, stateId} = await validateEntity(plainToInstance(Participation, dto));
+        const currentParticipation = await this.participationsService.findDetailedParticipation(memberId, eventId);
 
         return (new ParticipationChangeRequest())
             .setNewStateId(stateId)

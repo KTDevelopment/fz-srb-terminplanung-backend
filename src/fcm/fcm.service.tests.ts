@@ -1,4 +1,4 @@
-import {FcmService} from "./fcm.service";
+import {DeviceSpecificFcmResponse, FcmService} from "./fcm.service";
 import {FcmClient} from "./fcm.client";
 import {FcmPayloadGenerator} from "./fcm-payload.generator";
 import {DevicesService} from "../ressources/devices/devices.service";
@@ -12,12 +12,13 @@ import {
     getTestMember,
     getTestMemberList,
     getTestMemberListWithDevices,
-    getTestPlanner,
     getTestMemberWithDevices,
+    getTestPlanner,
     testFcmPayload
 } from "../../test/testData";
 import {ApplicationLogger} from "../logger/application-logger.service";
 import {loggerMock} from "../../test/mocks/loggerMock";
+import {BatchResponse} from "firebase-admin/lib/messaging/messaging-api";
 
 
 describe('FcmServiceTests', () => {
@@ -45,21 +46,21 @@ describe('FcmServiceTests', () => {
     });
 
     it('Should Do Nothing for notifyPlannerAboutStateChange when changed member has privileges', async () => {
-        let response = await fcmService.notifyPlannerAboutStateChange(getTestEvent(), [getTestPlanner(), getTestPlanner()], getTestPlanner(), 1);
+        const response = await fcmService.notifyPlannerAboutStateChange(getTestEvent(), [getTestPlanner(), getTestPlanner()], getTestPlanner(), 1);
         expect(response).toBeNull();
         expect(fcmPayloadGeneratorMock.generatePayloadForMemberChangedHisState).toBeCalledTimes(0)
     });
     it('should generate Payload and sends messages for notifyPlannerAboutStateChange when planner has devices', async () => {
-        let testEvent = getTestEvent();
-        let testMember = getTestMember();
-        let plannerListWithDevices = getPlannerListWithDevices();
-        let newState = 1;
-        let testPayload = testFcmPayload(testEvent.eventId);
+        const testEvent = getTestEvent();
+        const testMember = getTestMember();
+        const plannerListWithDevices = getPlannerListWithDevices();
+        const newState = 1;
+        const testPayload = testFcmPayload(testEvent.eventId);
 
         fcmPayloadGeneratorMock.generatePayloadForMemberChangedHisState.mockReturnValueOnce(testPayload);
         fcmClientMock.sendToDevice.mockResolvedValue(getAllSuccessFcmTestResponse());
 
-        let response = await fcmService.notifyPlannerAboutStateChange(testEvent, plannerListWithDevices, testMember, newState);
+        const response = await fcmService.notifyPlannerAboutStateChange(testEvent, plannerListWithDevices, testMember, newState);
 
         expect(response).not.toBeNull();
         expectFcmResponse(response, getAllSuccessFcmTestResponse());
@@ -68,28 +69,28 @@ describe('FcmServiceTests', () => {
         expect(fcmClientMock.sendToDevice).toBeCalledTimes(2);
     });
     it('should do nothing for notifyMemberThatHisStateChanged when member has no deivces', async () => {
-        let testEvent = getTestEvent();
-        let testMember = getTestMember();
-        let planner = getTestPlanner();
-        let newState = 1;
+        const testEvent = getTestEvent();
+        const testMember = getTestMember();
+        const planner = getTestPlanner();
+        const newState = 1;
 
-        let response = await fcmService.notifyMemberThatHisStateChanged(testEvent, testMember, planner, newState);
+        const response = await fcmService.notifyMemberThatHisStateChanged(testEvent, testMember, planner, newState);
 
         expect(response).toBeNull();
         expect(fcmClientMock.sendToDevice).toBeCalledTimes(0);
         expect(fcmPayloadGeneratorMock.generatePayloadForPlanerChangedMemberState).toBeCalledTimes(0);
     });
     it('should generate payloads and send messages for notifyMemberThatHisStateChanged when planner has devices', async () => {
-        let testEvent = getTestEvent();
-        let testMember = getTestMemberWithDevices();
-        let planner = getTestPlanner();
-        let newState = 1;
-        let testPayload = testFcmPayload(testEvent.eventId);
+        const testEvent = getTestEvent();
+        const testMember = getTestMemberWithDevices();
+        const planner = getTestPlanner();
+        const newState = 1;
+        const testPayload = testFcmPayload(testEvent.eventId);
 
         fcmPayloadGeneratorMock.generatePayloadForPlanerChangedMemberState.mockReturnValueOnce(testPayload);
         fcmClientMock.sendToDevice.mockResolvedValue(getAllSuccessFcmTestResponse());
 
-        let response = await fcmService.notifyMemberThatHisStateChanged(testEvent, testMember, planner, newState);
+        const response = await fcmService.notifyMemberThatHisStateChanged(testEvent, testMember, planner, newState);
 
         expect(response).not.toBeNull();
         expectFcmResponse(response, getAllSuccessFcmTestResponse());
@@ -98,39 +99,39 @@ describe('FcmServiceTests', () => {
         expect(fcmPayloadGeneratorMock.generatePayloadForPlanerChangedMemberState).toBeCalledWith(planner, testMember, testEvent, newState);
     });
     it('should log warning for self remind', async () => {
-        let testEvent = getTestEvent();
-        let testMember = getTestPlanner();
-        let newState = 1;
+        const testEvent = getTestEvent();
+        const testMember = getTestPlanner();
+        const newState = 1;
 
         const response = await fcmService.remindParticipator(testEvent, testMember, testMember, newState);
         expect(response).toBeNull();
         expect(loggerMock.warn).toBeCalledTimes(1);
     });
     it('should log warning for remindParticipator when receiver has no devices', async () => {
-        let testEvent = getTestEvent();
-        let testMember = getTestMember();
-        let testPlanner = getTestPlanner();
-        let newState = 1;
+        const testEvent = getTestEvent();
+        const testMember = getTestMember();
+        const testPlanner = getTestPlanner();
+        const newState = 1;
 
         const response = await fcmService.remindParticipator(testEvent, testPlanner, testMember, newState);
         expect(response).toBeNull();
         expect(loggerMock.warn).toBeCalledTimes(1);
     });
     it('should log warning for notifyAboutNewNewsletter when no member has any device', async () => {
-        let testMemberList = getTestMemberList();
+        const testMemberList = getTestMemberList();
 
         const response = await fcmService.notifyAllAboutNewNewsletter(testMemberList);
         expect(response).toBeNull();
         expect(loggerMock.warn).toBeCalledTimes(1);
     });
     it('should send correct Messages for notifyAboutNewNewsletter when members have devices', async () => {
-        let testMemberList = getTestMemberListWithDevices();
-        let testPayload = testFcmPayload();
+        const testMemberList = getTestMemberListWithDevices();
+        const testPayload = testFcmPayload();
 
         fcmPayloadGeneratorMock.generatePayloadForNewNewsletter.mockReturnValueOnce(testPayload);
         fcmClientMock.sendToDevice.mockResolvedValue(getAllSuccessFcmTestResponse(2));
 
-        let response = await fcmService.notifyAllAboutNewNewsletter(testMemberList);
+        const response = await fcmService.notifyAllAboutNewNewsletter(testMemberList);
 
         expect(response).not.toBeNull();
         expectFcmResponse(response, getAllSuccessFcmTestResponse(2));
@@ -139,17 +140,15 @@ describe('FcmServiceTests', () => {
     });
 });
 
-function expectFcmResponse(response, responseValue) {
+function expectFcmResponse(response: DeviceSpecificFcmResponse, responseValue: BatchResponse) {
     expect(response.ios).toMatchObject(responseValue);
     expect(response.android).toMatchObject(responseValue);
 }
 
-function getAllSuccessFcmTestResponse(numberOfMessages = 1) {
+function getAllSuccessFcmTestResponse(numberOfMessages = 1): BatchResponse {
     return {
-        canonicalRegistrationTokenCount: 0,
         failureCount: 0,
-        multicastId: 0,
-        results: [],
+        responses: [],
         successCount: numberOfMessages,
     };
 }

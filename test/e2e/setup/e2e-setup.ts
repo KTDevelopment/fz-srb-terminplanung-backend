@@ -9,7 +9,7 @@ export function setUpE2E() {
         global.testApp = testEnv.testApp;
         // @ts-ignore
         global.testDataManager = testEnv.testDataManager;
-        let response = await login('alexandra.michel@web.de', 'password_alexandra');
+        const response = await login('alexandra.michel@web.de', 'password_alexandra');
         // @ts-ignore
         global.accessToken = response.body.accessToken;
         // @ts-ignore

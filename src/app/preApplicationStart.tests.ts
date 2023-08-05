@@ -1,7 +1,7 @@
 import {runMigrations} from "./preApplicationStart";
 import {configServiceMock} from "../../test/mocks/configServiceMock";
 import {loggerMock} from "../../test/mocks/loggerMock";
-import { DataSource } from "typeorm"
+import {DataSource} from "typeorm"
 
 const dataSourceMock = {
     initialize: jest.fn(),

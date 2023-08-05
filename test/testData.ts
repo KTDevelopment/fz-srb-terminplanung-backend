@@ -1,15 +1,15 @@
 import {Role} from "../src/ressources/roles/role.entity";
 import {Member} from "../src/ressources/members/member.entity";
-import {plainToClass} from "class-transformer";
+import {plainToInstance} from "class-transformer";
 import {Event} from "../src/ressources/events/event.entity";
 import {FcmPayload} from "../src/fcm/models/FcmPayload";
 import {Device, DEVICE_TYPE_ANDROID, DEVICE_TYPE_IOS} from "../src/ressources/devices/device.entity";
 
 export function getTestMember() {
-    let role = new Role();
+    const role = new Role();
     role.roleId = 200;
     role.roleName = 'member';
-    let member = new Member();
+    const member = new Member();
     member.roles = [role];
     member.memberId = 2;
     member.firstName = 'memberFirstName';
@@ -20,10 +20,10 @@ export function getTestMember() {
 }
 
 export function getTestPlanner() {
-    let role = new Role();
+    const role = new Role();
     role.roleId = 100;
     role.roleName = 'planner';
-    let planner = new Member();
+    const planner = new Member();
     planner.roles = [role];
     planner.memberId = 1;
     planner.firstName = 'plannerFirstName';
@@ -33,9 +33,9 @@ export function getTestPlanner() {
 }
 
 export function getPlannerList() {
-    let planner1 = getTestPlanner();
+    const planner1 = getTestPlanner();
     planner1.devices = [];
-    let planner2 = getTestPlanner();
+    const planner2 = getTestPlanner();
     planner2.devices = [];
     planner2.firstName = "planner2FistName";
     planner2.lastName = "planner2LastName";
@@ -49,9 +49,9 @@ export function getPasswordResetToken() {
 }
 
 export function getTestEvent() {
-    let ms = new Date().getTime() + 86400000;
-    let tomorrow = new Date(ms);
-    return plainToClass(Event, {
+    const ms = new Date().getTime() + 86400000;
+    const tomorrow = new Date(ms);
+    return plainToInstance(Event, {
         eventId: 2,
         wpId: 10,
         startDate: new Date(),
@@ -73,7 +73,7 @@ export function getTestEvent() {
 }
 
 export function testFcmPayload(eventId: number = null) {
-    let payload = (new FcmPayload())
+    const payload = (new FcmPayload())
         .setType('999')
         .setMessage('foo_test_message')
         .setTitle('foo_title');
@@ -86,9 +86,9 @@ export function testFcmPayload(eventId: number = null) {
 }
 
 export function getPlannerListWithOutDevices() {
-    let planner1 = getTestPlanner();
+    const planner1 = getTestPlanner();
     planner1.devices = [];
-    let planner2 = getTestPlanner();
+    const planner2 = getTestPlanner();
     planner2.devices = [];
     planner2.firstName = "planner2FistName";
     planner2.memberId = 2;
@@ -96,9 +96,9 @@ export function getPlannerListWithOutDevices() {
 }
 
 export function getPlannerListWithDevices() {
-    let planner1 = getTestPlanner();
+    const planner1 = getTestPlanner();
     planner1.devices = [getAndroidTestDevice()];
-    let planner2 = getTestPlanner();
+    const planner2 = getTestPlanner();
     planner2.devices = [getIosTestDevice()];
     planner2.firstName = "planner2FistName";
     planner2.memberId = 2;
@@ -106,7 +106,7 @@ export function getPlannerListWithDevices() {
 }
 
 export function getAndroidTestDevice() {
-    let device = new Device();
+    const device = new Device();
     device.registrationId = "androidRegistrationId";
     device.deviceId = 1;
     device.deviceType = DEVICE_TYPE_ANDROID;
@@ -114,7 +114,7 @@ export function getAndroidTestDevice() {
 }
 
 export function getIosTestDevice() {
-    let device = new Device();
+    const device = new Device();
     device.registrationId = "iosRegistrationId";
     device.deviceId = 2;
     device.deviceType = DEVICE_TYPE_IOS;
@@ -130,7 +130,7 @@ export function getTestMemberListWithDevices() {
 }
 
 export function getTestMemberWithDevices() {
-    let member = getTestMember();
+    const member = getTestMember();
     member.devices = [
         getIosTestDevice(),
         getAndroidTestDevice()

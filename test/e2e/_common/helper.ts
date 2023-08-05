@@ -1,3 +1,5 @@
+// noinspection JSVoidFunctionReturnValueUsed
+
 import {login} from "./testRequests";
 
 export function reload() {
@@ -11,4 +13,8 @@ export function reload() {
 
 export async function adminToken(): Promise<string> {
     return (await login('kevin.thuermann@web.de', 'password_kevin')).body.accessToken
+}
+
+export async function plannerToken(): Promise<string> {
+    return (await login('martin.walter@web.de', 'password_martin')).body.accessToken
 }

@@ -4,8 +4,9 @@ import {Role} from "../../../src/ressources/roles/role.entity";
 import {Section} from "../../../src/ressources/sections/section.entity";
 import {Member} from "../../../src/ressources/members/member.entity";
 import {PasswordEncryptor} from "../../../src/auth/password.encryptor";
-import {Device} from "../../../src/ressources/devices/device.entity";
-import {ParticipationState} from "../../../src/ressources/participations/participation-states/participation-state.entity";
+import {
+    ParticipationState
+} from "../../../src/ressources/participations/participation-states/participation-state.entity";
 import {Participation} from "../../../src/ressources/participations/participation.entity";
 import {Anniversary} from "../../../src/ressources/anniversaries/anniversary.entity";
 import {DataSource} from "typeorm/data-source/DataSource";
@@ -65,27 +66,27 @@ export class TestDataManager {
     }
 
     private async insertTestParticipations() {
-        let elements  = this.entityManager.create(Participation, TestDataManager.getRawTestParticipations());
+        const elements = this.entityManager.create(Participation, TestDataManager.getRawTestParticipations());
         await this.entityManager.save(elements);
     }
 
     private async insertParticipationStates() {
-        let state6 = new ParticipationState();
+        const state6 = new ParticipationState();
         state6.stateId = 6;
         state6.stateName = 'has participated';
-        let state7 = new ParticipationState();
+        const state7 = new ParticipationState();
         state7.stateId = 7;
         state7.stateName = 'has not participated';
-        let state5 = new ParticipationState();
+        const state5 = new ParticipationState();
         state5.stateId = 5;
         state5.stateName = 'invitation request reject';
-        let state4 = new ParticipationState();
+        const state4 = new ParticipationState();
         state4.stateId = 4;
         state4.stateName = 'invitation request pending';
-        let state0 = new ParticipationState();
+        const state0 = new ParticipationState();
         state0.stateId = 0;
         state0.stateName = 'not invited';
-        let state1 = new ParticipationState();
+        const state1 = new ParticipationState();
         state1.stateId = 1;
         state1.stateName = 'invited';
 
@@ -105,7 +106,7 @@ export class TestDataManager {
     }
 
     private async getRawRoles() {
-        let allMemberFromDB = await this.entityManager.find(Member);
+        const allMemberFromDB = await this.entityManager.find(Member);
         return [
             {
                 roleId: 0,
@@ -136,7 +137,7 @@ export class TestDataManager {
     }
 
     private async getRawSections() {
-        let allMemberFromDB = await this.entityManager.find(Member);
+        const allMemberFromDB = await this.entityManager.find(Member);
         return [
             {
                 sectionId: 2,
@@ -152,7 +153,7 @@ export class TestDataManager {
     }
 
     private async getRawDevices() {
-        let allMemberFromDB = await this.entityManager.find(Member);
+        const allMemberFromDB = await this.entityManager.find(Member);
         return [
             {member: allMemberFromDB[0], registrationId: "deviceMember1", deviceType: "type_android"},
             {member: allMemberFromDB[1], registrationId: "deviceMember2", deviceType: "type_ios"}
@@ -228,6 +229,7 @@ export class TestDataManager {
             {memberId: 3, eventId: 2, stateId: 0},
             {memberId: 6, eventId: 1, stateId: 6},
             {memberId: 3, eventId: 2, stateId: 1},
+            {memberId: 1, eventId: 3, stateId: 7},
         ]
     }
 

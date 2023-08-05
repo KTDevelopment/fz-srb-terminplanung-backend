@@ -4,27 +4,25 @@ import {loggerMock} from "../../test/mocks/loggerMock";
 import {ConfigService} from "../config/config.service";
 import {GeoService} from "./geo.service";
 import {httpServiceMock} from "../../test/mocks/httpServiceMock";
-import {plainToClass} from "class-transformer";
+import {plainToInstance} from "class-transformer";
 import {Event} from "../ressources/events/event.entity";
 import {HttpService} from "@nestjs/axios";
 import {BehaviorSubject} from "rxjs";
+import {configServiceMock} from "../../test/mocks/configServiceMock";
 
 
-describe('FcmServiceTests', () => {
+describe('GeoServiceTest', () => {
     let geoService: GeoService;
-    let configServiceMock = {
-        config: {
-            ics: {
-                icsRootPath: 'fooUrl'
-            }
-        }
-    }
 
     beforeEach(async () => {
         const module = await Test.createTestingModule({
             providers: [GeoService, {
                 provide: ConfigService,
-                useValue: configServiceMock
+                useValue: configServiceMock({
+                    ics: {
+                        icsRootPath: 'fooUrl'
+                    }
+                })
             }, {
                 provide: ApplicationLogger,
                 useValue: loggerMock
@@ -45,9 +43,8 @@ describe('FcmServiceTests', () => {
     it('should load coordinates', async () => {
 
         httpServiceMock.get.mockReturnValue(new BehaviorSubject({data: [{lat: 1, lon: 2}]}))
-        let event = testEvent();
 
-        event = await geoService.enrichEventWithGeoCoordinates(event);
+        const event = await geoService.enrichEventWithGeoCoordinates(testEvent());
 
         expect(event.latitude).toEqual(1);
         expect(event.longitude).toEqual(2);
@@ -55,9 +52,8 @@ describe('FcmServiceTests', () => {
 
     it('should handle empty http response', async () => {
         httpServiceMock.get.mockReturnValue(new BehaviorSubject({data: []}))
-        let event = testEvent();
 
-        event = await geoService.enrichEventWithGeoCoordinates(event);
+        const event = await geoService.enrichEventWithGeoCoordinates(testEvent());
 
         expect(event.latitude).toEqual(0);
         expect(event.longitude).toEqual(0);
@@ -67,9 +63,8 @@ describe('FcmServiceTests', () => {
         httpServiceMock.get.mockImplementation(() => {
             throw new Error('caboom')
         })
-        let event = testEvent();
 
-        event = await geoService.enrichEventWithGeoCoordinates(event);
+        const event = await geoService.enrichEventWithGeoCoordinates(testEvent());
 
         expect(loggerMock.error).toBeCalled();
         expect(event.latitude).toEqual(0);
@@ -80,7 +75,7 @@ describe('FcmServiceTests', () => {
 });
 
 function testEvent() {
-    return plainToClass(Event, {
+    return plainToInstance(Event, {
         address: "Wriezener Str. 30 e",
         category: "HIGHLIGHT",
         description: "Beschreibung des Termins …\\n…\\n…\\n..\\n…. \\nINFOS ZUR HERBSTFANFARE",

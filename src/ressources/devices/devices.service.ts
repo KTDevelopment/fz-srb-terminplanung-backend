@@ -23,18 +23,4 @@ export class DevicesService extends CustomCrudService<Device> {
     async deleteDevices(registrationIds: string[]) {
         return await this.repo.delete({registrationId: In(registrationIds)})
     }
-
-    async updateRegistrationIds(registrationIdPairs: RegistrationIdPair[]) {
-        let oldIds = registrationIdPairs.map(pair => pair.old);
-        let candidates = await this.repo.find({where: {registrationId: In(oldIds)}});
-        candidates.map(candidate =>
-            candidate.registrationId = registrationIdPairs.find(pair => pair.old === candidate.registrationId).new
-        );
-        return await this.repo.save(candidates);
-    }
-}
-
-export interface RegistrationIdPair {
-    old: string,
-    new: string
 }

@@ -1,4 +1,10 @@
-import {deleteAuthenticated, getAuthenticated, login, patchAuthenticated, postAuthenticated} from "./_common/testRequests";
+import {
+    deleteAuthenticated,
+    getAuthenticated,
+    login,
+    patchAuthenticated,
+    postAuthenticated
+} from "./_common/testRequests";
 import {bodyLengthEqual, bodyLengthGreaterOrEqual, bodyMatchesObject} from "./_common/expectations";
 import {adminToken} from "./_common/helper";
 import {setUpE2E} from "./setup/e2e-setup";
@@ -67,7 +73,7 @@ describe('Device', () => {
         });
     });
 
-    describe('/Patch',  () => {
+    describe('/Patch', () => {
         it('updates Device Token for own device as member', async () => {
             return patchAuthenticated('/devices/4')
                 .send({

@@ -11,6 +11,6 @@ export class BasicAuthorizer {
     authorize(username: string, password: string, callback: AsyncAuthorizerCallback) {
         this.authService.validateMember(username, password)
             .then(member => callback(null, !!member))
-            .catch(() => callback(null,false));
+            .catch(() => callback(null, false));
     }
 }

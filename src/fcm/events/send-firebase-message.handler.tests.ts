@@ -4,7 +4,7 @@ import {FcmService} from "../fcm.service";
 import {MembersService} from "../../ressources/members/members.service";
 import {fcmServiceMock} from "../../../test/mocks/fcmServiceMock";
 import {membersServiceMock} from "../../../test/mocks/membersServiceMock";
-import {plainToClass} from "class-transformer";
+import {plainToInstance} from "class-transformer";
 import {SendFirebaseMessageEvent} from "./send-firebase-message.event";
 import {
     STATE__ATTEND,
@@ -41,71 +41,71 @@ describe('SendFirebaseMessageEventHandler Tests', () => {
     });
 
     it.each([STATE__HAS_PARTICIPATED, STATE__HAS_NOT_PARTICIPATED])
-    ('should do nothing for %p', (state)=> {
-        sendFirebaseMessageEventHandler.handle(plainToClass(SendFirebaseMessageEvent, {
+    ('should do nothing for %p', (state) => {
+        sendFirebaseMessageEventHandler.handle(plainToInstance(SendFirebaseMessageEvent, {
             newStateId: state,
             callingMember: getTestPlanner(),
             changedMember: getTestMember(),
             event: getTestEvent(),
         }));
-        expectNumberOfCalls(0,0,0);
+        expectNumberOfCalls(0, 0, 0);
     });
 
     it('should do nothing for privileged callingMember and STATE__ATTEND on "normal" member', () => {
-        sendFirebaseMessageEventHandler.handle(plainToClass(SendFirebaseMessageEvent, {
+        sendFirebaseMessageEventHandler.handle(plainToInstance(SendFirebaseMessageEvent, {
             newStateId: STATE__ATTEND,
             callingMember: getTestPlanner(),
             changedMember: getTestMember(),
             event: getTestEvent(),
         }));
-        expectNumberOfCalls(0,0,0);
+        expectNumberOfCalls(0, 0, 0);
     });
 
     it('should do nothing for privileged callingMember and STATE__DO_NOT_ATTEND on "normal" member', () => {
-        sendFirebaseMessageEventHandler.handle(plainToClass(SendFirebaseMessageEvent, {
+        sendFirebaseMessageEventHandler.handle(plainToInstance(SendFirebaseMessageEvent, {
             newStateId: STATE__DO_NOT_ATTEND,
             callingMember: getTestPlanner(),
             changedMember: getTestMember(),
             event: getTestEvent(),
         }));
-        expectNumberOfCalls(0,0,0);
+        expectNumberOfCalls(0, 0, 0);
     });
 
     it('should do Nothing if privileged member changed self invitation message to Member', () => {
-        sendFirebaseMessageEventHandler.handle(plainToClass(SendFirebaseMessageEvent, {
+        sendFirebaseMessageEventHandler.handle(plainToInstance(SendFirebaseMessageEvent, {
             newStateId: STATE__INVITED, //should never happen this way, just to make sure
             callingMember: getTestPlanner(),
             changedMember: getTestPlanner(),
             event: getTestEvent(),
         }));
-        expectNumberOfCalls(0,0,0);
+        expectNumberOfCalls(0, 0, 0);
     });
 
     it('should send invitation message to Member', () => {
-        sendFirebaseMessageEventHandler.handle(plainToClass(SendFirebaseMessageEvent, {
+        sendFirebaseMessageEventHandler.handle(plainToInstance(SendFirebaseMessageEvent, {
             newStateId: STATE__INVITED,
             callingMember: getTestPlanner(),
             changedMember: getTestMember(),
             event: getTestEvent(),
         }));
-        expectNumberOfCalls(1,0,0);
+        expectNumberOfCalls(1, 0, 0);
     });
 
     it('should send invitation request message to Planner', async () => {
         fcmServiceMock.notifyPlannerAboutStateChange.mockResolvedValueOnce('foo');
-        const result = await sendFirebaseMessageEventHandler.handle(plainToClass(SendFirebaseMessageEvent, {
+        const result = await sendFirebaseMessageEventHandler.handle(plainToInstance(SendFirebaseMessageEvent, {
             newStateId: STATE__INVITATION_REQUEST_PENDING,
             callingMember: getTestMember(),
             changedMember: getTestMember(),
             event: getTestEvent(),
         }));
         expect(result).toBe('foo');
-        expectNumberOfCalls(0,1,1);
+        expectNumberOfCalls(0, 1, 1);
     });
 
     it('should handle errors of FCMService', async () => {
         fcmServiceMock.notifyPlannerAboutStateChange.mockRejectedValue(new Error('caboom'));
-        const result = await sendFirebaseMessageEventHandler.handle(plainToClass(SendFirebaseMessageEvent, {
+        const result = await sendFirebaseMessageEventHandler.handle(plainToInstance(SendFirebaseMessageEvent, {
             newStateId: STATE__INVITATION_REQUEST_PENDING,
             callingMember: getTestMember(),
             changedMember: getTestMember(),
@@ -113,7 +113,7 @@ describe('SendFirebaseMessageEventHandler Tests', () => {
         }));
         expect(result).toBe(undefined);
         expect(loggerMock.error).toHaveBeenCalled();
-        expectNumberOfCalls(0,1,1);
+        expectNumberOfCalls(0, 1, 1);
     });
 });
 

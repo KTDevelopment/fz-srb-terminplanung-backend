@@ -1,4 +1,4 @@
-import {Controller, UseGuards} from '@nestjs/common';
+import {Controller, Get, Query, Req, UseGuards} from '@nestjs/common';
 import {Crud, CrudAuth, CrudController} from "@nestjsx/crud";
 import {ApiTags} from "@nestjs/swagger";
 import {Participation} from "./participation.entity";
@@ -6,8 +6,12 @@ import {ParticipationsService} from "./participations.service";
 import {ParticipationsGuard} from "./validation/participations-guard.service";
 import {Auth} from "../../auth/auth.decorator";
 import {Roles} from "../roles/roles.decorator";
-import {ROLE_ID_ADMIN} from "../roles/role.entity";
+import {ROLE_ID_ADMIN, ROLE_ID_PLANNER} from "../roles/role.entity";
 import {Member} from "../members/member.entity";
+import {TransformInstanceToPlain} from "class-transformer";
+import {Request} from "express";
+import {Event} from "../events/event.entity";
+import {ParseOptionalIntPipe} from "../../_common/ParseOptionalIntPipe";
 
 @Auth()
 @Crud({
@@ -56,5 +60,24 @@ import {Member} from "../members/member.entity";
 @Controller('api/v2/participations')
 export class ParticipationsController implements CrudController<Participation> {
     constructor(public service: ParticipationsService) {
+    }
+
+    @Auth(ROLE_ID_ADMIN, ROLE_ID_PLANNER)
+    @Get('unfinishedAuftritte')
+    @TransformInstanceToPlain()
+    async getUnfinishedAuftritte(
+        @Req() request: Request,
+        @Query("sectionId", ParseOptionalIntPipe) sectionIdOverride: number | undefined
+    ): Promise<Event[]> {
+        return await this.service.getUnfinishedAuftritte(this.determineSectionIdForUnfinishedAuftritte(request, sectionIdOverride))
+    }
+
+    private determineSectionIdForUnfinishedAuftritte(request: Request, sectionIdOverride: number | undefined): number {
+        const callingMember: Member = request.user as Member
+        if (callingMember.isAdmin() && sectionIdOverride) {
+            return sectionIdOverride
+        }
+
+        return callingMember.sectionId
     }
 }

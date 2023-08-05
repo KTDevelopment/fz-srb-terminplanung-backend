@@ -1,7 +1,7 @@
 import {ApplicationLogger} from "../logger/application-logger.service";
 import {ConfigService} from "../config/config.service";
 import {AppException} from "../_common/AppException";
-import { DataSource } from "typeorm"
+import {DataSource} from "typeorm"
 
 export async function runMigrations(configService: ConfigService, logger: ApplicationLogger) {
     if (configService.config.database.type !== 'mysql') return;

@@ -46,7 +46,7 @@ export class App {
     }
 
     async getUrl(): Promise<string> {
-       return 'http://localhost:' + await this.app.getHttpServer().address().port;
+        return 'http://localhost:' + await this.app.getHttpServer().address().port;
     }
 
     private async initializeResources() {

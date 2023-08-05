@@ -1,12 +1,13 @@
-import {plainToClass} from "class-transformer";
+import {plainToInstance} from "class-transformer";
 import {Event} from "../../../src/ressources/events/event.entity";
+import {TestResponses} from "./TestResponses";
 
 export function getNonPublicEvents() {
     return [
-        plainToClass(Event, {
+        {
             "remoteId": "30",
-            "startDate": "2018-08-17T03:24:00",
-            "endDate": "2018-08-18T03:24:00",
+            "startDate": "2018-08-17T03:24:00Z",
+            "endDate": "2018-08-18T03:24:00Z",
             "summary": "19. Herbstfanfare 2018 - EnergieARENA - 03.10.2018 - 17:00 - 21:00",
             "description": "Abend-Show-Veranstaltung des Fanfarenzuges des KSC Strausberg e. V.Saisonabschluss und Dankeschön für alle Aktiven, Eltern, Helfer, Förderer, Sponsoren, Fan´s, Freunde und alle Strausberger...",
             "eventName": "19. Herbstfanfare 2018",
@@ -23,11 +24,11 @@ export function getNonPublicEvents() {
             "creationDate": "2018-09-20T20:56:00.891Z",
             "updateDate": "2018-09-20T20:56:00.891Z",
             "version": 1
-        }),
-        plainToClass(Event, {
+        },
+        {
             "remoteId": "40",
-            "startDate": "2018-07-17T03:24:00",
-            "endDate": "2018-07-18T03:24:00",
+            "startDate": "2018-07-17T03:24:00Z",
+            "endDate": "2018-07-18T03:24:00Z",
             "summary": "Oktoberfest Zinndorf - Oktoberfest Zinndorf - 05.10.2018 - 21:30 - 22:45",
             "description": "",
             "eventName": "Oktoberfest Zinndorf",
@@ -44,18 +45,26 @@ export function getNonPublicEvents() {
             "creationDate": "2018-09-20T20:56:00.907Z",
             "updateDate": "2018-09-20T20:56:00.907Z",
             "version": 1
+        }
+    ].map(it => {
+        return plainToInstance(Event, {
+            ...it,
+            startDate: new Date(it.startDate),
+            endDate: new Date(it.endDate),
+            creationDate: new Date(it.creationDate),
+            updateDate: new Date(it.updateDate),
         })
-    ]
+    })
 }
 
 export function getPublicEvents() {
-    let ms = new Date().getTime() + 86400000;
-    let tomorrow = new Date(ms);
+    const ms = new Date().getTime() + 86400000;
+    const tomorrow = new Date(ms);
     return [
-        plainToClass(Event, {
+        {
             "remoteId": "10",
-            "startDate": "2018-09-17T03:24:00",
-            "endDate": "2018-09-18T03:24:00",
+            "startDate": "2018-09-17T03:24:00Z",
+            "endDate": "2018-09-18T03:24:00Z",
             "summary": "Oktoberfest Zinndorf - Oktoberfest Zinndorf - 05.10.2018 - 21:30 - 22:45",
             "description": "",
             "eventName": "Oktoberfest Zinndorf",
@@ -72,8 +81,8 @@ export function getPublicEvents() {
             "creationDate": "2018-09-20T20:56:00.907Z",
             "updateDate": "2018-09-20T20:56:00.907Z",
             "version": 1
-        }),
-        plainToClass(Event, {
+        },
+        {
             "remoteId": "20",
             "startDate": new Date().toISOString(),
             "endDate": tomorrow.toISOString(),
@@ -93,15 +102,24 @@ export function getPublicEvents() {
             "creationDate": "2018-09-20T20:56:00.907Z",
             "updateDate": "2018-09-20T20:56:00.907Z",
             "version": 1
-        }),
-    ]
+        },
+        TestResponses.unfinishedEvent(),
+    ].map(it => {
+        return plainToInstance(Event, {
+            ...it,
+            startDate: new Date(it.startDate),
+            endDate: new Date(it.endDate),
+            creationDate: new Date(it.creationDate),
+            updateDate: new Date(it.updateDate),
+        })
+    })
 }
 
 export function getEventThatShouldBeRemoved() {
-    return plainToClass(Event, {
+    return plainToInstance(Event, {
         "remoteId": "100",
-        "startDate": '2100-01-01T00:00:00',
-        "endDate": '2100-01-02T00:00:00',
+        "startDate": new Date('2100-01-01T00:00:00Z'),
+        "endDate": new Date('2100-01-02T00:00:00Z'),
         "summary": "Oktoberfest Zinndorf - Oktoberfest Zinndorf - 05.10.2018 - 21:30 - 22:45",
         "description": "",
         "eventName": "Oktoberfest Zinndorf",
@@ -115,8 +133,8 @@ export function getEventThatShouldBeRemoved() {
         "longitude": 123.23,
         "latitude": 321.23,
         "isPublic": true,
-        "creationDate": "2018-09-20T20:56:00.907Z",
-        "updateDate": "2018-09-20T20:56:00.907Z",
+        "creationDate": new Date("2018-09-20T20:56:00.907Z"),
+        "updateDate": new Date("2018-09-20T20:56:00.907Z"),
         "version": 1
     });
 }

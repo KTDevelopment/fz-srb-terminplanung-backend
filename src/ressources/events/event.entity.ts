@@ -85,8 +85,7 @@ export class Event extends BaseEntity {
     isPublic: boolean;
 
     isInPast() {
-        let now = new Date();
-        return now.getTime() > this.endDate.getTime();
+        return new Date().getTime() > this.endDate.getTime();
     }
 
     equalsEventWithoutCoordinates(event: Event): boolean {
@@ -114,4 +113,10 @@ export class Event extends BaseEntity {
             this.town === event.town
         );
     }
+
+    isAuftritt(): boolean {
+        return this.category.toUpperCase().includes(AUFTRITT_MARKER)
+    }
 }
+
+export const AUFTRITT_MARKER = "AUFTRITT"

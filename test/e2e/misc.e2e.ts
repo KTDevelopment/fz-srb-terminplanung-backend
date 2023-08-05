@@ -68,7 +68,7 @@ function cleanUpFileStorage() {
         'test/test-file-storage/fzAppStoreLinks.json',
     ];
     links.forEach(link => {
-        if(existsSync(link)) {
+        if (existsSync(link)) {
             unlinkSync(link)
         }
     });

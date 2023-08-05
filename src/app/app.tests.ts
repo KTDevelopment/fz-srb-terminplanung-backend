@@ -8,7 +8,9 @@ import {EventsService} from "../ressources/events/events.service";
 import {SectionsService} from "../ressources/sections/sections.service";
 import {RolesService} from "../ressources/roles/roles.service";
 import {MembersService} from "../ressources/members/members.service";
-import {ParticipationStatesService} from "../ressources/participations/participation-states/participation-states.service";
+import {
+    ParticipationStatesService
+} from "../ressources/participations/participation-states/participation-states.service";
 
 describe('App', () => {
     it('does start up stuff', async () => {
@@ -26,7 +28,7 @@ describe('App', () => {
                 return {}
             }),
             listen: jest.fn(),
-            getHttpServer: jest.fn().mockReturnValue({address: () => ({port:123})}),
+            getHttpServer: jest.fn().mockReturnValue({address: () => ({port: 123})}),
         })
         SwaggerModule.createDocument = jest.fn().mockReturnValue({});
         SwaggerModule.setup = jest.fn().mockReturnValue({});

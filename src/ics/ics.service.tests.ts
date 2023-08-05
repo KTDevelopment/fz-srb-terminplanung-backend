@@ -3,27 +3,25 @@ import {ApplicationLogger} from "../logger/application-logger.service";
 import {loggerMock} from "../../test/mocks/loggerMock";
 import {ConfigService} from "../config/config.service";
 import {IcsService} from "./ics.service";
-import {plainToClass} from "class-transformer";
+import {plainToInstance} from "class-transformer";
 import {Event} from "../ressources/events/event.entity";
+import {configServiceMock} from "../../test/mocks/configServiceMock";
 
 const iCal = require('node-ical');
 
-describe('FcmServiceTests', () => {
+describe('IcsServiceTests', () => {
     let icsService: IcsService;
-    let configServiceMock = {
-        config: {
-            ics: {
-                icsRootPath: 'fooUrl'
-            }
-        }
-    }
     iCal.fromURL = jest.fn();
 
     beforeEach(async () => {
         const module = await Test.createTestingModule({
             providers: [IcsService, {
                 provide: ConfigService,
-                useValue: configServiceMock
+                useValue: configServiceMock({
+                    ics: {
+                        icsRootPath: 'fooUrl'
+                    }
+                })
             }, {
                 provide: ApplicationLogger,
                 useValue: loggerMock
@@ -121,7 +119,7 @@ function falsyData(): any {
 
 function expectedEvents(): Event[] {
     return [
-        plainToClass(Event, {
+        plainToInstance(Event, {
             address: "Wriezener Str. 30 e",
             category: "HIGHLIGHT",
             description: "Beschreibung des Termins …\\n…\\n…\\n..\\n…. \\nINFOS ZUR HERBSTFANFARE",
@@ -139,7 +137,7 @@ function expectedEvents(): Event[] {
             summary: "HERBSTFANFARE",
             town: "Strausberg",
         }),
-        plainToClass(Event, {
+        plainToInstance(Event, {
             address: "Wriezener Str. 30 e",
             category: "AUFTRITT",
             description: "Was genau geplant wird und vor allem durchgeführt werden kann, erfahrt ihr hier in den nächsten Wochen.",
@@ -157,7 +155,7 @@ function expectedEvents(): Event[] {
             summary: "Kinderfest",
             town: "Strausberg",
         }),
-        plainToClass(Event, {
+        plainToInstance(Event, {
             address: "Wriezener Str. 30 e",
             category: "AUFTRITT",
             description: "desc",

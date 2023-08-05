@@ -6,4 +6,5 @@ import {BackupService} from "./backup.service";
         BackupService,
     ],
 })
-export class BackupModule {}
+export class BackupModule {
+}

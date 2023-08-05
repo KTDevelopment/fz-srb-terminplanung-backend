@@ -6,4 +6,5 @@ import {ApplicationLogger} from "./application-logger.service";
     providers: [ApplicationLogger],
     exports: [ApplicationLogger]
 })
-export class LoggerModule {}
+export class LoggerModule {
+}

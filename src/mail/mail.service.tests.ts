@@ -31,8 +31,7 @@ describe('MailServiceTests', () => {
     it('should mail Planners About State Change', async () => {
         await mailService.mailPlannersAboutStateChange(getTestMember(), getTestEvent(), getPlannerList(), 4);
 
-        // @ts-ignore
-        let context = mockMailClient.sendMail.mock.calls[0][0];
+        const context = mockMailClient.sendMail.mock.calls[0][0];
 
         expect(context).toMatchObject({
             from: '"Auftrittsplanung" <terminplanung@fanfarenzug-strausberg-terminplan.de>',
@@ -45,8 +44,7 @@ describe('MailServiceTests', () => {
     it('should send Password Reset Mail', async () => {
         await mailService.sendPasswordResetMail(getTestMember(), getPasswordResetToken());
 
-        // @ts-ignore
-        let context = mockMailClient.sendMail.mock.calls[0][0];
+        const context = mockMailClient.sendMail.mock.calls[0][0];
 
         expect(context).toMatchObject({
             from: '"Auftrittsplanung" <terminplanung@fanfarenzug-strausberg-terminplan.de>',
@@ -59,7 +57,7 @@ describe('MailServiceTests', () => {
 });
 
 const mockConfigService = {
-    config:{
+    config: {
         mail: {
             SMTPConfig: {
                 host: "foo_host",

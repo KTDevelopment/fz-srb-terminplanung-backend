@@ -3,7 +3,7 @@ import {AuthGuard} from "@nestjs/passport";
 import {AuthService} from "./auth.service";
 import {ApiBody, ApiTags} from "@nestjs/swagger";
 import {validateEntity} from "../_common/EntityValidator";
-import {plainToClass} from "class-transformer";
+import {plainToInstance} from "class-transformer";
 import {LoginDto} from "./Models/Login.dto";
 import {RefreshLoginDto} from "./Models/RefreshLogin.dto";
 import {ResetPasswordDto} from "./Models/ResetPassword.dto";
@@ -39,7 +39,7 @@ export class AuthController {
     @Post('/reset-password/:email')
     @HttpCode(HttpStatus.OK)
     public async setNewPassword(@Param('email') email: string, @Body() resetPasswordDtoLike: DeepPartial<ResetPasswordDto>) {
-        const resetPasswordDto = await validateEntity(plainToClass(ResetPasswordDto, resetPasswordDtoLike));
+        const resetPasswordDto = await validateEntity(plainToInstance(ResetPasswordDto, resetPasswordDtoLike));
         return this.authService.resetPassword(email, resetPasswordDto);
     }
 }

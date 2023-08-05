@@ -4,10 +4,11 @@ import {Injectable} from "@nestjs/common";
 import {Environment, FireBaseConfig} from "../config/config";
 import {ApplicationLogger} from "../logger/application-logger.service";
 import {ConfigService} from "../config/config.service";
+import {TokenMessage} from "firebase-admin/lib/messaging";
+import {FcmMessage} from "./models/FcmMessage";
+import {BatchResponse} from "firebase-admin/lib/messaging/messaging-api";
 import cert = admin.credential.cert;
 import Messaging = admin.messaging.Messaging;
-import MessagingPayload = admin.messaging.MessagingPayload;
-import MessagingDevicesResponse = admin.messaging.MessagingDevicesResponse;
 
 @Injectable()
 export class FcmClient {
@@ -17,7 +18,7 @@ export class FcmClient {
     private readonly isTestMode: boolean = false;
 
     constructor(
-        private readonly configService: ConfigService,
+        configService: ConfigService,
         private readonly logger: ApplicationLogger
     ) {
         this.logger.setContext(FcmClient.name);
@@ -35,14 +36,16 @@ export class FcmClient {
         this.isTestMode = configService.config.env === Environment.TEST
     }
 
-    async sendToDevice(registrationTokens: string[], payload: MessagingPayload): Promise<MessagingDevicesResponse> {
+    async sendToDevice(fcmMessage: FcmMessage): Promise<BatchResponse> {
+
         if (this.isTestMode) {
             return {
-                canonicalRegistrationTokenCount: 0,
+                responses: fcmMessage.receiverIds.map(receiverId => ({
+                    messageId: `TestId-${receiverId}`,
+                    success: true,
+                })),
+                successCount: fcmMessage.receiverIds.length,
                 failureCount: 0,
-                successCount: registrationTokens.length,
-                multicastId: 1,
-                results: []
             }
         }
 
@@ -50,9 +53,9 @@ export class FcmClient {
             throw new Error("firebase is not enabled");
         }
 
-        this.logger.debug(`send message ${JSON.stringify(payload)} to ${registrationTokens}`)
+        this.logger.debug(`send message ${JSON.stringify(fcmMessage.baseMessage)} to ${fcmMessage.receiverIds}`)
         return await retry(async () => {
-            return await this.messaging.sendToDevice(registrationTokens, payload) //todo refactor to new API sendMulticast
+            return await this.messaging.sendEach(this.createTokenMessages(fcmMessage))
         }, {
             delay: 200,
             factor: 2,
@@ -63,5 +66,14 @@ export class FcmClient {
                 }
             }
         });
+    }
+
+    private createTokenMessages(fcmMessage: FcmMessage): TokenMessage[] {
+        return fcmMessage.receiverIds.map(receiverId => {
+            return {
+                token: receiverId,
+                ...fcmMessage.baseMessage
+            }
+        })
     }
 }

@@ -7,5 +7,5 @@ export class AppException extends Error {
 }
 
 function combineErrorStack(newStack: string, oldStack: string): string {
-    return newStack.split('\n').slice(0,2).join('\n') + "\n" + oldStack;
+    return newStack.split('\n').slice(0, 2).join('\n') + "\n" + oldStack;
 }

@@ -21,7 +21,7 @@ export class TokenService {
         return jwt.sign(payload, secret, {expiresIn: this.getAuthConfig().passwordResetTokenExpiresIn});
     }
 
-    isPasswordResetTokenExpired(token:string, secret: string) {
+    isPasswordResetTokenExpired(token: string, secret: string) {
         try {
             jwt.verify(token, secret)
         } catch (e) {

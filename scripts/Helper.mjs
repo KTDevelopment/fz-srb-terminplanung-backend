@@ -5,7 +5,7 @@ import {exec} from "node:child_process";
 export const executeBash = (command) => {
     return new Promise((resolve, reject) => {
         let error = '';
-        let buffer = exec(command);
+        const buffer = exec(command);
 
         buffer.stdout.on('data', function (data) {
             log(data.toString().trim());

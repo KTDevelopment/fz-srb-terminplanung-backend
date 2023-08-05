@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {AppStoreLinksDto} from "./model/AppStoreLinks.dto";
-import {plainToClass} from "class-transformer";
+import {plainToInstance} from "class-transformer";
 import {ConfigService} from "../../config/config.service";
 import {DropBoxLinksDto} from "./model/DropBoxLinks.dto";
 import {existsSync, mkdirSync, readFileSync, writeFileSync} from "fs";
@@ -21,7 +21,7 @@ export class MiscService {
     }
 
     getFzAppStoreLinks(): AppStoreLinksDto {
-        return plainToClass(AppStoreLinksDto, JSON.parse(
+        return plainToInstance(AppStoreLinksDto, JSON.parse(
             readFileSync(this.fzAppStoreLinksFilePath).toString('utf8')
         ));
     }
@@ -32,7 +32,7 @@ export class MiscService {
     }
 
     getDropBoxLinks(): DropBoxLinksDto {
-        return plainToClass(DropBoxLinksDto, JSON.parse(
+        return plainToInstance(DropBoxLinksDto, JSON.parse(
             readFileSync(this.dropBoxLinksFilePath).toString('utf8')
         ));
     }

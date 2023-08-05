@@ -54,8 +54,8 @@ export class MembersService extends CustomCrudService<Member> {
     }
 
     async createMany(req: CrudRequest, dto: CreateManyDto<DeepPartial<Member>>): Promise<Member[]> {
-        let newMembers = this.repo.create(dto.bulk);
-        let defaultMemberRole = await this.roleService.getDefaultRole();
+        const newMembers = this.repo.create(dto.bulk);
+        const defaultMemberRole = await this.roleService.getDefaultRole();
         newMembers.forEach(newMember => {
             if (!newMember.roles) newMember.roles = [];
             MembersService.augmentRolesOfMember(newMember, defaultMemberRole);
@@ -99,7 +99,7 @@ export class MembersService extends CustomCrudService<Member> {
     }
 
     private async createMemberWithMandatoryRolesAndHashedPassword(memberLike: DeepPartial<Member>): Promise<Member> {
-        let augmentedMember = this.repo.create(memberLike);
+        const augmentedMember = this.repo.create(memberLike);
         if (!augmentedMember.roles) augmentedMember.roles = [];
         MembersService.augmentRolesOfMember(augmentedMember, await this.roleService.getDefaultRole());
         if (!augmentedMember.password) augmentedMember.password = "";

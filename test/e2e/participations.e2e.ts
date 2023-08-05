@@ -1,7 +1,13 @@
-import {deleteAuthenticated, getAuthenticated, login, postAuthenticated} from "./_common/testRequests";
-import {bodyItemMatchesObject, bodyLengthGreaterOrEqual, bodyMatchesObject, firstBodyItemMatchesObject} from "./_common/expectations";
+import {deleteAuthenticated, get, getAuthenticated, login, postAuthenticated} from "./_common/testRequests";
+import {
+    bodyItemMatchesObject,
+    bodyLengthEqual,
+    bodyLengthGreaterOrEqual,
+    bodyMatchesObject,
+    firstBodyItemMatchesObject
+} from "./_common/expectations";
 import {TestResponses} from "./TestData/TestResponses";
-import {adminToken, reload} from "./_common/helper";
+import {adminToken, plannerToken, reload} from "./_common/helper";
 import {setUpE2E} from "./setup/e2e-setup";
 
 setUpE2E()
@@ -145,7 +151,7 @@ describe('Participations', () => {
 
             return getAuthenticated('/anniversaries', await adminToken())
                 .query('filter=memberId||eq||' + memberId)
-                .expect(res => bodyItemMatchesObject(res, 0,{
+                .expect(res => bodyItemMatchesObject(res, 0, {
                     memberId,
                     "performanceCount": before.performanceCount + 1,
                 }))
@@ -191,7 +197,7 @@ describe('Participations', () => {
 
             const memberAfter = (await getAuthenticated('/members/' + memberId, await adminToken())).body;
 
-            expect(memberAfter.performanceCount).toBe((memberBefore.performanceCount -1));
+            expect(memberAfter.performanceCount).toBe((memberBefore.performanceCount - 1));
 
             return getAuthenticated('/anniversaries')
                 .query('filter=memberId||eq||' + memberId + '&filter=eventId||eq||1')
@@ -203,6 +209,34 @@ describe('Participations', () => {
 
             return getAuthenticated('/participations/4', await adminToken()).expect(404)
         });
+    });
+
+    describe('/GET unfinishedAuftritte', () => {
+        reload();
+        it('it should NOT GET unfinished Auftritte is not logged in', async () => {
+            return get('/participations/unfinishedAuftritte')
+                .expect(401)
+        })
+
+        it('it should NOT GET unfinished Auftritte for MEMBER', async () => {
+            return getAuthenticated('/participations/unfinishedAuftritte')
+                .expect(403)
+        })
+
+        it('it should GET all unfinished Auftritte for PLANNER', async () => {
+            return getAuthenticated('/participations/unfinishedAuftritte', await plannerToken())
+                .expect(res => firstBodyItemMatchesObject(res, TestResponses.unfinishedEvent()));
+        })
+
+        it('it should GET all unfinished Auftritte for ADMIN without section override', async () => {
+            return getAuthenticated('/participations/unfinishedAuftritte', await adminToken())
+                .expect(res => bodyLengthEqual(res, 0));
+        })
+
+        it('it should GET all unfinished Auftritte for ADMIN with section override', async () => {
+            return getAuthenticated('/participations/unfinishedAuftritte?sectionId=1', await adminToken())
+                .expect(res => firstBodyItemMatchesObject(res, TestResponses.unfinishedEvent()));
+        })
     })
 });
 

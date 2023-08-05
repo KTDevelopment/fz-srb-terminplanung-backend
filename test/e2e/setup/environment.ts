@@ -9,10 +9,10 @@ export async function setupTestEnvironment() {
         imports: [AppModule],
     }).compile();
 
-    let testApp = moduleFixture.createNestApplication();
+    const testApp = moduleFixture.createNestApplication();
     await testApp.init();
 
-    let testDataManager = new TestDataManager(await testApp.resolve(getDataSourceToken()) as DataSource);
+    const testDataManager = new TestDataManager(await testApp.resolve(getDataSourceToken()) as DataSource);
     await testDataManager.populateTablesWithTestData();
     return {
         testApp,

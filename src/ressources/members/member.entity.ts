@@ -49,7 +49,7 @@ export class Member extends BaseEntity {
     @ApiHideProperty()
     password: string;
 
-    @ManyToMany(() => Role, role => role.members, {eager:true})
+    @ManyToMany(() => Role, role => role.members, {eager: true})
     @JoinTable()
     @ValidateNested()
     @Transform(rolesTransformer)

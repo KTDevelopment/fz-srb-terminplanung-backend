@@ -37,7 +37,7 @@ export class MiscController {
 
     @Auth(ROLE_ID_ADMIN)
     @Post('fzSrbAppStoreLinks')
-    @UsePipes(new ValidationPipe({ transform: true }))
+    @UsePipes(new ValidationPipe({transform: true}))
     @TransformInstanceToPlain()
     async handlePostFzAppStoreLinks(@Body() newLinks: AppStoreLinksDto): Promise<AppStoreLinksDto> {
         return this.miscService.saveFzAppStoreLinks(newLinks)
@@ -52,7 +52,7 @@ export class MiscController {
 
     @Auth(ROLE_ID_ADMIN)
     @Post('dropBoxLinks')
-    @UsePipes(new ValidationPipe({ transform: true }))
+    @UsePipes(new ValidationPipe({transform: true}))
     @TransformInstanceToPlain()
     async handlePostDropBoxLinks(@Body() newLinks: DropBoxLinksDto): Promise<DropBoxLinksDto> {
         return this.miscService.saveDropBoxLinks(newLinks)

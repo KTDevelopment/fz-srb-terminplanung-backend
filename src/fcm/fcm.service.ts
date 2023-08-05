@@ -1,5 +1,4 @@
 import {Injectable} from '@nestjs/common';
-import * as admin from "firebase-admin";
 import {FcmPayloadGenerator} from "./fcm-payload.generator";
 import {FcmClient} from "./fcm.client";
 import {Member} from "../ressources/members/member.entity";
@@ -12,11 +11,10 @@ import {
 import {FcmPayload} from "./models/FcmPayload";
 import {Event} from "../ressources/events/event.entity";
 import {FcmMessage} from "./models/FcmMessage";
-import {DevicesService, RegistrationIdPair} from "../ressources/devices/devices.service";
+import {DevicesService} from "../ressources/devices/devices.service";
 import {ApplicationLogger} from "../logger/application-logger.service";
 import {AppException} from "../_common/AppException";
-import MessagingDevicesResponse = admin.messaging.MessagingDevicesResponse;
-import MessagingDeviceResult = admin.messaging.MessagingDeviceResult;
+import {BatchResponse} from "firebase-admin/lib/messaging/messaging-api";
 
 
 @Injectable()
@@ -36,17 +34,16 @@ export class FcmService {
             return null;
         }
 
-        let devices: Device[] = [];
-        receivers.forEach((planner: Member) => {
-            devices = devices.concat(planner.devices);
-        });
+        const devices = receivers.reduce((acc: Device[], receiver: Member) => {
+            return acc.concat(receiver.devices)
+        }, [] as Device[]);
 
         if (devices.length === 0) {
             this.logger.warn("FCM: no Devices on receivers - " + receivers.map(it => it.memberId).join(','));
             return null;
         }
 
-        let payload = this.fcmPayloadGenerator.generatePayloadForMemberChangedHisState(sender, event, newState);
+        const payload = this.fcmPayloadGenerator.generatePayloadForMemberChangedHisState(sender, event, newState);
 
         return this.sendFcmPayload(payload, devices);
     }
@@ -57,7 +54,7 @@ export class FcmService {
             return null;
         }
 
-        let payload: FcmPayload = this.fcmPayloadGenerator.generatePayloadForPlanerChangedMemberState(sender, receiver, event, newState);
+        const payload: FcmPayload = this.fcmPayloadGenerator.generatePayloadForPlanerChangedMemberState(sender, receiver, event, newState);
         return this.sendFcmPayload(payload, receiver.devices);
     }
 
@@ -72,23 +69,22 @@ export class FcmService {
             return null;
         }
 
-        let payload: FcmPayload = this.fcmPayloadGenerator.generatePayloadForRemindMember(trigger, event, currentState);
+        const payload: FcmPayload = this.fcmPayloadGenerator.generatePayloadForRemindMember(trigger, event, currentState);
 
         return this.sendFcmPayload(payload, receiver.devices);
     }
 
     async notifyAllAboutNewNewsletter(memberList: Member[]): Promise<null | DeviceSpecificFcmResponse> {
-        let devices: Array<Device> = [];
-        memberList.forEach((member: Member) => {
-            devices = devices.concat(member.devices);
-        });
+        const devices = memberList.reduce((acc: Device[], member: Member) => {
+            return acc.concat(member.devices)
+        }, [] as Device[]);
 
         if (devices.length === 0) {
             this.logger.warn("FCM - newsletter Notify - Es sind keine DeviceIds hinterlegt");
             return null;
         }
 
-        let payload = this.fcmPayloadGenerator.generatePayloadForNewNewsletter();
+        const payload = this.fcmPayloadGenerator.generatePayloadForNewNewsletter();
 
         return this.sendFcmPayload(payload, devices)
     };
@@ -100,76 +96,65 @@ export class FcmService {
         }
     }
 
-    private async sendMessagesByType(payload: FcmPayload, receiverDevices: Device[], deviceType: AVAILABLE_DEVICE_TYPES) {
-        let registrationIds = this.getRegistrationIdsByType(receiverDevices, deviceType);
+    private async sendMessagesByType(payload: FcmPayload, receiverDevices: Device[], deviceType: AVAILABLE_DEVICE_TYPES): Promise<BatchResponse> {
+        const registrationIds = this.getRegistrationIdsByType(receiverDevices, deviceType);
 
         if (registrationIds.length === 0) {
             return NO_MESSAGES_RESPONSE
         }
 
-        return await this.sendMessage((new FcmMessage())
-            .setMessagingPayload(payload.getMessagingPayloadByType(deviceType))
-            .setReceiverIds(registrationIds))
+        return await this.sendMessage(
+            (new FcmMessage())
+                .setBaseMessage(payload.getBaseMessageByType(deviceType))
+                .setReceiverIds(registrationIds)
+        )
     }
 
     private getRegistrationIdsByType(receiverDevices: Device[], deviceType: AVAILABLE_DEVICE_TYPES) {
         return receiverDevices.filter(it => it.deviceType === deviceType).map(it => it.registrationId);
     }
 
-    private async sendMessage(fcmMessage: FcmMessage): Promise<MessagingDevicesResponse> {
-        let response = await this.fcmClient.sendToDevice(fcmMessage.receiverIds, fcmMessage.messagingPayload);
+    private async sendMessage(fcmMessage: FcmMessage): Promise<BatchResponse> {
+        const response = await this.fcmClient.sendToDevice(fcmMessage);
         this.logger.debug("response from fcm messaging: " + JSON.stringify(response));
-        if (response.successCount === fcmMessage.receiverIds.length && response.canonicalRegistrationTokenCount === 0) {
+        if (response.successCount === fcmMessage.receiverIds.length) {
             return response;
         }
 
         this.logger.warn('some fcm Messages failed: ' + JSON.stringify(response));
 
-        let separatedResponse = this.separateResponseResults(response.results, fcmMessage.receiverIds);
-        if (separatedResponse.removableIds.length > 0) {
-            await this.removeTheRemovables(separatedResponse.removableIds);
-        }
-        if (separatedResponse.replaceableIds.length > 0) {
-            await this.replaceTheReplaceables(separatedResponse.replaceableIds);
+        const removableIds = this.extractRemovableIds(response, fcmMessage.receiverIds);
+        if (removableIds.length > 0) {
+            await this.removeTheRemovables(removableIds);
         }
 
         if (response.failureCount === fcmMessage.receiverIds.length) {
-            this.logger.error(new Error("Error sending message"), JSON.stringify(response.results))
+            this.logger.error(new Error("Error sending message"), JSON.stringify(response.responses))
         }
 
         return response;
     }
 
-    private separateResponseResults(results: MessagingDeviceResult[], receiverRegistrationIds: string[]): SeparatedFcmResults {
-        let result: SeparatedFcmResults = {
-            removableIds: [],
-            replaceableIds: []
-        };
+    private extractRemovableIds(batchResponse: BatchResponse, receiverRegistrationIds: string[]): string[] {
+        const removableIds: string[] = []
 
         receiverRegistrationIds.forEach(receiverRegistrationId => {
             const index = receiverRegistrationIds.indexOf(receiverRegistrationId);
-            const currentResult = results[index];
+            const currentResult = batchResponse.responses[index];
 
             if (currentResult.error) {
                 switch (currentResult.error.code) {
                     case "messaging/registration-token-not-registered":
-                        result.removableIds.push(receiverRegistrationId);
+                        removableIds.push(receiverRegistrationId);
                         break;
                     case "messaging/invalid-registration-token":
-                        result.removableIds.push(receiverRegistrationId);
+                        removableIds.push(receiverRegistrationId);
                         break;
                 }
             }
-
-            if (currentResult.canonicalRegistrationToken) {
-                result.replaceableIds.push({
-                    old: receiverRegistrationId,
-                    new: currentResult.canonicalRegistrationToken,
-                });
-            }
         });
 
-        return result;
+        return removableIds;
     }
 
     private async removeTheRemovables(removableIds: string[]) {
@@ -179,30 +164,15 @@ export class FcmService {
             this.logger.error(new AppException(e, "removeTheRemovablesFailed"));
         }
     }
-
-    private async replaceTheReplaceables(replaceableIdPairs: RegistrationIdPair[]) {
-        try {
-            return await this.devicesService.updateRegistrationIds(replaceableIdPairs);
-        } catch (e) {
-            this.logger.error(new AppException(e, "replaceTheReplaceablesFailed"));
-        }
-    }
 }
 
-const NO_MESSAGES_RESPONSE: MessagingDevicesResponse = {
-    canonicalRegistrationTokenCount: 0,
-    failureCount: 0,
-    multicastId: 0,
-    results: [],
+const NO_MESSAGES_RESPONSE: BatchResponse = {
+    responses: [],
     successCount: 0,
+    failureCount: 0,
 };
 
 export interface DeviceSpecificFcmResponse {
-    ios: MessagingDevicesResponse,
-    android: MessagingDevicesResponse
-}
-
-interface SeparatedFcmResults {
-    removableIds: string[],
-    replaceableIds: RegistrationIdPair[]
+    ios: BatchResponse,
+    android: BatchResponse
 }

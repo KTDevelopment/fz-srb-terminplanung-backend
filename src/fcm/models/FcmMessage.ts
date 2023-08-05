@@ -1,12 +1,11 @@
-import * as admin from "firebase-admin";
-import MessagingPayload = admin.messaging.MessagingPayload;
+import {BaseMessage} from "firebase-admin/lib/messaging/messaging-api";
 
 export class FcmMessage {
     receiverIds: string[] = [];
-    messagingPayload: MessagingPayload;
+    baseMessage: BaseMessage;
 
-    setMessagingPayload(messagingPayload: MessagingPayload) {
-        this.messagingPayload = messagingPayload;
+    setBaseMessage(baseMessage: BaseMessage) {
+        this.baseMessage = baseMessage;
         return this;
     }
 

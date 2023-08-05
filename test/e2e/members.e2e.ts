@@ -1,5 +1,16 @@
-import {deleteAuthenticated, getAuthenticated, patchAuthenticated, postAuthenticated, putAuthenticated} from "./_common/testRequests";
-import {bodyItemMatchesObject, bodyLengthGreaterOrEqual, bodyMatchesObject, firstBodyItemMatchesObject} from "./_common/expectations";
+import {
+    deleteAuthenticated,
+    getAuthenticated,
+    patchAuthenticated,
+    postAuthenticated,
+    putAuthenticated
+} from "./_common/testRequests";
+import {
+    bodyItemMatchesObject,
+    bodyLengthGreaterOrEqual,
+    bodyMatchesObject,
+    firstBodyItemMatchesObject
+} from "./_common/expectations";
 import {TestResponses} from "./TestData/TestResponses";
 import {adminToken, reload} from "./_common/helper";
 import {setUpE2E} from "./setup/e2e-setup";
@@ -34,7 +45,11 @@ describe('Member', () => {
         it('should get MemberData for other Member then self, if not admin', async () => {
             return getAuthenticated('/members/1')
                 .expect(404)
-                .expect(res => bodyMatchesObject(res, {"statusCode": 404, "error": "Not Found", "message": "Member not found"}))
+                .expect(res => bodyMatchesObject(res, {
+                    "statusCode": 404,
+                    "error": "Not Found",
+                    "message": "Member not found"
+                }))
         });
 
         it('should get MemberData for self, if role is Member', async () => {
@@ -134,7 +149,7 @@ describe('Member', () => {
                 .expect(res => bodyMatchesObject(res, MEMBER_DATA.PATCH_RECEIVE_WithSectionAndRole))
         });
 
-        it('does not clear roles on patch if roles are not touched', async () =>{
+        it('does not clear roles on patch if roles are not touched', async () => {
             return patchAuthenticated('/members/1', await adminToken())
                 .send(MEMBER_DATA.PATCH_DoesNotClearRoles)
                 .expect(res => bodyMatchesObject(res, MEMBER_DATA.PATCH_RECEIVE_DoesNotClearRoles))

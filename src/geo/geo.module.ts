@@ -7,4 +7,5 @@ import {HttpModule} from "@nestjs/axios";
     providers: [GeoService],
     exports: [GeoService]
 })
-export class GeoModule {}
+export class GeoModule {
+}

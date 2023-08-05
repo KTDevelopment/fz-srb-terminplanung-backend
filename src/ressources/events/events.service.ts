@@ -42,7 +42,7 @@ export class EventsService extends CustomCrudService<Event> {
         }
 
         try {
-            let currentEvent = await this.repo.findOne({where: {remoteId: newEvent.remoteId}});
+            const currentEvent = await this.repo.findOne({where: {remoteId: newEvent.remoteId}});
 
             if (currentEvent === null) {
                 return await this.repo.save(await this.geoService.enrichEventWithGeoCoordinates(newEvent));
@@ -68,11 +68,10 @@ export class EventsService extends CustomCrudService<Event> {
     private async deleteEventsWhichAreInFutureButNotInRemoteIdList(remoteIds: string[]): Promise<Event[]> {
         if (remoteIds.length === 0) return [];
 
-        let now = new Date();
-        let eventsToDelete: Event[] = await this.find({
+        const eventsToDelete: Event[] = await this.find({
                 where: {
                     remoteId: Not(In(remoteIds)),
-                    startDate: MoreThan(now),
+                    startDate: MoreThan(new Date()),
                     isPublic: true
                 }
             }

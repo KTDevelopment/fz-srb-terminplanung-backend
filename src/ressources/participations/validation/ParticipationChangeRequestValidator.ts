@@ -1,5 +1,10 @@
 import {ParticipationChangeRequest} from "./ParticipationChangeRequest";
-import {KEY_FOR_OTHER, KEY_FOR_SELF, VALID_CHANGES_FOR_MEMBER, VALID_CHANGES_FOR_PLANNER_ADMIN_WEBADMINS} from "./ValidStateChanges";
+import {
+    KEY_FOR_OTHER,
+    KEY_FOR_SELF,
+    VALID_CHANGES_FOR_MEMBER,
+    VALID_CHANGES_FOR_PLANNER_ADMIN_WEBADMINS
+} from "./ValidStateChanges";
 import {STATE__HAS_NOT_PARTICIPATED, STATE__HAS_PARTICIPATED} from "../participation-states/participation-state.entity";
 import {Injectable} from "@nestjs/common";
 
@@ -11,11 +16,11 @@ export class ParticipationChangeRequestValidator {
             return false
         }
 
-        let event = participationChangeRequest.currentParticipation.event;
-        let memberToChange = participationChangeRequest.currentParticipation.member;
-        let currentStateId = participationChangeRequest.currentParticipation.participationState.stateId;
-        let newStateId = participationChangeRequest.newStateId;
-        let callingMember = participationChangeRequest.callingMember;
+        const event = participationChangeRequest.currentParticipation.event;
+        const memberToChange = participationChangeRequest.currentParticipation.member;
+        const currentStateId = participationChangeRequest.currentParticipation.participationState.stateId;
+        const newStateId = participationChangeRequest.newStateId;
+        const callingMember = participationChangeRequest.callingMember;
 
         // simple validation for both final states: only when in past, from planner or admin
         if (newStateId === STATE__HAS_NOT_PARTICIPATED || newStateId === STATE__HAS_PARTICIPATED) {
@@ -31,7 +36,7 @@ export class ParticipationChangeRequestValidator {
             return false;
         }
 
-        let isForSelf = callingMember.memberId === memberToChange.memberId;
+        const isForSelf = callingMember.memberId === memberToChange.memberId;
 
         if (callingMember.isAdmin()) {
             return this.validateForAdmin(isForSelf, currentStateId, newStateId)

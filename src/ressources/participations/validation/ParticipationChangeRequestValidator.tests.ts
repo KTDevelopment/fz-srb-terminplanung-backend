@@ -6,7 +6,7 @@ import {ParticipationState} from "../participation-states/participation-state.en
 import {Section} from "../../sections/section.entity";
 import {Role} from "../../roles/role.entity";
 import {Event} from "../../events/event.entity";
-import {plainToClass} from "class-transformer";
+import {plainToInstance} from "class-transformer";
 import {suite, test} from "@testdeck/jest";
 
 @suite
@@ -400,16 +400,16 @@ class ParticipationChangeRequestValidatorTests {
             .setCurrentParticipation(this.testParticipation)
             .setCallingMember(this.callingMember);
 
-        let result = this.validator.validateRequest(this.request);
+        const result = this.validator.validateRequest(this.request);
 
         expect(result).toBe(this.expectedResult);
     }
 }
 
 function getTestEvent() {
-    let ms = new Date().getTime() + 86400000;
-    let tomorrow = new Date(ms);
-    return plainToClass(Event, {
+    const ms = new Date().getTime() + 86400000;
+    const tomorrow = new Date(ms);
+    return plainToInstance(Event, {
         eventId: 2,
         wpId: 10,
         startDate: new Date(),
@@ -431,7 +431,7 @@ function getTestEvent() {
 }
 
 function getTestEventWhichLiesInPast() {
-    return plainToClass(Event, {
+    return plainToInstance(Event, {
         eventId: 1,
         wpId: 10,
         startDate: new Date('2018-06-17T03:24:00'),
@@ -453,22 +453,22 @@ function getTestEventWhichLiesInPast() {
 }
 
 function getAdminMember() {
-    let role = new Role();
+    const role = new Role();
     role.roleId = 0;
     role.roleName = 'admin';
-    let member = new Member();
+    const member = new Member();
     member.roles = [role];
     member.memberId = 1;
     return member;
 }
 
 function getPlannerMember() {
-    let role = new Role();
+    const role = new Role();
     role.roleId = 100;
     role.roleName = 'planner';
-    let section = new Section();
+    const section = new Section();
     section.sectionId = 1;
-    let member = new Member();
+    const member = new Member();
     member.roles = [role];
     member.section = section;
     member.memberId = 100;
@@ -476,21 +476,21 @@ function getPlannerMember() {
 }
 
 function getMember() {
-    let role = new Role();
+    const role = new Role();
     role.roleId = 200;
     role.roleName = 'member';
-    let section = new Section();
+    const section = new Section();
     section.sectionId = 1;
-    let member = new Member();
+    const member = new Member();
     member.roles = [role];
     member.section = section;
     member.memberId = 200;
     return member;
 }
 
-function getParticipationByStateId(id) {
-    let participation = new Participation();
-    let state = new ParticipationState();
+function getParticipationByStateId(id: number) {
+    const participation = new Participation();
+    const state = new ParticipationState();
     state.stateId = id;
     participation.participationState = state;
     return participation;

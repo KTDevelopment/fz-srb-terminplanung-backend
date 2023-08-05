@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {Event} from "../ressources/events/event.entity";
-import {plainToClass} from "class-transformer";
+import {plainToInstance} from "class-transformer";
 import {ConfigService} from "../config/config.service";
 import {ApplicationLogger} from "../logger/application-logger.service";
 import {AppException} from "../_common/AppException";
@@ -38,7 +38,7 @@ export class IcsService {
     }
 
     private static createEvent(raw: any) {
-        return plainToClass(Event, {
+        return plainToInstance(Event, {
             remoteId: raw.uid,
             startDate: new Date(raw.start),
             endDate: new Date(raw.end),
@@ -55,7 +55,7 @@ export class IcsService {
         });
     }
 
-    private static getLocationDetails (locationString: string | null | undefined) {
+    private static getLocationDetails(locationString: string | null | undefined) {
         if (!locationString) return {
             location: '',
             address: '',
@@ -70,7 +70,7 @@ export class IcsService {
                 location: split[0] ? split[0].trim() : '',
                 address: split[1] ? split[1].trim() : '',
                 town: split[2] ? split[2].trim() : '',
-                postcode: split[3] ? parseInt(split[3].trim()) :0,
+                postcode: split[3] ? parseInt(split[3].trim()) : 0,
             }
         }
 
@@ -90,15 +90,6 @@ export class IcsService {
             postcode: 0,
         }
     }
-
-    // hopefully not used anymore
-    // private static calculateDatePayingAttentionOnWinterTime(date) {
-    //     if (SeasonsDeterminator.isInWinterTime(date)) {
-    //         let millisFormPlusOneHour = date.getTime() + (60 * 60 * 1000); // eine Stunde addieren, weil der Zeitstempel nicht in WinterZeit ist
-    //         return new Date(millisFormPlusOneHour);
-    //     }
-    //     return date;
-    // }
 
     private static determineCategory(catsFromWebsite: string[] | null | undefined): string {
         if (!catsFromWebsite || catsFromWebsite.length === 0) return '';

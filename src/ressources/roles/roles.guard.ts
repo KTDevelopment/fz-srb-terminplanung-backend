@@ -18,8 +18,8 @@ export class RolesGuard implements CanActivate {
     }
 
     private getRoles(context: ExecutionContext): number[] {
-        let first = this.reflector.get<number[]>('roles', context.getClass()) || [];
-        let second = this.reflector.get<number[]>('roles', context.getHandler()) || [];
+        const first = this.reflector.get<number[]>('roles', context.getClass()) || [];
+        const second = this.reflector.get<number[]>('roles', context.getHandler()) || [];
         return [...first, ...second];
     }
 }
