@@ -8,8 +8,6 @@ export const VALID_CHANGES_FOR_MEMBER = {
         3: [2],
         4: [],
         5: [],
-        6: [],
-        7: [],
     },
     [KEY_FOR_OTHER]: {
         0: [],
@@ -18,8 +16,6 @@ export const VALID_CHANGES_FOR_MEMBER = {
         3: [],
         4: [],
         5: [],
-        6: [],
-        7: [],
     }
 };
 
@@ -31,8 +27,6 @@ export const VALID_CHANGES_FOR_PLANNER_ADMIN_WEBADMINS = {
         3: [2],
         4: [],
         5: [],
-        6: [],
-        7: [],
     },
     [KEY_FOR_OTHER]: {
         0: [1, 2, 3], //(2,3) zugesagt und abgesagt wenn keine Devices
@@ -41,7 +35,5 @@ export const VALID_CHANGES_FOR_PLANNER_ADMIN_WEBADMINS = {
         3: [2], //(2) zugesagt wenn keine Devices
         4: [2, 5],
         5: [1],
-        6: [],
-        7: [],
     }
 };

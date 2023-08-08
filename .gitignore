@@ -51,3 +51,4 @@ local-file-storage
 local-backup-temp
 /test/test-backup-temp
 local.db
+/docker/backup.sql

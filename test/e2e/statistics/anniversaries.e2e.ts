@@ -1,7 +1,7 @@
-import {getAuthenticated} from "./_common/testRequests";
-import {bodyItemMatchesObject, bodyLengthGreaterOrEqual} from "./_common/expectations";
-import {adminToken} from "./_common/helper";
-import {setUpE2E} from "./setup/e2e-setup";
+import {getAuthenticated} from "../_common/testRequests";
+import {bodyItemMatchesObject, bodyLengthGreaterOrEqual} from "../_common/expectations";
+import {adminToken} from "../_common/helper";
+import {setUpE2E} from "../setup/e2e-setup";
 
 setUpE2E()
 
@@ -12,7 +12,7 @@ describe('Anniversaries', () => {
             .expect(res => bodyLengthGreaterOrEqual(res, 3))
             .expect(res => bodyItemMatchesObject(res, 1, {
                 memberId: 2,
-                eventId: 1,
+                statisticsEntryId: 1,
                 performanceCount: 100
             }));
     });
@@ -23,7 +23,7 @@ describe('Anniversaries', () => {
             .expect(res => bodyLengthGreaterOrEqual(res, 1))
             .expect(res => bodyItemMatchesObject(res, 0, {
                 memberId: 6,
-                eventId: 1,
+                statisticsEntryId: 1,
                 performanceCount: 2000
             }));
     });
@@ -35,8 +35,8 @@ describe('Anniversaries', () => {
             .expect(res => bodyLengthGreaterOrEqual(res, 1))
             .expect(res => bodyItemMatchesObject(res, 0, {
                 memberId: 3,
-                eventId: 1,
-                performanceCount: 1000
+                statisticsEntryId: 1,
+                performanceCount: 100
             }));
     });
 
@@ -47,7 +47,7 @@ describe('Anniversaries', () => {
             .expect(res => bodyLengthGreaterOrEqual(res, 1))
             .expect(res => bodyItemMatchesObject(res, 0, {
                 memberId: 6,
-                eventId: 1,
+                statisticsEntryId: 1,
                 performanceCount: 2000
             }));
     });

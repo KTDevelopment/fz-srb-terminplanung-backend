@@ -9,8 +9,6 @@ import {SendFirebaseMessageEvent} from "./send-firebase-message.event";
 import {
     STATE__ATTEND,
     STATE__DO_NOT_ATTEND,
-    STATE__HAS_NOT_PARTICIPATED,
-    STATE__HAS_PARTICIPATED,
     STATE__INVITATION_REQUEST_PENDING,
     STATE__INVITED
 } from "../../ressources/participations/participation-states/participation-state.entity";
@@ -38,17 +36,6 @@ describe('SendFirebaseMessageEventHandler Tests', () => {
         jest.resetAllMocks();
         membersServiceMock.findPlannerOfMember.mockResolvedValue([getTestPlanner()]);
         sendFirebaseMessageEventHandler = module.get<SendFirebaseMessageEventHandler>(SendFirebaseMessageEventHandler);
-    });
-
-    it.each([STATE__HAS_PARTICIPATED, STATE__HAS_NOT_PARTICIPATED])
-    ('should do nothing for %p', (state) => {
-        sendFirebaseMessageEventHandler.handle(plainToInstance(SendFirebaseMessageEvent, {
-            newStateId: state,
-            callingMember: getTestPlanner(),
-            changedMember: getTestMember(),
-            event: getTestEvent(),
-        }));
-        expectNumberOfCalls(0, 0, 0);
     });
 
     it('should do nothing for privileged callingMember and STATE__ATTEND on "normal" member', () => {

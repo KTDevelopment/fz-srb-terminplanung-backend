@@ -6,7 +6,7 @@
   "license": "ISC",
   "scripts": {
     "clear": "rm -rf node_modules",
-    "generateMigrations": "typeorm migration:generate -n",
+    "generateMigrations": "ts-node --project ./tsconfig.json ./node_modules/.bin/typeorm migration:generate ./src/migration/GiveMeAName -d ./config/migration_ormconfig.ts -p",
     "prebuild": "rm -rf dist",
     "build": "nest build -p ./tsconfig.json",
     "build:prod": "yarn build && mv dist/src/main.js dist/src/production-server.js && mv dist/src/main.js.map dist/src/production-server.js.map",

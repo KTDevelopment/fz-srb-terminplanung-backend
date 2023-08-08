@@ -104,6 +104,28 @@ export function getPublicEvents() {
             "version": 1
         },
         TestResponses.unfinishedEvent(),
+        {
+            "eventId": "12",
+            "remoteId": "50",
+            "startDate": "2018-09-17T03:24:00Z",
+            "endDate": "2018-09-18T03:24:00Z",
+            "summary": "etwas was kein Auftritt ist",
+            "description": "",
+            "eventName": "Oktoberfest Zinndorf",
+            "location": "Oktoberfest Zinndorf",
+            "address": "Festzelt auf dem Anger",
+            "postcode": 1234,
+            "town": "Zinndorf",
+            "dress": "-",
+            "participatingGroup": "Drumline",
+            "category": "Meeting",
+            "longitude": 123.23,
+            "latitude": 321.23,
+            "isPublic": true,
+            "creationDate": "2018-09-20T20:56:00.907Z",
+            "updateDate": "2018-09-20T20:56:00.907Z",
+            "version": 1
+        },
     ].map(it => {
         return plainToInstance(Event, {
             ...it,

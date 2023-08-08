@@ -4,8 +4,6 @@ import {DeviceSpecificFcmResponse, FcmService} from "../fcm.service";
 import {
     STATE__ATTEND,
     STATE__DO_NOT_ATTEND,
-    STATE__HAS_NOT_PARTICIPATED,
-    STATE__HAS_PARTICIPATED
 } from "../../ressources/participations/participation-states/participation-state.entity";
 import {MembersService} from "../../ressources/members/members.service";
 import {ApplicationLogger} from "../../logger/application-logger.service";
@@ -45,12 +43,7 @@ export class SendFirebaseMessageEventHandler implements IEventHandler<SendFireba
     private static isFCMNeeded(event: SendFirebaseMessageEvent) {
         const {newStateId, callingMember, changedMember} = event;
         // Nachricht über FCM wird NICHT verschickt, wenn
-        // status 6 oder 7 verteilt wird
-        // oder status 2 oder 3 von einem Planer, wenn ein Mitglied keine Reg_ids hat
-
-        if (newStateId === STATE__HAS_PARTICIPATED || newStateId === STATE__HAS_NOT_PARTICIPATED) {
-            return false;
-        }
+        // status 2 oder 3 von einem Planer, wenn ein Mitglied keine Reg_ids hat
 
         return !(SendFirebaseMessageEventHandler.isAttendOrNotAttend(newStateId) && callingMember.isPrivileged() && changedMember.devices.length === 0);
     }

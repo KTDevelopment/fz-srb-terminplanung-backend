@@ -15,7 +15,7 @@ export function bodyLengthGreaterOrEqual(res, length: number) {
 
 export function bodyLengthEqual(res, length: number) {
     if (!Array.isArray(res.body)) throw new Error("body is no array: " + JSON.stringify(res.body));
-    if (res.body.length !== length) throw new Error("body contains only " + res.body.length + " items instead of minimum " + length);
+    if (res.body.length !== length) throw new Error("body contains " + res.body.length + " items instead of expected " + length);
 }
 
 export function firstBodyItemMatchesObject(res, object) {

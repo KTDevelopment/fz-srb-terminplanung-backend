@@ -1,7 +1,10 @@
 version: '3.8'
 services:
   database:
-    image: arm64v8/mysql:oracle
+    build:
+      context: .
+      dockerfile: Dockerfile
+#    image: arm64v8/mysql:oracle
     container_name: "fz-srb-terminplanung-backend-database"
     restart: always
     environment:

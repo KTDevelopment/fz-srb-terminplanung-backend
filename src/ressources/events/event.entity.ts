@@ -26,7 +26,7 @@ export class Event extends BaseEntity {
     @IsString()
     summary: string;
 
-    @Column({type: "text"})
+    @Column({type: "text", charset: "utf8mb4", collation: "utf8mb4_unicode_ci"})
     @IsString()
     description: string;
 
@@ -116,6 +116,10 @@ export class Event extends BaseEntity {
 
     isAuftritt(): boolean {
         return this.category.toUpperCase().includes(AUFTRITT_MARKER)
+    }
+
+    createLocationString(): string {
+        return `${this.location}, ${this.address}, ${this.postcode} ${this.town}`
     }
 }
 

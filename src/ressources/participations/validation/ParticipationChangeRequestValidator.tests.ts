@@ -41,50 +41,6 @@ class ParticipationChangeRequestValidatorTests {
     }
 
     @test
-    async validateRequestShouldReturnTrueForRequestForFinalState6AndAdmin() {
-        this.testParticipation.event = getTestEventWhichLiesInPast();
-        this.callingMember = getAdminMember();
-        this.newStateId = 6;
-
-        this.expectedResult = true;
-
-        await this.testValidator();
-    }
-
-    @test
-    async validateRequestShouldReturnTrueForRequestForFinalState7AndAdmin() {
-        this.testParticipation.event = getTestEventWhichLiesInPast();
-        this.callingMember = getAdminMember();
-        this.newStateId = 7;
-
-        this.expectedResult = true;
-
-        await this.testValidator();
-    }
-
-    @test
-    async validateRequestShouldReturnTrueForRequestForFinalState6AndPlanner() {
-        this.newStateId = 6;
-        this.testParticipation.event = getTestEventWhichLiesInPast();
-        this.callingMember = getPlannerMember();
-
-        this.expectedResult = true;
-
-        await this.testValidator();
-    }
-
-    @test
-    async validateRequestShouldReturnTrueForRequestForFinalState7AndPlanner() {
-        this.newStateId = 7;
-        this.testParticipation.event = getTestEventWhichLiesInPast();
-        this.callingMember = getPlannerMember();
-
-        this.expectedResult = true;
-
-        await this.testValidator();
-    }
-
-    @test
     async validateRequestShouldReturnFalseForRequestForState1WhenEventLiesInPast() {
         this.newStateId = 1;
         this.testParticipation.event = getTestEventWhichLiesInPast();

@@ -3,9 +3,9 @@ import {Crud, CrudAuth, CrudController} from "@nestjsx/crud";
 import {ApiTags} from "@nestjs/swagger";
 import {Anniversary} from "./anniversary.entity";
 import {AnniversariesService} from "./anniversaries.service";
-import {Roles} from "../roles/roles.decorator";
-import {ROLE_ID_ADMIN, ROLE_ID_MEMBER} from "../roles/role.entity";
-import {Auth} from "../../auth/auth.decorator";
+import {Auth} from "../../../auth/auth.decorator";
+import {ROLE_ID_ADMIN, ROLE_ID_MEMBER} from "../../roles/role.entity";
+import {Roles} from "../../roles/roles.decorator";
 
 @Auth(ROLE_ID_ADMIN)
 @Crud({
@@ -25,7 +25,7 @@ import {Auth} from "../../auth/auth.decorator";
                 //@ts-ignore
                 condition: 'isDeleted = 0'
             },
-            event: {}
+            statisticsEntry: {}
         }
     },
     routes: {

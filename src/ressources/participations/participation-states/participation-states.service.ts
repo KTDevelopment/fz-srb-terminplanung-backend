@@ -5,8 +5,6 @@ import {
     ParticipationState,
     STATE__ATTEND,
     STATE__DO_NOT_ATTEND,
-    STATE__HAS_NOT_PARTICIPATED,
-    STATE__HAS_PARTICIPATED,
     STATE__INVITATION_REQUEST_PENDING,
     STATE__INVITATION_REQUEST_REJECTED,
     STATE__INVITED,
@@ -14,10 +12,11 @@ import {
 } from "./participation-state.entity";
 import {plainToInstance} from "class-transformer";
 import {FindOneOptions} from "typeorm/find-options/FindOneOptions";
+import {Repository} from "typeorm";
 
 @Injectable()
 export class ParticipationStatesService extends CustomCrudService<ParticipationState> {
-    constructor(@InjectRepository(ParticipationState) repo) {
+    constructor(@InjectRepository(ParticipationState) repo: Repository<ParticipationState>) {
         super(repo);
     }
 
@@ -46,11 +45,6 @@ export class ParticipationStatesService extends CustomCrudService<ParticipationS
             plainToInstance(ParticipationState, {
                 stateId: STATE__INVITATION_REQUEST_REJECTED,
                 stateName: 'invitation_request_rejected'
-            }),
-            plainToInstance(ParticipationState, {stateId: STATE__HAS_PARTICIPATED, stateName: 'has_participated'}),
-            plainToInstance(ParticipationState, {
-                stateId: STATE__HAS_NOT_PARTICIPATED,
-                stateName: 'has_not_participated'
             }),
         ]
     }

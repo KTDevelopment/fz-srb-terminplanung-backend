@@ -8,8 +8,12 @@ import {
     ParticipationState
 } from "../../../src/ressources/participations/participation-states/participation-state.entity";
 import {Participation} from "../../../src/ressources/participations/participation.entity";
-import {Anniversary} from "../../../src/ressources/anniversaries/anniversary.entity";
 import {DataSource} from "typeorm/data-source/DataSource";
+import {Anniversary} from "../../../src/ressources/statistics/anniversaries/anniversary.entity";
+import {StatisticsEntry} from "../../../src/ressources/statistics/statisticsEntry/statisticsEntry.entity";
+import {
+    StatisticsParticipation
+} from "../../../src/ressources/statistics/statisticParticipation/statisticsParticipation.entity";
 
 export class TestDataManager {
 
@@ -31,6 +35,8 @@ export class TestDataManager {
         await this.insertParticipationStates();
         await this.insertTestParticipations();
         await this.insertTestDevices();
+        await this.insertTestStatisticsEntries();
+        await this.insertTestStatisticsParticipations();
         await this.insertTestAnniversaries();
     }
 
@@ -38,6 +44,10 @@ export class TestDataManager {
     async clearData() {
         await this.dataSource.destroy();
         await this.dataSource.initialize();
+    }
+
+    async cleanStatisticsDeletionProtocols() {
+        await this.dataSource.query("DELETE FROM statistics_deletion_protocol")
     }
 
     public async addEventThatShouldBeRemoved() {
@@ -71,12 +81,6 @@ export class TestDataManager {
     }
 
     private async insertParticipationStates() {
-        const state6 = new ParticipationState();
-        state6.stateId = 6;
-        state6.stateName = 'has participated';
-        const state7 = new ParticipationState();
-        state7.stateId = 7;
-        state7.stateName = 'has not participated';
         const state5 = new ParticipationState();
         state5.stateId = 5;
         state5.stateName = 'invitation request reject';
@@ -92,13 +96,11 @@ export class TestDataManager {
 
         // (2, 'attend'),
         //     (3, 'do not attend'),
-        //     (7, 'has not participated'),
-        //     (6, 'has participated'),
         //     (4, 'invitation request pending'),
         //     (5, 'invitation request reject'),
         //     (1, 'invited'),
         //     (0, 'not invited');
-        return await this.dataSource.manager.save([state0, state1, state6, state7, state4, state5])
+        return await this.dataSource.manager.save([state0, state1, state4, state5])
     }
 
     private async insertTestDevices() {
@@ -223,13 +225,10 @@ export class TestDataManager {
 
     static getRawTestParticipations() {
         return [
-            {memberId: 1, eventId: 1, stateId: 7},
             {memberId: 2, eventId: 1, stateId: 5},
-            {memberId: 4, eventId: 1, stateId: 7},
+            {memberId: 4, eventId: 1, stateId: 5},
             {memberId: 3, eventId: 2, stateId: 0},
-            {memberId: 6, eventId: 1, stateId: 6},
             {memberId: 3, eventId: 2, stateId: 1},
-            {memberId: 1, eventId: 3, stateId: 7},
         ]
     }
 
@@ -237,19 +236,106 @@ export class TestDataManager {
         return [
             {
                 memberId: 6,
-                eventId: 1,
+                statisticsEntryId: 1,
                 performanceCount: 2000
             },
             {
                 memberId: 2,
-                eventId: 1,
+                statisticsEntryId: 1,
                 performanceCount: 100
             },
             {
                 memberId: 3,
+                statisticsEntryId: 1,
+                performanceCount: 100
+            },
+            {
+                memberId: 3,
+                statisticsEntryId: 4,
+                performanceCount: 200
+            },
+        ]
+    }
+
+    private async insertTestStatisticsEntries() {
+        await this.entityManager.save(this.entityManager.create(StatisticsEntry, TestDataManager.getRawStatisticsEntries()));
+    }
+
+    private static getRawStatisticsEntries() {
+        const ms = new Date().getTime() + 86400000;
+        const tomorrow = new Date(ms);
+        return [
+            {
+                name: "TestStatisticEntry-1",
+                locationString: "exampleLocation, string",
+                date: new Date("2023-05-12T00:00:00Z"),
                 eventId: 1,
-                performanceCount: 1000
+                sectionId: 1,
+                isProcessed: false,
+            },
+            {
+                name: "TestStatisticEntry-1",
+                locationString: "exampleLocation, string",
+                date: new Date("2023-05-12T00:00:00Z"),
+                eventId: 1,
+                sectionId: 2,
+                isProcessed: false,
+            },
+            {
+                name: "TestStatisticEntry-2",
+                locationString: "exampleLocation, string",
+                date: new Date("2023-06-12T00:00:00Z"),
+                eventId: 2,
+                sectionId: 1,
+                isProcessed: true,
+            },
+            {
+                name: "TestStatisticEntry-Tomorrow",
+                locationString: "exampleLocation, string",
+                date: tomorrow,
+                eventId: 3,
+                sectionId: 1,
+                isProcessed: true,
             }
+        ]
+    }
+
+    private async insertTestStatisticsParticipations() {
+        await this.entityManager.save(this.entityManager.create(StatisticsParticipation, TestDataManager.getRawStatisticsParticipations()));
+    }
+
+    private static getRawStatisticsParticipations() {
+        return [
+            {
+                memberId: 1,
+                statisticsEntryId: 1,
+                performanceCount: 100,
+            },
+            {
+                memberId: 2,
+                statisticsEntryId: 1,
+                performanceCount: 100,
+            },
+            {
+                memberId: 6,
+                statisticsEntryId: 1,
+                performanceCount: 100,
+            },
+            {
+                memberId: 3,
+                statisticsEntryId: 1,
+                performanceCount: 100,
+            },
+            {
+                memberId: 3,
+                statisticsEntryId: 3,
+                performanceCount: 101,
+            },
+            {
+                memberId: 3,
+                statisticsEntryId: 4,
+                performanceCount: 200,
+            },
         ]
     }
 }

@@ -11,7 +11,6 @@ import {MembersModule} from '../ressources/members/members.module';
 import {AuthModule} from '../auth/auth.module';
 import {ParticipationsModule} from '../ressources/participations/participations.module';
 import {ParticipationStatesModule} from '../ressources/participations/participation-states/participation-states.module';
-import {AnniversariesModule} from '../ressources/anniversaries/anniversaries.module';
 import {MiscModule} from '../ressources/misc/misc.module';
 import {MailModule} from '../mail/mail.module';
 import {FcmModule} from '../fcm/fcm.module';
@@ -22,6 +21,7 @@ import {ServeStaticModule} from "@nestjs/serve-static";
 import {RavenInterceptor, RavenModule} from "nest-raven";
 import {APP_INTERCEPTOR} from "@nestjs/core";
 import {BackupModule} from "../backup/nest-integration/backup.module";
+import {StatisticsModule} from "../ressources/statistics/statistics.module";
 
 @Module({
     imports: [
@@ -49,11 +49,11 @@ import {BackupModule} from "../backup/nest-integration/backup.module";
         MembersModule,
         ParticipationsModule,
         ParticipationStatesModule,
-        AnniversariesModule,
         MiscModule,
         MailModule,
         FcmModule,
         BackupModule,
+        StatisticsModule,
     ],
     controllers: [AppController],
     providers: [

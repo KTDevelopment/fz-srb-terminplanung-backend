@@ -5,7 +5,7 @@ import {
     VALID_CHANGES_FOR_MEMBER,
     VALID_CHANGES_FOR_PLANNER_ADMIN_WEBADMINS
 } from "./ValidStateChanges";
-import {STATE__HAS_NOT_PARTICIPATED, STATE__HAS_PARTICIPATED} from "../participation-states/participation-state.entity";
+import {STATE_DEPRECATIONS} from "../participation-states/participation-state.entity";
 import {Injectable} from "@nestjs/common";
 
 @Injectable()
@@ -22,12 +22,7 @@ export class ParticipationChangeRequestValidator {
         const newStateId = participationChangeRequest.newStateId;
         const callingMember = participationChangeRequest.callingMember;
 
-        // simple validation for both final states: only when in past, from planner or admin
-        if (newStateId === STATE__HAS_NOT_PARTICIPATED || newStateId === STATE__HAS_PARTICIPATED) {
-            return event.isInPast() && (callingMember.isAdmin() || callingMember.isPlanner());
-        }
-
-        // guard when event is in past, only finale states STATE__HAS_NOT_PARTICIPATED, STATE__HAS_PARTICIPATED are valid
+        // guard when event is in the past, no more changes are valid
         if (event.isInPast()) {
             return false;
         }
@@ -83,6 +78,8 @@ export class ParticipationChangeRequestValidator {
     private static baseValidation(participationChangeRequest: ParticipationChangeRequest) {
         return (
             participationChangeRequest.newStateId !== null &&
+            participationChangeRequest.newStateId !== STATE_DEPRECATIONS.STATE__HAS_NOT_PARTICIPATED &&
+            participationChangeRequest.newStateId !== STATE_DEPRECATIONS.STATE__HAS_PARTICIPATED &&
             participationChangeRequest.currentParticipation !== null &&
             participationChangeRequest.callingMember !== null
         );

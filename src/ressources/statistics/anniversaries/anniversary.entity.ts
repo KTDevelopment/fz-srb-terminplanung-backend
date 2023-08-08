@@ -1,9 +1,9 @@
 import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 import {Type} from "class-transformer";
 import {IsInt, IsOptional} from "class-validator";
-import {Member} from "../members/member.entity";
-import {Event} from "../events/event.entity";
-import {BaseEntity} from "../../_common/base.entity";
+import {Member} from "../../members/member.entity";
+import {StatisticsEntry} from "../statisticsEntry/statisticsEntry.entity";
+import {BaseEntity} from "../../../_common/base.entity";
 
 @Entity()
 export class Anniversary extends BaseEntity {
@@ -19,7 +19,7 @@ export class Anniversary extends BaseEntity {
 
     @Column()
     @IsInt()
-    eventId: number;
+    statisticsEntryId: number;
 
     @Column()
     @IsInt()
@@ -30,8 +30,8 @@ export class Anniversary extends BaseEntity {
     @Type(() => Member)
     member: Member;
 
-    @ManyToOne(() => Event, event => event.eventId)
-    @JoinColumn({name: "eventId"})
-    @Type(() => Event)
-    event: Event;
+    @ManyToOne(() => StatisticsEntry, statisticsEntry => statisticsEntry.id)
+    @JoinColumn({name: "statisticsEntryId"})
+    @Type(() => StatisticsEntry)
+    statisticsEntry: StatisticsEntry;
 }
