@@ -116,5 +116,21 @@ describe('StatisticsEntries', () => {
                 .expect(400)
         });
 
+        it('NO statisticEntries from Event as ADMIN, if unique constrain of name, eventId and sectionId', async () => {
+            await postAuthenticated('/statisticsEntries/fromEvent', await adminToken())
+                .send({
+                    eventId: 1,
+                    sectionIds: [4],
+                    customName: "customName",
+                })
+
+            return postAuthenticated('/statisticsEntries/fromEvent', await adminToken())
+                .send({
+                    eventId: 1,
+                    sectionIds: [4],
+                    customName: "customName",
+                })
+                .expect(400)
+        });
     })
 });

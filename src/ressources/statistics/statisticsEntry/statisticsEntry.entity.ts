@@ -3,7 +3,7 @@ import {IsDate, IsInt, IsOptional, IsString} from "class-validator";
 import {BaseEntity} from "../../../_common/base.entity";
 
 @Entity()
-@Unique(["eventId", "sectionId"])
+@Unique(["name", "eventId", "sectionId"])
 export class StatisticsEntry extends BaseEntity {
 
     @PrimaryGeneratedColumn()

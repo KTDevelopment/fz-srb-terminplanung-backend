@@ -31,14 +31,18 @@ export class StatisticsEntryService extends CustomCrudService<StatisticsEntry> {
 
         return this.dataSource.transaction(entityManager => {
             return promiseAllSequentially(dto.sectionIds, async (sectionId) => {
-                return entityManager.save(plainToInstance(StatisticsEntry, {
-                    name: dto.customName ? dto.customName : event.eventName,
-                    locationString: event.createLocationString(),
-                    date: event.endDate,
-                    eventId: event.eventId,
-                    sectionId: sectionId,
-                    isProcessed: false,
-                }))
+                try {
+                    return await entityManager.save(plainToInstance(StatisticsEntry, {
+                        name: dto.customName ? dto.customName : event.eventName,
+                        locationString: event.createLocationString(),
+                        date: event.endDate,
+                        eventId: event.eventId,
+                        sectionId: sectionId,
+                        isProcessed: false,
+                    }))
+                } catch (e) {
+                    throw new BadRequestException("requested creation is not valid")
+                }
             })
         });
     }
