@@ -118,9 +118,20 @@ export class Event extends BaseEntity {
         return this.category.toUpperCase().includes(AUFTRITT_MARKER)
     }
 
+    isHighlight() {
+        return this.category.toUpperCase().includes(HIGHLIGHT_MARKER);
+    }
+
     createLocationString(): string {
-        return `${this.location}, ${this.address}, ${this.postcode} ${this.town}`
+        let base = [this.location, this.address, this.postcode].filter(Boolean).join(", ")
+
+        if(this.town !== undefined) {
+            base = `${base} ${this.town}`
+        }
+
+        return base
     }
 }
 
-export const AUFTRITT_MARKER = "AUFTRITT"
+export const AUFTRITT_MARKER = "AUFTRITT";
+export const HIGHLIGHT_MARKER = "HIGHLIGHT";

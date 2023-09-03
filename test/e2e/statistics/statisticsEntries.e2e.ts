@@ -41,7 +41,7 @@ describe('StatisticsEntries', () => {
     })
 
     describe("CREATE", () => {
-        it('statisticEntries from Event as ADMIN', async () => {
+        it('statisticEntries from auftritt Event as ADMIN', async () => {
             return postAuthenticated('/statisticsEntries/fromEvent', await adminToken())
                 .send({
                     eventId: 1,
@@ -59,7 +59,25 @@ describe('StatisticsEntries', () => {
                 }));
         });
 
-        it('statisticEntries from Event with custom name as ADMIN', async () => {
+        it('statisticEntries from highlight Event as ADMIN', async () => {
+            return postAuthenticated('/statisticsEntries/fromEvent', await adminToken())
+                .send({
+                    eventId: 60,
+                    sectionIds: [5, 6],
+                })
+                .expect(201)
+                .expect(res => bodyLengthEqual(res, 2))
+                .expect(res => bodyItemMatchesObject(res, 1, {
+                    name: "19. Herbstfanfare 2018",
+                    locationString: "EnergieARENA, Wriezener Str., 1234 Strausberg",
+                    date: "2018-08-18T03:24:00.000Z",
+                    eventId: 60,
+                    sectionId: 6,
+                    isProcessed: false,
+                }));
+        });
+
+        it('statisticEntries from auftritt Event with custom name as ADMIN', async () => {
             return postAuthenticated('/statisticsEntries/fromEvent', await adminToken())
                 .send({
                     eventId: 3,

@@ -126,6 +126,28 @@ export function getPublicEvents() {
             "updateDate": "2018-09-20T20:56:00.907Z",
             "version": 1
         },
+        {
+            "eventId": "60",
+            "remoteId": "6000",
+            "startDate": "2018-08-17T03:24:00Z",
+            "endDate": "2018-08-18T03:24:00Z",
+            "summary": "19. Herbstfanfare 2018 - EnergieARENA - 03.10.2018 - 17:00 - 21:00",
+            "description": "Abend-Show-Veranstaltung des Fanfarenzuges des KSC Strausberg e. V.Saisonabschluss und Dankeschön für alle Aktiven, Eltern, Helfer, Förderer, Sponsoren, Fan´s, Freunde und alle Strausberger...",
+            "eventName": "19. Herbstfanfare 2018",
+            "location": "EnergieARENA",
+            "address": "Wriezener Str.",
+            "postcode": 1234,
+            "town": "Strausberg",
+            "dress": "Showkleidung",
+            "participatingGroup": "ALLE",
+            "category": "HIGHLIGHT",
+            "longitude": 123.23,
+            "latitude": 321.23,
+            "isPublic": false,
+            "creationDate": "2018-09-20T20:56:00.891Z",
+            "updateDate": "2018-09-20T20:56:00.891Z",
+            "version": 1
+        },
     ].map(it => {
         return plainToInstance(Event, {
             ...it,

@@ -6,7 +6,7 @@ import {CustomCrudService} from "../../../_common/CustomCrudService";
 import {CreateFromEventDto} from "./dto/CreateFromEventDto";
 import {InjectDataSource} from "@nestjs/typeorm/dist/common/typeorm.decorators";
 import {DataSource} from "typeorm/data-source/DataSource";
-import {AUFTRITT_MARKER, Event} from "../../events/event.entity";
+import {AUFTRITT_MARKER, Event, HIGHLIGHT_MARKER} from "../../events/event.entity";
 import {promiseAllSequentially} from "../../../_common/promiseAllSequentially";
 import {plainToInstance} from "class-transformer";
 
@@ -25,25 +25,25 @@ export class StatisticsEntryService extends CustomCrudService<StatisticsEntry> {
             throw new BadRequestException(`given event does not exists`)
         }
 
-        if (!event.isAuftritt()) {
-            throw new BadRequestException(`statistics are only allowed for ${AUFTRITT_MARKER} right now`)
+        if (event.isAuftritt() || event.isHighlight()) {
+            return this.dataSource.transaction(entityManager => {
+                return promiseAllSequentially(dto.sectionIds, async (sectionId) => {
+                    try {
+                        return await entityManager.save(plainToInstance(StatisticsEntry, {
+                            name: dto.customName ? dto.customName : event.eventName,
+                            locationString: event.createLocationString(),
+                            date: event.endDate,
+                            eventId: event.eventId,
+                            sectionId: sectionId,
+                            isProcessed: false,
+                        }))
+                    } catch (e) {
+                        throw new BadRequestException("requested creation is not valid")
+                    }
+                })
+            });
+        } else {
+            throw new BadRequestException(`statistics are only allowed for ${AUFTRITT_MARKER} or ${HIGHLIGHT_MARKER} right now`)
         }
-
-        return this.dataSource.transaction(entityManager => {
-            return promiseAllSequentially(dto.sectionIds, async (sectionId) => {
-                try {
-                    return await entityManager.save(plainToInstance(StatisticsEntry, {
-                        name: dto.customName ? dto.customName : event.eventName,
-                        locationString: event.createLocationString(),
-                        date: event.endDate,
-                        eventId: event.eventId,
-                        sectionId: sectionId,
-                        isProcessed: false,
-                    }))
-                } catch (e) {
-                    throw new BadRequestException("requested creation is not valid")
-                }
-            })
-        });
     }
 }
