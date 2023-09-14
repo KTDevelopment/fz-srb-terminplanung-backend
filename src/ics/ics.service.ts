@@ -4,6 +4,7 @@ import {plainToInstance} from "class-transformer";
 import {ConfigService} from "../config/config.service";
 import {ApplicationLogger} from "../logger/application-logger.service";
 import {AppException} from "../_common/AppException";
+import {DateTime} from "luxon";
 
 const iCal = require('node-ical');
 
@@ -17,21 +18,41 @@ export class IcsService {
         this.logger.setContext(IcsService.name)
     }
 
-    downloadEvents(): Promise<Event[]> {
-        const url = this.configService.config.ics.icsRootPath;
-        return new Promise((resolve, reject) => {
-            const newEvents = [];
+    async downloadEvents(): Promise<Event[]> {
+        const basicUrl = this.configService.config.ics.icsRootPath;
+        const futureUrl = basicUrl + "&tribe-bar-date=" + DateTime.now().plus({month: 3}).toFormat("yyyy-MM-dd")
+        return this.removeDuplicateEvents([
+            ...this.convertEvents(await this.downloadFromUrl(basicUrl)),
+            ...this.convertEvents(await this.downloadFromUrl(futureUrl))
+        ])
+    }
+
+    private removeDuplicateEvents(events: Event[]) {
+        return events.filter((value, index, self) =>
+                index === self.findIndex((t) => (
+                    t.remoteId === value.remoteId
+                ))
+        )
+    }
+
+    private convertEvents(rawIcsEvents: any) {
+        const newEvents = [];
+        for (let i in rawIcsEvents) {
+            if (rawIcsEvents.hasOwnProperty(i) && rawIcsEvents[i].type === 'VEVENT') {
+                newEvents.push(IcsService.createEvent(rawIcsEvents[i]));
+            }
+        }
+        return newEvents;
+    }
+
+    private async downloadFromUrl(url: string) {
+        return new Promise((resolve) => {
             iCal.fromURL(url, {}, (err, data) => {
                 if (!err) {
-                    for (let i in data) {
-                        if (data.hasOwnProperty(i) && data[i].type === 'VEVENT') {
-                            newEvents.push(IcsService.createEvent(data[i]));
-                        }
-                    }
-                    resolve(newEvents)
+                    resolve(data)
                 } else {
                     this.logger.error(new AppException(err, "Fehler beim Download der .ics Datei von " + url));
-                    reject(err);
+                    resolve([]);
                 }
             });
         })

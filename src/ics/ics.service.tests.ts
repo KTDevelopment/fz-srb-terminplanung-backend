@@ -6,8 +6,10 @@ import {IcsService} from "./ics.service";
 import {plainToInstance} from "class-transformer";
 import {Event} from "../ressources/events/event.entity";
 import {configServiceMock} from "../../test/mocks/configServiceMock";
+import {Settings} from "luxon";
 
 const iCal = require('node-ical');
+Settings.now = () => new Date(2023, 8, 25).valueOf();
 
 describe('IcsServiceTests', () => {
     let icsService: IcsService;
@@ -19,7 +21,7 @@ describe('IcsServiceTests', () => {
                 provide: ConfigService,
                 useValue: configServiceMock({
                     ics: {
-                        icsRootPath: 'fooUrl'
+                        icsRootPath: 'https://fzsrbtest.de/termine/?ical=1'
                     }
                 })
             }, {
@@ -36,20 +38,32 @@ describe('IcsServiceTests', () => {
         expect(icsService).toBeDefined();
     });
 
-    it('should parse events', async () => {
-        iCal.fromURL.mockImplementation((url, options, callback) => callback(null, iCalRawData()));
+    it('should parse events and remove duplicates', async () => {
+        iCal.fromURL
+            .mockImplementationOnce((url, options, callback) => callback(null, iCalRawData()))
+            .mockImplementationOnce((url, options, callback) => callback(null, secondICalRawData()));
 
         const events = await icsService.downloadEvents();
 
-        expect(events.length).toBe(3);
+        expect(events.length).toBe(4);
         expect(events).toEqual(expectedEvents());
+    });
+
+    it('should load current events and three month in future', async () => {
+        iCal.fromURL.mockImplementation((url, options, callback) => callback(null, iCalRawData()));
+
+        await icsService.downloadEvents();
+
+        expect(iCal.fromURL.mock.calls[0][0]).toBe("https://fzsrbtest.de/termine/?ical=1");
+        expect(iCal.fromURL.mock.calls[1][0]).toBe("https://fzsrbtest.de/termine/?ical=1&tribe-bar-date=2023-12-25");
     });
 
     it('should logg an reject error', async () => {
         iCal.fromURL.mockImplementation((url, options, callback) => callback(new Error('caboom')));
 
-        await expect(icsService.downloadEvents()).rejects.toThrow('caboom');
+        const events = await icsService.downloadEvents();
 
+        expect(events.length).toBe(0);
         expect(loggerMock.error).toBeCalled();
     });
 
@@ -101,6 +115,34 @@ function iCalRawData(): any {
         }
     }
 }
+function secondICalRawData(): any {
+    return {
+        customKey: {
+            type: 'foo'
+        },
+        event3: {
+            type: 'VEVENT',
+            uid: 'event3',
+            start: new Date('2020-05-02T12:00:00Z'),
+            end: new Date('2020-05-02T17:00:00Z'),
+            summary: 'Custom',
+            description: 'desc',
+            location: 'ENERGIE-ARENA, Wriezener Str. 30 e, Strausberg, 15344, Deutschland',
+            categories: ['AUFTRITT', 'noch was']
+        },
+        event4: {
+            type: 'VEVENT',
+            uid: 'event4',
+            start: new Date('2022-05-01T12:00:00Z'),
+            end: new Date('2022-05-01T17:00:00Z'),
+            summary: 'einfacher Auftritt',
+            description: 'irgend ein Text',
+            location: 'ENERGIE-ARENA, Wriezener Str. 30 e, Strausberg, 15344, Deutschland',
+            categories: ['AUFTRITT']
+        },
+    }
+}
+
 
 function falsyData(): any {
     return {
@@ -173,5 +215,23 @@ function expectedEvents(): Event[] {
             summary: "Custom",
             town: "Strausberg",
         }),
+        plainToInstance(Event, {
+            address: "Wriezener Str. 30 e",
+            category: "AUFTRITT",
+            description: "irgend ein Text",
+            dress: "",
+            endDate: new Date("2022-05-01T17:00:00Z"),
+            eventName: "einfacher Auftritt",
+            isPublic: true,
+            latitude: 0,
+            location: "ENERGIE-ARENA",
+            longitude: 0,
+            participatingGroup: "",
+            postcode: 15344,
+            remoteId: "event4",
+            startDate: new Date("2022-05-01T12:00:00Z"),
+            summary: "einfacher Auftritt",
+            town: "Strausberg",
+        })
     ]
 }
