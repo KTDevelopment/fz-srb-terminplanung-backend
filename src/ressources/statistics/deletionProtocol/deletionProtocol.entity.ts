@@ -13,10 +13,12 @@ export class DeletionProtocol extends BaseEntity {
     @Column()
     @IsInt()
     memberId: number;
+    //TODO fix this to the name of the member, because a deletion of the statisticsEntry should generate protocol entries
 
     @Column()
     @IsInt()
     statisticsEntryId: number;
+    //TODO fix this to the name of the statisticsEntry, because a deletion of the statisticsEntry should generate protocol entries
 
     @Column()
     @IsInt()

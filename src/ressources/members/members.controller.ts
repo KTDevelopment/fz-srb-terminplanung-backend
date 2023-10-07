@@ -1,9 +1,8 @@
-import {Body, Controller, Query} from '@nestjs/common';
+import {Body, Controller, ForbiddenException} from '@nestjs/common';
 import {CreateManyDto, Crud, CrudAuth, CrudController, CrudRequest, Override, ParsedRequest} from "@nestjsx/crud";
 import {MembersService} from "./members.service";
 import {Member} from "./member.entity";
-import {ApiQuery, ApiResponse, ApiTags} from "@nestjs/swagger";
-import {ParseBooleanPipe} from "../../_common/ParseBooleanPipe";
+import {ApiResponse, ApiTags} from "@nestjs/swagger";
 import {Roles} from "../roles/roles.decorator";
 import {ROLE_ID_ADMIN, ROLE_ID_PLANNER} from "../roles/role.entity";
 import {Auth} from "../../auth/auth.decorator";
@@ -52,7 +51,8 @@ import {Auth} from "../../auth/auth.decorator";
         if (member.isPlanner() && !member.isAdmin()) {
             return {sectionId: member.sectionId}
         }
-    }
+    },
+    persist: (user: Member) => user,
 })
 @ApiTags('members')
 @Controller('api/v2/members')
@@ -64,16 +64,19 @@ export class MembersController implements CrudController<Member> {
         return this;
     }
 
-    @ApiQuery({name: 'includeDeleted', type: 'boolean', required: false})
     @ApiResponse({status: 200, type: [Member]})
     @Roles(ROLE_ID_ADMIN, ROLE_ID_PLANNER)
     @Override()
     getMany(
         @ParsedRequest() req: CrudRequest,
-        @Query('includeDeleted', ParseBooleanPipe) includeDeleted: boolean
     ) {
-        if (!includeDeleted) {
+
+        if (!MembersController.includesDeletedFilter(req)) {
             MembersController.addFieldToSearch(req, 'isDeleted', false);
+        } else {
+            if (!(req.parsed.authPersist as Member).isAdmin()) {
+                throw new ForbiddenException("requested call is not allowed")
+            }
         }
 
         return this.base.getManyBase(req);
@@ -103,4 +106,7 @@ export class MembersController implements CrudController<Member> {
         })
     }
 
+    private static includesDeletedFilter(req: CrudRequest): boolean {
+        return req.parsed.filter.findIndex(it => it.field === "isDeleted") >= 0
+    }
 }

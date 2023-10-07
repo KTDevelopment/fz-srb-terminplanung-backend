@@ -19,12 +19,38 @@ export function bodyLengthEqual(res, length: number) {
 }
 
 export function firstBodyItemMatchesObject(res, object) {
+    bodyIsArray(res)
     bodyItemMatchesObject(res, 0, object);
+}
+
+export function noBodyItemMatchesObject(res, matcher: (value: any) => boolean) {
+    bodyIsArray(res)
+    res.body.forEach((_, index: number) => {
+        bodyItemDoesNOTMatch(res, index, matcher);
+    })
 }
 
 export function bodyItemMatchesObject(res, index, object) {
     if (res.body[index] === undefined) throw new Error("no item at index: " + index + " in body: " + JSON.stringify(res.body));
     expect(res.body[index]).toMatchObject(object);
+}
+
+export function bodyItemMatches(res, index, matcher: (value: any) => boolean) {
+    bodyIsArray(res)
+    if (!matcher(res.body[index])) {
+        throw new Error("body item does not match: " + JSON.stringify(res.body[index]));
+    }
+}
+
+export function bodyItemDoesNOTMatch(res, index, matcher: (value: any) => boolean) {
+    bodyIsArray(res)
+    if (matcher(res.body[index])) {
+        throw new Error("body item matches but it should NOT: " + JSON.stringify(res.body[index]));
+    }
+}
+
+export function bodyIsArray(res) {
+    if (!Array.isArray(res.body)) throw new Error("body is no array: " + JSON.stringify(res.body));
 }
 
 export function loginResponse(res) {

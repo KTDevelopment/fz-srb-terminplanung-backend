@@ -9,10 +9,10 @@ import {
     bodyItemMatchesObject,
     bodyLengthGreaterOrEqual,
     bodyMatchesObject,
-    firstBodyItemMatchesObject
+    firstBodyItemMatchesObject, noBodyItemMatchesObject
 } from "./_common/expectations";
 import {TestResponses} from "./TestData/TestResponses";
-import {adminToken, reload} from "./_common/helper";
+import {adminToken, plannerToken, reload} from "./_common/helper";
 import {setUpE2E} from "./setup/e2e-setup";
 
 setUpE2E()
@@ -62,15 +62,22 @@ describe('Member', () => {
         it('should getBaseMembers', async () => {
             return getAuthenticated('/members', await adminToken())
                 .expect(res => bodyLengthGreaterOrEqual(res, 5))
+                .expect(res => noBodyItemMatchesObject(res, item => item.isDeleted))
                 .expect(res => firstBodyItemMatchesObject(res, TestResponses.kevin()));
         });
 
-        it('should getMembersIncludingDeleted', async () => {
+        it('should get deleted Members', async () => {
             return getAuthenticated('/members', await adminToken())
-                .query('includeDeleted=true')
+                .query('filter=isDeleted||eq||true')
                 .expect(200)
-                .expect(res => bodyLengthGreaterOrEqual(res, 6))
-                .expect(res => bodyItemMatchesObject(res, 4, TestResponses.paul()));
+                .expect(res => bodyLengthGreaterOrEqual(res, 1))
+                .expect(res => firstBodyItemMatchesObject(res, TestResponses.paul()));
+        });
+
+        it('should NOT get deleted members if called as planner', async () => {
+            return getAuthenticated('/members', await plannerToken())
+                .query('filter=isDeleted||eq||true')
+                .expect(403);
         });
 
         it('should getBaseMembers By Email', async () => {
