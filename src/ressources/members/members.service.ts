@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {Member} from "./member.entity";
 import {PasswordEncryptor} from "../../auth/password.encryptor";
@@ -46,42 +46,32 @@ export class MembersService extends CustomCrudService<Member> {
     }
 
     async createOne(req: CrudRequest, dto: DeepPartial<Member>): Promise<Member> {
+        const baseMember = this.repo.create(dto)
+        const defaultRole = await this.roleService.getDefaultRole()
+        await this.ensureUniqueName(baseMember);
         return await this.repo.save(
             await validateEntity(
-                await this.createMemberWithMandatoryRolesAndHashedPassword(dto)
+                this.augmentMemberWithMandatoryRolesAndHashedPassword(baseMember, defaultRole)
             )
         );
     }
 
     async createMany(req: CrudRequest, dto: CreateManyDto<DeepPartial<Member>>): Promise<Member[]> {
         const newMembers = this.repo.create(dto.bulk);
-        const defaultMemberRole = await this.roleService.getDefaultRole();
-        newMembers.forEach(newMember => {
-            if (!newMember.roles) newMember.roles = [];
-            MembersService.augmentRolesOfMember(newMember, defaultMemberRole);
-            if (!newMember.password) newMember.password = "";
-            this.hashPasswordOfMember(newMember);
-        });
+        await this.ensureUniqueNames(newMembers);
+        const defaultRole = await this.roleService.getDefaultRole();
+        const membersToSave = newMembers.map(it => this.augmentMemberWithMandatoryRolesAndHashedPassword(it, defaultRole));
 
-        await Promise.all(newMembers.map(newMember => validateEntity(newMember)));
-        return await this.repo.save(newMembers);
+        await Promise.all(membersToSave.map(newMember => validateEntity(newMember)));
+        return await this.repo.save(membersToSave);
     }
 
     async updateOne(req: CrudRequest, dto: DeepPartial<Member>): Promise<Member> {
-        const found = await this.getOneOrFail(req);
-        this.hashPasswordOfMember(dto);
-        const toSave = this.repo.create({...found, ...dto});
-        MembersService.augmentRolesOfMember(toSave, await this.roleService.getDefaultRole());
-        await this.repo.save(toSave);
-        return this.findDetailedMember(toSave.memberId);
+        return this.upDateOrReplace(req, dto)
     }
 
     async replaceOne(req: CrudRequest, dto: DeepPartial<Member>): Promise<Member> {
-        const found = await this.getOneOrFail(req);
-        this.hashPasswordOfMember(dto);
-        const toSave = this.repo.create({...found, ...dto});
-        MembersService.augmentRolesOfMember(toSave, await this.roleService.getDefaultRole());
-        return await this.repo.save(toSave);
+        return this.upDateOrReplace(req, dto)
     }
 
     async deleteOne(req: CrudRequest): Promise<undefined | Member> {
@@ -98,13 +88,25 @@ export class MembersService extends CustomCrudService<Member> {
         }
     }
 
-    private async createMemberWithMandatoryRolesAndHashedPassword(memberLike: DeepPartial<Member>): Promise<Member> {
-        const augmentedMember = this.repo.create(memberLike);
-        if (!augmentedMember.roles) augmentedMember.roles = [];
-        MembersService.augmentRolesOfMember(augmentedMember, await this.roleService.getDefaultRole());
-        if (!augmentedMember.password) augmentedMember.password = "";
-        this.hashPasswordOfMember(augmentedMember);
-        return augmentedMember;
+    private async upDateOrReplace(req: CrudRequest, dto: DeepPartial<Member>) {
+        const found = await this.getOneOrFail(req);
+        delete dto.memberId;
+        this.hashPasswordOfMember(dto);
+        const toSave = this.repo.create({...found, ...dto});
+        if (found.getFullName() !== toSave.getFullName()) {
+            await this.ensureUniqueName(toSave);
+        }
+        MembersService.augmentRolesOfMember(toSave, await this.roleService.getDefaultRole());
+        await this.repo.save(toSave);
+        return this.findDetailedMember(toSave.memberId);
+    }
+
+    private augmentMemberWithMandatoryRolesAndHashedPassword(baseMember: Member, defaultRole: Role): Member {
+        if (!baseMember.roles) baseMember.roles = [];
+        MembersService.augmentRolesOfMember(baseMember, defaultRole);
+        if (!baseMember.password) baseMember.password = "";
+        this.hashPasswordOfMember(baseMember);
+        return baseMember;
     }
 
     private static augmentRolesOfMember(newMember: Member, defaultMemberRole: Role) {
@@ -146,5 +148,19 @@ export class MembersService extends CustomCrudService<Member> {
                 roleId: 200,
             }]
         })
+    }
+
+    private async ensureUniqueName(member: Member) {
+        const loadedMember = await this.repo.findOneBy({firstName: member.firstName, lastName: member.lastName})
+        if (loadedMember) {
+           throw new BadRequestException("combination of firstName and lastName already taken")
+        }
+    }
+
+    private async ensureUniqueNames(member: Member[]) {
+        const loadedMembers = await this.repo.findBy(member.map(it => ({firstName: it.firstName, lastName: it.lastName})))
+        if (loadedMembers.length > 0) {
+            throw new BadRequestException("combination of firstName and lastName already taken")
+        }
     }
 }

@@ -108,6 +108,12 @@ describe('Member', () => {
                 .send(MEMBER_DATA.POST_WithRole)
                 .expect(res => bodyMatchesObject(res, MEMBER_DATA.POST_RECEIVE_WithRole));
         });
+
+        it('fails when combination of firstName and lastName ist already present', async () => {
+            return postAuthenticated('/members', await adminToken())
+                .send(MEMBER_DATA.POST_NAME_ALREADY_PRESENT)
+                .expect(400);
+        });
     });
 
     describe('/POST Many member', () => {
@@ -124,6 +130,17 @@ describe('Member', () => {
                 .expect(res => bodyItemMatchesObject(res, 0, MEMBER_DATA.POST_RECEIVE_WithoutRoles))
                 .expect(res => bodyItemMatchesObject(res, 1, MEMBER_DATA.POST_RECEIVE_WithRole));
         });
+
+        it('fails when combination of firstName and lastName ist already present', async () => {
+            return postAuthenticated('/members', await adminToken())
+                .send({
+                    bulk: [
+                        MEMBER_DATA.POST_NAME_ALREADY_PRESENT,
+                        MEMBER_DATA.POST_WithRole
+                    ]
+                })
+                .expect(400);
+        });
     });
 
     describe('/PUT member', () => {
@@ -138,6 +155,12 @@ describe('Member', () => {
             return putAuthenticated('/members/1', await adminToken())
                 .send(MEMBER_DATA.PUT_WithSectionAndRole)
                 .expect(res => bodyMatchesObject(res, MEMBER_DATA.PUT_RECEIVE_WithSectionAndRole));
+        });
+
+        it('fails when combination of firstName and lastName ist already present on other member', async () => {
+            return putAuthenticated('/members/2', await adminToken())
+                .send(MEMBER_DATA.PUT_WithoutRole)
+                .expect(400);
         });
     });
 
@@ -161,6 +184,12 @@ describe('Member', () => {
                 .send(MEMBER_DATA.PATCH_DoesNotClearRoles)
                 .expect(res => bodyMatchesObject(res, MEMBER_DATA.PATCH_RECEIVE_DoesNotClearRoles))
         })
+
+        it('fails when combination of firstName and lastName ist already present on other member', async () => {
+            return patchAuthenticated('/members/2', await adminToken())
+                .send(MEMBER_DATA.POST_NAME_ALREADY_PRESENT)
+                .expect(400);
+        });
     });
 
     describe('/DELETE member', () => {
@@ -174,6 +203,15 @@ describe('Member', () => {
 });
 
 const MEMBER_DATA = {
+    POST_NAME_ALREADY_PRESENT: {
+        firstName: 'Kevin',
+        lastName: 'Thürmann',
+        performanceCount: 600,
+        email: 'kevin.thuermann@web.de',
+        password: 'test1Password',
+        isDeleted: false,
+        sectionId: 2
+    },
     POST_WithoutRoles: {
         "email": "test1@web.de",
         "firstName": "testFirstName",
@@ -236,17 +274,17 @@ const MEMBER_DATA = {
     PUT_WithoutRole: {
         "memberId": 1,
         "email": "kevin1@web.de",
-        "firstName": "kevin1",
-        "lastName": "Thuermann1",
-        "performanceCount": 0,
+        "firstName": "Kevin",
+        "lastName": "Thürmann",
+        "performanceCount": 200,
         "password": "new password"
     },
     PUT_RECEIVE_WithoutRole: {
         "memberId": 1,
         "email": "kevin1@web.de",
-        "firstName": "kevin1",
-        "lastName": "Thuermann1",
-        "performanceCount": 0
+        "firstName": "Kevin",
+        "lastName": "Thürmann",
+        "performanceCount": 200
     },
     PUT_WithSectionAndRole: {
         "memberId": 1,
