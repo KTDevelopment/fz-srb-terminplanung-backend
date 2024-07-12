@@ -95,6 +95,15 @@ export class IcsService {
             }
         }
 
+        if (split[4] && !isNaN(parseInt(split[4].trim()))) {
+            return {
+                location: split[0] ? split[0].trim() : '',
+                address: split[2] ? split[2].trim() : '',
+                town: split[3] ? split[3].trim() : '',
+                postcode: split[4] ? parseInt(split[4].trim()) : 0,
+            }
+        }
+
         if (split[0] === "BANDHAUS") {
             return {
                 location: split[0] ? split[0].trim() : '',
